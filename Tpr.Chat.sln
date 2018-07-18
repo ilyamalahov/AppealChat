@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2035
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tpr.Chat.Core", "Tpr.Chat.Core\Tpr.Chat.Core.csproj", "{3354A2E9-1EE3-4558-BEE9-0A2ECE59C100}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tpr.Chat.Core.TestConsole", "Tpr.Chat.Core.TestConsole\Tpr.Chat.Core.TestConsole.csproj", "{F92FEE91-1001-4F9B-8B89-7ECF7629455D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3354A2E9-1EE3-4558-BEE9-0A2ECE59C100}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3354A2E9-1EE3-4558-BEE9-0A2ECE59C100}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3354A2E9-1EE3-4558-BEE9-0A2ECE59C100}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3354A2E9-1EE3-4558-BEE9-0A2ECE59C100}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F92FEE91-1001-4F9B-8B89-7ECF7629455D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F92FEE91-1001-4F9B-8B89-7ECF7629455D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F92FEE91-1001-4F9B-8B89-7ECF7629455D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F92FEE91-1001-4F9B-8B89-7ECF7629455D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {45318A00-618C-4B44-9DC0-D2D60E6FAEF2}
+	EndGlobalSection
+EndGlobal
