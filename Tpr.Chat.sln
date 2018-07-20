@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tpr.Chat.Core", "Tpr.Chat.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tpr.Chat.Core.TestConsole", "Tpr.Chat.Core.TestConsole\Tpr.Chat.Core.TestConsole.csproj", "{F92FEE91-1001-4F9B-8B89-7ECF7629455D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tpr.Chat.Web", "Tpr.Chat.Web\Tpr.Chat.Web.csproj", "{AF03ECF6-6C5D-473B-9E03-577E82CA9E67}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F92FEE91-1001-4F9B-8B89-7ECF7629455D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F92FEE91-1001-4F9B-8B89-7ECF7629455D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F92FEE91-1001-4F9B-8B89-7ECF7629455D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF03ECF6-6C5D-473B-9E03-577E82CA9E67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF03ECF6-6C5D-473B-9E03-577E82CA9E67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF03ECF6-6C5D-473B-9E03-577E82CA9E67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF03ECF6-6C5D-473B-9E03-577E82CA9E67}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
