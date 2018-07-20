@@ -26,13 +26,13 @@ namespace Tpr.Chat.Core.Repositories
             }
         }
 
-        public IList<ChatMessage> GetChatMessages(Guid appealId)
+        public IList<Message> GetChatMessages(Guid appealId)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
                 string sql = "SELECT * FROM dbo.ChatMessages WHERE AppealId = @AppealId";
-                return connection.Query<ChatMessage>(sql, new {appealId}).ToList();
+                return connection.Query<Message>(sql, new {appealId}).ToList();
             }
         }
 
@@ -53,7 +53,7 @@ namespace Tpr.Chat.Core.Repositories
 
         long WriteChatMessage(Guid appealId, string nickName, string messageString, ChatMessageTypes chatMessageType)
         {
-            var chatMessage = new ChatMessage()
+            var chatMessage = new Message()
             {
                 AppealId = appealId,
                 ChatMessageTypeId = chatMessageType,

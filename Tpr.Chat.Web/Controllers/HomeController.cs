@@ -4,27 +4,43 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Tpr.Chat.Core.Repositories;
 using Tpr.Chat.Web.Models;
 
 namespace Tpr.Chat.Web.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly IUserRepository userRepository;
+        private readonly IChatRepository chatRepository;
+
+        public HomeController(IUserRepository userRepository, IChatRepository chatRepository)
         {
-            return View();
+            this.userRepository = userRepository;
+            this.chatRepository = chatRepository;
         }
 
-        public IActionResult About()
+        public async Task<IActionResult> Index(Guid appealId)
         {
-            ViewData["Message"] = "Your application description page.";
+            //var user = await userRepository.Get(appealId);
 
-            return View();
-        }
+            //if (user == null)
+            //{
+            //    ModelState.AddModelError("", "User is not found");
 
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
+            //    return BadRequest(ModelState);
+            //}
+
+            var chatSession = chatRepository.GetChatSession(appealId);
+
+            if(chatSession == null)
+            {
+                ModelState.AddModelError("", "Chat session is not found");
+
+                return BadRequest(ModelState);
+            }
+
+            //chatSession.FinishTime.Subtract(chatSession.StartTime);
 
             return View();
         }

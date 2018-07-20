@@ -38,9 +38,9 @@ namespace Tpr.Chat.Core.Repositories
         {
             using (var connection = new SqlConnection(connectionString))
             {
-                var result = await connection.QueryAsync<User>("SELECT * FROM dbo.Users WHERE Id = @Id", id);
+                var users = await connection.QueryAsync<User>("SELECT * FROM dbo.Users WHERE Id = @Id", id);
 
-                return result.FirstOrDefault();
+                return users.FirstOrDefault();
             }
         }
     }

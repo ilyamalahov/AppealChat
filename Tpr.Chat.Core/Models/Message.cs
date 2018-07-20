@@ -4,21 +4,18 @@ using Dapper.Contrib.Extensions;
 namespace Tpr.Chat.Core.Models
 {
     [Table("ChatMessages")]
-    public class ChatMessage
+    public class Message
     {
         [Key]
         public int Id { get; set; }
-        public Guid AppealId { get; set; }
-        public DateTime CreateDate { get; set; }
-        public string MessageString { get; set; }
-        public string NickName { get; set; }
-        public ChatMessageTypes ChatMessageTypeId { get; set; }
-    }
 
-    public enum ChatMessageTypes
-    {
-        Joined = 1,
-        Message = 2,
-        Leave = 3
+        public DateTime CreateDate { get; set; }
+
+        public string MessageString { get; set; }
+
+        public string NickName { get; set; }
+
+        [ExplicitKey]
+        public Guid SessionId { get; set; }
     }
 }
