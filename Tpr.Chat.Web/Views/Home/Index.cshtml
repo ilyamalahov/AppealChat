@@ -1,94 +1,63 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+<div class="sidebar">
+    <div class="expert-info" style="text-align: center; padding: 10px; border-bottom: 1px solid #000">
+        <div class="expert-image" style="width: 150px; height: 150px;">
 
-<div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
-    <ol class="carousel-indicators">
-        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-        <li data-target="#myCarousel" data-slide-to="1"></li>
-        <li data-target="#myCarousel" data-slide-to="2"></li>
-    </ol>
-    <div class="carousel-inner" role="listbox">
-        <div class="item active">
-            <img src="~/images/banner1.svg" alt="ASP.NET" class="img-responsive" />
-            <div class="carousel-caption" role="option">
-                <p>
-                    Learn how to build ASP.NET apps that can run anywhere.
-                    <a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkID=525028&clcid=0x409">
-                        Learn More
-                    </a>
-                </p>
-            </div>
         </div>
-        <div class="item">
-            <img src="~/images/banner2.svg" alt="Visual Studio" class="img-responsive" />
-            <div class="carousel-caption" role="option">
-                <p>
-                    There are powerful new features in Visual Studio for building modern web apps.
-                    <a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkID=525030&clcid=0x409">
-                        Learn More
-                    </a>
-                </p>
-            </div>
+        <div class="expert-caption" style="font-size: 20px">
+            Член конфликтной комиссии
         </div>
-        <div class="item">
-            <img src="~/images/banner3.svg" alt="Microsoft Azure" class="img-responsive" />
-            <div class="carousel-caption" role="option">
-                <p>
-                    Learn how Microsoft's Azure cloud platform allows you to build, deploy, and scale web apps.
-                    <a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkID=525027&clcid=0x409">
-                        Learn More
-                    </a>
-                </p>
-            </div>
+        <div class="" style="font-size: 20px">
+            №456
+        </div>
+        <hr />
+        <div class="expert-change">
+            <a href="/">Сменить собеседника</a>
         </div>
     </div>
-    <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
-        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
-    </a>
-    <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
-        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-        <span class="sr-only">Next</span>
-    </a>
-</div>
+    <div class="appeal-info" style="padding:10px;">
+        <ul style="list-style: none; margin: 0; padding: 0">
+            <li style="border-bottom: 1px solid #000; padding: 15px 0;"><span>Номер аппеляции</span><span style="float: right">123</span></li>
+            <li style="border-bottom: 1px solid #000; padding: 15px 0;"><span>Предмет</span><span style="float: right">Математика профильная</span></li>
+            <li style="padding: 15px 0;"><span>Дата экзамена</span><span style="float: right">01.01.2018</span></li>
+        </ul>
+    </div>
+    <div class="moscow-time" style="text-align: center">
 
-<div class="row">
-    <div class="col-md-3">
-        <h2>Application uses</h2>
-        <ul>
-            <li>Sample pages using ASP.NET Core MVC</li>
-            <li>Theming using <a href="https://go.microsoft.com/fwlink/?LinkID=398939">Bootstrap</a></li>
-        </ul>
-    </div>
-    <div class="col-md-3">
-        <h2>How to</h2>
-        <ul>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=398600">Add a Controller and View</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=699315">Manage User Secrets using Secret Manager.</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=699316">Use logging to log a message.</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=699317">Add packages using NuGet.</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=699319">Target development, staging or production environment.</a></li>
-        </ul>
-    </div>
-    <div class="col-md-3">
-        <h2>Overview</h2>
-        <ul>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=518008">Conceptual overview of what is ASP.NET Core</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=699320">Fundamentals of ASP.NET Core such as Startup and middleware.</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=398602">Working with Data</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=398603">Security</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=699321">Client side development</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=699322">Develop on different platforms</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=699323">Read more on the documentation site</a></li>
-        </ul>
-    </div>
-    <div class="col-md-3">
-        <h2>Run &amp; Deploy</h2>
-        <ul>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=517851">Run your app</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=517853">Run tools such as EF migrations and more</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=398609">Publish to Microsoft Azure Web Apps</a></li>
-        </ul>
     </div>
 </div>
+<div class="main-content">
+    <div class="chat-header">
+        <div class="complete-button">
+            <a href="/">Завершить консультацию</a>
+        </div>
+        <div class="caption">
+            Система онлайн-консультирования по вопросам...
+        </div>
+    </div>
+    <div class="messages-list">
+        <ul id="messagesList">
+            <li class="message owner-expert">Член конфликтной комиссии №ХХХ подключился к консультации</li>
+            <li class="message owner-expert">
+                <div class="message-text">Добрый день! Готовы проконсультировать Вас по всем вопросам...</div>
+                Член конфликтной комиссии №ХХХ
+            </li>
+        </ul>
+    </div>
+    <div class="chat-footer">
+        <div class="time-caption">До конца консультации осталось XX минут</div>
+        <div class="message-form">
+            <form id="chatForm">
+                <input class="send-button" id="sendButton" name="sendButton" type="submit" value="Send" />
+                <button class="emoji-button" type="button">Emoji</button>
+                <div style="overflow: hidden;">
+                    <input class="send-textbox" type="text" placeholder="Введите сообщение..." />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="~/lib/signalr/signalr.js"></script>
+<script src="~/js/chat.js"></script>

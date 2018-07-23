@@ -1,37 +1,89 @@
-﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification\ 
-for details on configuring this project to bundle and minify static web assets. */
-body {
-    padding-top: 50px;
-    padding-bottom: 20px;
+﻿body {
+    margin: 0;
+    padding: 0;
 }
-
-/* Wrapping element */
-/* Set some basic padding to keep content from hitting the edges */
 .body-content {
-    padding-left: 15px;
-    padding-right: 15px;
+    position: relative;
+    height: 100vh;
+}
+.sidebar {
+    float: right;
+    width: 350px;
+    height: 100%;
+}
+.main-content {
+    position: relative;
+    margin-right: 350px;
+    height: 100%;
+    border-right: 1px solid #000;
 }
 
-/* Carousel */
-.carousel-caption p {
-    font-size: 20px;
-    line-height: 1.4;
+.message {
+
 }
 
-/* Make .svg files in the carousel display properly in older browsers */
-.carousel-inner .item img[src$=".svg"] {
+.message-text {
+    border:1px solid #000;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.chat-header {
+    border-bottom: 1px solid #000;
+    padding: 10px;
+}
+
+.chat-footer {
+    position: absolute;
+    bottom: 0;
     width: 100%;
 }
-
-/* QR code generator */
-#qrCode {
-    margin: 15px;
+.time-caption {
+    padding: 5px;
+    text-align:right;
 }
 
-/* Hide/rearrange for smaller screens */
-@media screen and (max-width: 767px) {
-    /* Hide captions */
-    .carousel-caption {
-        display: none;
+.message-form {
+    border-top: 1px solid #000;
+    padding: 5px;
+}
+
+.send-button {
+    float: right;
+    padding: 5px;
+    margin-left: 5px;
+}
+
+.send-textbox {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px;
+}
+
+.emoji-button {
+    float: left;
+    padding: 5px;
+    margin-right: 5px;
+}
+
+.complete-button {
+    float: right;
+}
+
+.messages-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+    .messages-list ul li {
+        padding: 5px;
+        margin-bottom: 5px;
     }
+
+
+.owner-expert {
+    text-align: right;
 }
+     /*message-form .column {
+    display: inline-block;
+}*/

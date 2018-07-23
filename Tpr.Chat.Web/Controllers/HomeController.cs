@@ -1,46 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Tpr.Chat.Core.Repositories;
+using Tpr.Chat.Web.Jwt;
 using Tpr.Chat.Web.Models;
 
 namespace Tpr.Chat.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IUserRepository userRepository;
         private readonly IChatRepository chatRepository;
 
-        public HomeController(IUserRepository userRepository, IChatRepository chatRepository)
+        public HomeController(IChatRepository chatRepository)
         {
-            this.userRepository = userRepository;
             this.chatRepository = chatRepository;
         }
 
-        public async Task<IActionResult> Index(Guid appealId)
+        public IActionResult Index(Guid appealId)
         {
-            //var user = await userRepository.Get(appealId);
+            //var chatSession = chatRepository.GetChatSession(appealId);
 
-            //if (user == null)
+            //if (chatSession == null)
             //{
-            //    ModelState.AddModelError("", "User is not found");
+            //    ModelState.AddModelError("", "Chat session is not found");
 
             //    return BadRequest(ModelState);
             //}
 
-            var chatSession = chatRepository.GetChatSession(appealId);
+            //var claims = new List<Claim>
+            //{
+            //    new Claim(ClaimsIdentity.DefaultNameClaimType, appealId.ToString())
+            //};
 
-            if(chatSession == null)
-            {
-                ModelState.AddModelError("", "Chat session is not found");
-
-                return BadRequest(ModelState);
-            }
-
-            //chatSession.FinishTime.Subtract(chatSession.StartTime);
+            //var identity = new ClaimsIdentity(claims, "Token");
 
             return View();
         }

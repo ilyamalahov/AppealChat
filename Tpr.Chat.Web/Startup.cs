@@ -31,9 +31,7 @@ namespace Tpr.Chat.Web
         {
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
 
-            services.AddSignalRCore().AddJsonProtocol();
-
-            services.AddTransient<IUserRepository, UserRepository>(repository => new UserRepository(connectionString));
+            //services.AddTransient<IUserRepository, UserRepository>(repository => new UserRepository(connectionString));
             services.AddTransient<IChatRepository, ChatRepository>(repository => new ChatRepository(connectionString));
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -67,7 +65,9 @@ namespace Tpr.Chat.Web
                 })
             );
 
-            services.AddMvcCore().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddSignalR().AddJsonProtocol();
+
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,0 +1,19 @@
+{
+  "name": "Tpr.Chat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.srvdev.ru/ikompas/AIS_Appeal/Tpr.Chat.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aspnet/signalr": "^1.0.2"
+  }
+}
