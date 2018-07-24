@@ -9,12 +9,17 @@ using Tpr.Chat.Web.ViewModels;
 
 namespace Tpr.Chat.Web.Controllers
 {
-    [Authorize]
     [Produces("application/json")]
     [Route("api/[controller]")]
     public class ApiController : Controller
     {
+        [Authorize]
         public JsonResult CreateChat([FromBody] CreateChatViewModel viewModel)
+        {
+            return Json("");
+        }
+
+        public JsonResult UpdateInfo(Guid appealId, string expertKey = null, string expertPassword = null)
         {
             return Json("");
         }

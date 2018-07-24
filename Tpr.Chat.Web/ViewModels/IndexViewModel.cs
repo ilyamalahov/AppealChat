@@ -7,6 +7,6 @@ namespace Tpr.Chat.Web.ViewModels
 {
     public class IndexViewModel
     {
-        public Guid UserId { get; set; }
+        public bool IsExpert { get; internal set; }
     }
 }

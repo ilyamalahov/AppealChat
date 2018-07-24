@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Tpr.Chat.Core.Repositories;
 using Tpr.Chat.Web.Jwt;
 using Tpr.Chat.Web.Models;
+using Tpr.Chat.Web.ViewModels;
 
 namespace Tpr.Chat.Web.Controllers
 {
@@ -22,16 +23,33 @@ namespace Tpr.Chat.Web.Controllers
             this.chatRepository = chatRepository;
         }
 
-        public IActionResult Index(Guid appealId)
+        [HttpGet("{id}")]
+        public IActionResult Index(Guid id, int key = 0, string secretKey = null)
         {
-            //var chatSession = chatRepository.GetChatSession(appealId);
+            var chatSession = chatRepository.GetChatSession(id);
 
-            //if (chatSession == null)
-            //{
-            //    ModelState.AddModelError("", "Chat session is not found");
+            if (chatSession == null)
+            {
+                ModelState.AddModelError("", "Chat session is not found");
 
-            //    return BadRequest(ModelState);
-            //}
+                return BadRequest(ModelState);
+            }
+
+            if(DateTime.Now < chatSession.StartTime)
+            {
+                ModelState.AddModelError("", "Consultation has not yet begun");
+
+                return BadRequest(ModelState);
+            }
+
+            if(DateTime.Now > chatSession.FinishTime)
+            {
+                ModelState.AddModelError("", "The consultation has already been completed");
+
+                return BadRequest(ModelState);
+            }
+
+            //var moscowTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Russian Standard Time");
 
             //var claims = new List<Claim>
             //{
@@ -40,7 +58,12 @@ namespace Tpr.Chat.Web.Controllers
 
             //var identity = new ClaimsIdentity(claims, "Token");
 
-            return View();
+            IndexViewModel indexViewModel = new IndexViewModel
+            {
+                IsExpert = key > 0
+            };
+            
+            return View(indexViewModel);
         }
 
         public IActionResult Privacy()
