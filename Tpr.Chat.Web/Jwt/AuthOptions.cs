@@ -10,20 +10,12 @@ namespace Tpr.Chat.Web.Jwt
     public class AuthOptions
     {
         // издатель токена
-        public const string ISSUER = "MyAuthServer";
-        
-        // потребитель токена
-        public const string AUDIENCE = "http://localhost:51884/";
-        
-        // ключ для шифрации
-        const string KEY = "mysupersecret_secretkey!123";
-        
-        // время жизни токена - 1 минута
-        public const int LIFETIME = 1;
+        public string Issuer { get; set; }
 
-        public static SymmetricSecurityKey GetSymmetricSecurityKey()
-        {
-            return new SymmetricSecurityKey(Encoding.ASCII.GetBytes(KEY));
-        }
+        // потребитель токена
+        public string Audience { get; set; }
+
+        // ключ для шифрации
+        public string SigningKey { get; set; }
     }
 }

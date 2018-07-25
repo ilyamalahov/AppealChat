@@ -1,9 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@{
+    ViewData["Title"] = "Система онлайн консультирования по вопросам";
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Tpr.Chat.Web</title>
+    <title>@ViewData["Title"]</title>
 
     <environment include="Development">
         <link rel="stylesheet" href="~/css/site.css" />
@@ -16,10 +19,6 @@
 </head>
 <body>
     <partial name="_CookieConsentPartial" />
-
-    <div class="body-content">
-        @RenderBody()
-    </div>
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
@@ -36,5 +35,9 @@
     </environment>
 
     @RenderSection("Scripts", required: false)
+
+    <div class="body-content">
+        @RenderBody()
+    </div>
 </body>
 </html>

@@ -35,20 +35,16 @@
 </div>
 <div class="main-content">
     <div class="chat-header">
-        <div class="complete-button">
-            <a href="/">Завершить консультацию</a>
-        </div>
-        <div class="caption">
-            Система онлайн-консультирования по вопросам...
-        </div>
+        <div class="complete-button"><a href="/">Завершить консультацию</a></div>
+        <div class="caption">Система онлайн-консультирования по вопросам...</div>
     </div>
     <div class="messages-list">
         <ul id="messagesList">
             @*<li class="message owner-expert">Член конфликтной комиссии №ХХХ подключился к консультации</li>
-            <li class="message owner-expert">
-                <div class="message-text">Добрый день! Готовы проконсультировать Вас по всем вопросам...</div>
-                Член конфликтной комиссии №ХХХ
-            </li>*@
+                <li class="message owner-expert">
+                    <div class="message-text">Добрый день! Готовы проконсультировать Вас по всем вопросам...</div>
+                    Член конфликтной комиссии №ХХХ
+                </li>*@
         </ul>
     </div>
     <div class="chat-footer">
@@ -64,5 +60,9 @@
         </div>
     </div>
 </div>
+<script>
+    var appealId = "@Model.AppealId";
+</script>
+
 <script src="~/lib/signalr/signalr.js"></script>
 <script src="~/js/chat.js"></script>

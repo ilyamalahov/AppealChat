@@ -13,15 +13,7 @@ namespace Tpr.Chat.Web.Service
     {
         public string CreateToken(ClaimsIdentity identity)
         {
-            var jwt = new JwtSecurityToken(
-                AuthOptions.ISSUER,
-                AuthOptions.AUDIENCE,
-                identity.Claims,
-                DateTime.UtcNow,
-                DateTime.UtcNow.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME)),
-                new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-
-            return new JwtSecurityTokenHandler().WriteToken(jwt);
+            return null;
         }
 
         private ClaimsIdentity GetIdentity(Guid appealId)

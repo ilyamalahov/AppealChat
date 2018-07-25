@@ -8,19 +8,19 @@ using Tpr.Chat.Core.Repositories;
 
 namespace Tpr.Chat.Web.Hubs
 {
-    //[Authorize]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class ChatHub : Hub
     {
-        private readonly ChatRepository chatRepository;
+        private readonly IChatRepository chatRepository;
 
-        public ChatHub(ChatRepository chatRepository)
+        public ChatHub(IChatRepository chatRepository)
         {
             this.chatRepository = chatRepository;
         }
-
-        //[AllowAnonymous]
+        
         public async Task SendMessage(Guid appealId, string message, string username)
         {
+            //Context.User.Claims.First(u => u.Equals())
             chatRepository.WriteMessage(appealId, username, message);
 
             await Clients.All.SendAsync("ReceiveMessage", message, username);

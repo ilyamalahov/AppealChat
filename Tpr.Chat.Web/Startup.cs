@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -31,7 +32,24 @@ namespace Tpr.Chat.Web
         {
             string connectionString = Configuration.GetConnectionString("LocalConnection");
             
+            // Chat repository
             services.AddTransient<IChatRepository, ChatRepository>(repository => new ChatRepository(connectionString));
+
+            // Cross-Origin Request S?
+            services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
+            {
+                builder.AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowAnyOrigin()
+                    .AllowCredentials();
+            })
+            );
+
+            // SignalR
+            services.AddSignalR(options => options.EnableDetailedErrors = true).AddJsonProtocol();
+
+            // Authentication
+            var jwtConfiguration = Configuration.GetSection("JWT");
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {
@@ -40,32 +58,53 @@ namespace Tpr.Chat.Web
                         // укзывает, будет ли валидироваться издатель при валидации токена
                         ValidateIssuer = true,
                         // строка, представляющая издателя
-                        ValidIssuer = AuthOptions.ISSUER,
+                        ValidIssuer = jwtConfiguration["Issuer"],
 
                         // будет ли валидироваться потребитель токена
                         ValidateAudience = true,
                         // установка потребителя токена
-                        ValidAudience = AuthOptions.AUDIENCE,
-                        // будет ли валидироваться время существования
-                        ValidateLifetime = true,
+                        ValidAudience = jwtConfiguration["Audience"],
 
                         // установка ключа безопасности
-                        IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfiguration["SigningKey"])),
                         // валидация ключа безопасности
                         ValidateIssuerSigningKey = true,
+
+                        // будет ли валидироваться время существования
+                        ValidateLifetime = true,
+                        //  
+                        ClockSkew = TimeSpan.Zero
+                    };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+
+                            // If the request is for our hub...
+                            if (!string.IsNullOrEmpty(accessToken) && (context.HttpContext.Request.Path.StartsWithSegments("/chat")))
+                            {
+                                // Read the token out of the query string
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        },
+                        OnAuthenticationFailed = context =>
+                        {
+                            Console.WriteLine(context.Exception.Message);
+
+                            return Task.CompletedTask;
+                        },
+                        //OnTokenValidated = context =>
+                        //{
+                        //    Console.WriteLine(context.Result.Succeeded);
+
+                        //    return Task.CompletedTask;
+                        //}
                     };
                 });
 
-            services.AddCors(options => options.AddPolicy("CorsPolicy", builder => {
-                builder.AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowAnyOrigin()
-                    .AllowCredentials();
-                })
-            );
-
-            services.AddSignalR().AddJsonProtocol();
-
+            // MVC
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
@@ -82,17 +121,25 @@ namespace Tpr.Chat.Web
                 app.UseHsts();
             }
 
+            // HTTPS rediretion
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseAuthentication();
 
+            // Static files
+            app.UseStaticFiles();
+
+            // CORS
             app.UseCors("CorsPolicy");
 
+            // SignalR
             app.UseSignalR(routes =>
             {
                 routes.MapHub<ChatHub>("/chat");
             });
 
+            // Authentication
+            app.UseAuthentication();
+
+            // MVC
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

@@ -23,47 +23,41 @@ namespace Tpr.Chat.Web.Controllers
             this.chatRepository = chatRepository;
         }
 
-        [HttpGet("{id}")]
-        public IActionResult Index(Guid id, int key = 0, string secretKey = null)
+        [HttpGet("/{appealId}")]
+        public IActionResult Index(Guid appealId, int key = 0, string secretKey = null)
         {
-            var chatSession = chatRepository.GetChatSession(id);
-
+            var chatSession = chatRepository.GetChatSession(appealId);
+            
+            // Check if chat session is exists
             if (chatSession == null)
             {
-                ModelState.AddModelError("", "Chat session is not found");
-
-                return BadRequest(ModelState);
+                return NotFound(appealId);
             }
 
-            if(DateTime.Now < chatSession.StartTime)
+            // Check if current date less than chat start time
+            if (DateTime.Now < chatSession.StartTime)
             {
-                ModelState.AddModelError("", "Consultation has not yet begun");
-
-                return BadRequest(ModelState);
+                return View("Early");
             }
 
-            if(DateTime.Now > chatSession.FinishTime)
+            // Check if current date more than chat finish time
+            if (DateTime.Now > chatSession.FinishTime)
             {
-                ModelState.AddModelError("", "The consultation has already been completed");
-
-                return BadRequest(ModelState);
+                return View("Complete");
             }
 
-            //var moscowTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Russian Standard Time");
+            // Expert checkings
 
-            //var claims = new List<Claim>
-            //{
-            //    new Claim(ClaimsIdentity.DefaultNameClaimType, appealId.ToString())
-            //};
 
-            //var identity = new ClaimsIdentity(claims, "Token");
 
-            IndexViewModel indexViewModel = new IndexViewModel
+            // View model
+            var viewModel = new IndexViewModel
             {
+                AppealId = appealId,
                 IsExpert = key > 0
             };
             
-            return View(indexViewModel);
+            return View(viewModel);
         }
 
         public IActionResult Privacy()
