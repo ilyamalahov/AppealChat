@@ -62,10 +62,23 @@ namespace Tpr.Chat.Core.Repositories
                 MessageString = messageString
             };
 
-            using (var connection = new SqlConnection(_connectionString))
+            return WriteChatMessage(chatMessage);
+        }
+
+        public long WriteChatMessage(ChatMessage message)
+        {
+            try
             {
-                connection.Open();
-                return connection.Insert(chatMessage);
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    return connection.Insert(message);
+                }
+            }
+            catch (Exception)
+            {
+                return 0;
             }
         }
     }

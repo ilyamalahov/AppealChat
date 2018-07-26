@@ -66,7 +66,7 @@ namespace Tpr.Chat.Web
                         ValidAudience = jwtConfiguration["Audience"],
 
                         // установка ключа безопасности
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfiguration["SigningKey"])),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfiguration["SecretKey"])),
                         // валидация ключа безопасности
                         ValidateIssuerSigningKey = true,
 

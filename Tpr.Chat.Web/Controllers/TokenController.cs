@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Tpr.Chat.Core.Constants;
 using Tpr.Chat.Core.Repositories;
 
 namespace Tpr.Chat.Web.Controllers
@@ -25,7 +26,7 @@ namespace Tpr.Chat.Web.Controllers
 
         [Produces("application/json")]
         [HttpPost("/token")]
-        public IActionResult Token(Guid appealId)
+        public IActionResult Token(Guid appealId, int key = 0, string secretKey = null)
         {
             var chatSession = chatRepository.GetChatSession(appealId);
 
@@ -47,18 +48,27 @@ namespace Tpr.Chat.Web.Controllers
                 return BadRequest(chatSession);
             }
 
+            ChatRole role = ChatRole.Appeal;
+
+            // Expert checkings
+            if (key > 0)
+            {
+                role = ChatRole.Expert;
+
+                // Secret checkings, etc...
+            }
+
             // Jwt Token Process
 
             var jwtConfiguration = configuration.GetSection("JWT");
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, appealId.ToString())
+                new Claim(ClaimsIdentity.DefaultNameClaimType, appealId.ToString()),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, role.ToString())
             };
-
-            //var identity = new ClaimsIdentity(claims, "Token");
             
-            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration["SigningKey"]));
+            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration["SecretKey"]));
 
             var token = new JwtSecurityToken(
                 issuer: jwtConfiguration["Issuer"],

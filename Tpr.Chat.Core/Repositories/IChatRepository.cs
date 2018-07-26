@@ -11,5 +11,6 @@ namespace Tpr.Chat.Core.Repositories
         long WriteMessage(Guid appealId, string nickName, string messageString);
         long WriteJoined(Guid appealId, string nickName);
         long WriteLeave(Guid appealId, string nickName);
+        long WriteChatMessage(ChatMessage message);
     }
 }

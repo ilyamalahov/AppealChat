@@ -16,6 +16,6 @@ namespace Tpr.Chat.Web.Jwt
         public string Audience { get; set; }
 
         // ключ для шифрации
-        public string SigningKey { get; set; }
+        public string SecretKey { get; set; }
     }
 }
