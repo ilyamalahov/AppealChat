@@ -1,85 +1,68 @@
-﻿body, h1, h2, h3, h4, h5, h6 {
+﻿html, body, h1, h2, h3, h4, h5, h6 {
     margin: 0;
     padding: 0;
-}
-.body-content {
-    position: relative;
-    height: 100vh;
+    height: 100%;
+    min-height: 100%;
     color: #565656;
     font-family: Calibri;
-    overflow: hidden;
+}
+form {
+    padding: 0;
+    margin: 0;
 }
 
-.footer {
+.footer, .header {
+    flex: none;
+}
+
+.sidebar {
+    float: right;
+    width: 350px;
+    border-left: 1px solid #000;
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+.sidebar-footer {
     position: absolute;
     bottom: 0;
     width: 100%;
     background: #fff;
 }
 
-.sidebar {
-    float: right;
-    width: 350px;
+.content {
+    display: flex;
+    flex-direction: column;
     height: 100%;
-    position: relative;
-    overflow: hidden;
 }
 
-.main-content {
-    position: relative;
-    margin-right: 350px;
-    height: 100%;
-    border-right: 1px solid #000;
-}
-
-.chat-header {
-    border-bottom: 1px solid #000;
-    padding: 10px;
-    overflow: hidden;
-}
-    .chat-header .caption {
-        text-overflow: ellipsis;
-        white-space: nowrap;
+    .content .header {
+        border-bottom: 1px solid #000;
+        padding: 10px;
         overflow: hidden;
-        font-size: 24px;
     }
-
-.time-caption {
-    padding: 5px;
-    text-align:right;
-}
-
-.message-form {
-    border-top: 1px solid #000;
-    padding: 5px;
-}
-
-.send-button {
-    float: right;
-    padding: 5px;
-    margin-left: 5px;
-}
-
-.send-textbox {
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.emoji-button {
-    float: left;
-    padding: 5px;
-    margin-right: 5px;
-}
+        .content .header .caption {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            font-size: 24px;
+        }
 
 .complete-button {
     float: right;
 }
 
-.messages-list ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.message-history {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex: auto;
 }
+
+    .message-history ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
 
 .message {
     padding: 5px;
@@ -125,6 +108,34 @@
     clear:left;
 }
 
+.time-caption {
+    padding: 5px;
+    text-align: right;
+}
+
+.message-form {
+    border-top: 1px solid #000;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.send-textbox {
+    width: 100%;
+    padding: 6px;
+    resize: none
+}
+
+.form-button {
+    font-size: 22px;
+    padding: 5px;
+    color: #565656;
+    display: block;
+}
+    .form-button:hover {
+        color: #ccc;
+    }
+
 .glyph {
     margin-right: 5px;
     vertical-align: bottom;
@@ -149,3 +160,17 @@
     .link-button:hover, .hide-info-panel:hover {
         text-decoration: underline;
     }
+
+.emoji-grid {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto auto auto;
+    text-align: center;
+    border-top: 1px solid #000;
+}
+    .emoji-grid span {
+        padding: 10px;
+    }
+        .emoji-grid span:hover {
+            background: #ebebeb;
+            cursor: pointer;
+        }

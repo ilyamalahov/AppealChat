@@ -9,7 +9,7 @@
     {
         <div class="expert-info" style="text-align: center; padding: 10px; border-bottom: 1px solid #000">
             <div class="expert-image"><img style="width: 150px; height: 150px;" src="~/images/account.png" alt="Account" /></div>
-            <div class="expert-name" style="font-size: 20px">Член конфликтной комиссии <br/> №{ EXPERT_NUMBER }</div>
+            <div class="expert-name" style="font-size: 20px">Член конфликтной комиссии <br /> №{ EXPERT_NUMBER }</div>
             <hr />
             <a href="/" class="link-button"><i class="fas fa-exchange-alt glyph"></i>Сменить собеседника</a>
         </div>
@@ -21,17 +21,17 @@
             <li style="padding: 15px 0;"><span>Дата экзамена</span><span style="float: right">{ APPEAL_EXAMDATE }</span></li>
         </ul>
     </div>
-    <div class="footer" style="text-align: center">
+    <div class="sidebar-footer" style="text-align: center">
         <div class="moscow-time" style="padding: 5px; border-bottom: 1px solid">Московское время: { MOSCOW_TIME }</div>
         <a href="/" class="hide-info-panel"><i class="fas fa-chevron-circle-up" style="margin-right: 5px; font-size: 20px; vertical-align: middle;"></i>Скрыть информационную панель</a>
     </div>
 </div>
-<div class="main-content">
-    <div class="chat-header">
+<div class="content">
+    <div class="header">
         <a href="/" class="complete-button link-button"><i class="fas fa-check-circle glyph"></i>Завершить консультацию</a>
         <div class="caption"><i class="fab fa-adn glyph" style="font-size: 26px;"></i>Система онлайн-консультирования по вопросам...</div>
     </div>
-    <div class="messages-list">
+    <div class="message-history">
         <ul id="messagesList">
             @foreach (var message in Model.Messages)
             {
@@ -46,7 +46,7 @@
                             <span>@message.NickName</span><p>подключился к консультации </p><span>(@messageDate)</span>
                             break;
                         case ChatMessageTypes.Message:
-                            <div class="message-bubble">@message.MessageString</div><span class="nickname">@message.NickName</span> <span>(@messageDate)</span>
+                            <div class="message-bubble">@Html.Raw(message.MessageString)</div><span class="nickname">@message.NickName</span> <span>(@messageDate)</span>
                             break;
                         case ChatMessageTypes.Leave:
                             <span>@message.NickName</span><p>покинул консультацию </p><span>(@messageDate)</span>
@@ -58,14 +58,11 @@
     </div>
     <div class="footer">
         <div class="time-caption">До конца консультации осталось <span id="remaining-time">{ REMAINING_TIME }</span> минут</div>
+        <div id="emoji-grid" class="emoji-grid"></div>
         <div class="message-form">
-            <form id="chatForm">
-                <button class="send-button" id="sendButton" name="sendButton" type="submit"><i class="far fa-paper-plane"></i>Send</button>
-                <button class="emoji-button" type="button"><i class="far fa-smile"></i>Emoji</button>
-                <div style="overflow: hidden;">
-                    <textarea id="messageInput" class="send-textbox" style="resize: none" data-max-rows="5" rows="1" autocomplete="off" placeholder="Введите сообщение..." ></textarea>
-                </div>
-            </form>
+                <a href="#" class="form-button"><i class="far fa-smile"></i></a>
+                <textarea id="messageInput" class="send-textbox" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
+                <a id="sendButton" href="#" class="form-button"><i class="far fa-paper-plane"></i></a>
         </div>
     </div>
 </div>

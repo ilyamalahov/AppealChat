@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Tpr.Chat.Core.Constants;
 using Tpr.Chat.Core.Models;
@@ -23,6 +24,7 @@ namespace Tpr.Chat.Web.Hubs
         
         public async Task SendMessage(string message)
         {
+
             Guid appealId = Guid.Empty;
 
             if(Guid.TryParse(Context.User.Identity.Name, out appealId))

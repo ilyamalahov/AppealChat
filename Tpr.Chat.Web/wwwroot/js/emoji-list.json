@@ -1,0 +1,146 @@
+﻿[
+  {
+    "id": 1,
+    "unicode": "&#x1F600",
+    "char": "😀",
+    "name": "grinning face"
+  },
+  {
+    "id": 2,
+    "unicode": "&#x1F601",
+    "char": "😁",
+    "name": "beaming face with smiling eyes"
+  },
+  {
+    "id": 3,
+    "unicode": "&#x1F602",
+    "char": "😂",
+    "name": "face with tears of joy"
+  },
+  {
+    "id": 4,
+    "unicode": "&#x1F923",
+    "char": "🤣",
+    "name": "rolling on the floor laughing"
+  },
+  {
+    "id": 5,
+    "unicode": "&#x1F603",
+    "char": "😃",
+    "name": "grinning face with big eyes"
+  },
+  {
+    "id": 6,
+    "unicode": "&#x1F604",
+    "char": "😄",
+    "name": "grinning face with smiling eyes"
+  },
+  {
+    "id": 7,
+    "unicode": "&#x1F605",
+    "char": "😅",
+    "name": "grinning face with sweat"
+  },
+  {
+    "id": 8,
+    "unicode": "&#x1F606",
+    "char": "😆",
+    "name": "grinning squinting face"
+  },
+  {
+    "id": 9,
+    "unicode": "&#x1F609",
+    "char": "😉",
+    "name": "winking face"
+  },
+  {
+    "id": 10,
+    "unicode": "&#x1F60A",
+    "char": "😊",
+    "name": "smiling face with smiling eyes"
+  },
+  {
+    "id": 11,
+    "unicode": "&#x1F60B",
+    "char": "😋",
+    "name": "face savoring food"
+  },
+  {
+    "id": 12,
+    "unicode": "&#x1F60E",
+    "char": "😎",
+    "name": "smiling face with sunglasses"
+  },
+  {
+    "id": 13,
+    "unicode": "&#x1F60D",
+    "char": "😍",
+    "name": "smiling face with heart-eyes"
+  },
+  {
+    "id": 14,
+    "unicode": "&#x1F618",
+    "char": "😘",
+    "name": "face blowing a kiss"
+  },
+  {
+    "id": 15,
+    "unicode": "&#x1F610",
+    "char": "😐",
+    "name": "neutral face"
+  },
+  {
+    "id": 16,
+    "unicode": "&#x1F617",
+    "char": "😗",
+    "name": "kissing face"
+  },
+  {
+    "id": 17,
+    "unicode": "&#x1F619",
+    "char": "😙",
+    "name": "kissing face with smiling eyes"
+  },
+  {
+    "id": 18,
+    "unicode": "&#x1F61A",
+    "char": "😚",
+    "name": "kissing face with closed eyes"
+  },
+  {
+    "id": 19,
+    "unicode": "&#x1F611",
+    "char": "😑",
+    "name": "expressionless face"
+  },
+  {
+    "id": 20,
+    "unicode": "&#x1F642",
+    "char": "🙂",
+    "name": "slightly smiling face"
+  },
+  {
+    "id": 21,
+    "unicode": "&#x1F917",
+    "char": "🤗",
+    "name": "hugging face"
+  },
+  {
+    "id": 22,
+    "unicode": "&#x1F929",
+    "char": "🤩",
+    "name": "star-struck"
+  },
+  {
+    "id": 23,
+    "unicode": "&#x1F914",
+    "char": "🤔",
+    "name": "thinking face"
+  },
+  {
+    "id": 24,
+    "unicode": "&#x1F928",
+    "char": "🤨",
+    "name": "face with raised eyebrow"
+  }
+]

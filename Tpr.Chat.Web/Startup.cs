@@ -31,7 +31,7 @@ namespace Tpr.Chat.Web
         public void ConfigureServices(IServiceCollection services)
         {
             string connectionString = Configuration.GetConnectionString("LocalConnection");
-            
+
             // Chat repository
             services.AddTransient<IChatRepository, ChatRepository>(repository => new ChatRepository(connectionString));
 
@@ -52,7 +52,8 @@ namespace Tpr.Chat.Web
             var jwtConfiguration = Configuration.GetSection("JWT");
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options => {
+                .AddJwtBearer(options =>
+                {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         // укзывает, будет ли валидироваться издатель при валидации токена
@@ -91,6 +92,7 @@ namespace Tpr.Chat.Web
                         },
                         OnAuthenticationFailed = context =>
                         {
+
                             Console.WriteLine(context.Exception.Message);
 
                             return Task.CompletedTask;

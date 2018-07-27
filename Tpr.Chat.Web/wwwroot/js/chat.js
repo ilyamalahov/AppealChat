@@ -1,4 +1,15 @@
 ﻿$(document).ready(function () {
+    
+    $.getJSON('js/emoji-list.json', function (data) {
+        for (var k in data) {
+            var emojiItem = $('<span></span>').html(data[k].unicode);
+            emojiItem.bind("click", function (event) {
+                $('#messageInput').append($(this).text());
+            });
+            $('#emoji-grid').append(emojiItem);
+        }
+    });
+
     // Initializing SignalR connection
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/chat?access_token=" + localStorage.getItem("access_token"))
@@ -12,7 +23,7 @@
     connection.on("Receive", (message) => {
         const messageDate = new Date(message.createDate);
 
-        const messageBubble = $('<div class="message-bubble"></div>').text(message.messageString);
+        const messageBubble = $('<div class="message-bubble"></div>').html(message.messageString);
 
         const messageSign = '<span class="nickname">' + message.nickName + '</span> (' + messageDate.toLocaleTimeString() + ')';
 
@@ -50,10 +61,9 @@
     });
 
     // Sending message
-    $('#chatForm').on('submit', event => {
-        event.preventDefault();
-        
-        var message = $('#messageInput').val();
+    $('#sendButton').on('click', event => {
+
+        var message = this.emojiToUnicode($('#messageInput').text());
 
         connection.invoke("SendMessage", message)
             .catch(error => console.error(error));
@@ -66,11 +76,17 @@
     //    $("#messagesList").append(li);
     //}
     $('#messageInput').on('input.autoExpand', function () {
-        if (this.rows < 5) {
-            var minRows = this.rows | 0;
-            this.rows = minRows;
-            var rows = Math.ceil((this.scrollHeight - this.clientHeight) / 16);
-            this.rows = minRows + rows;
-        }
+        this.rows = $(this).data('min-rows') | 0;
+
+        var currentRowCount = Math.ceil((this.scrollHeight - this.clientHeight) / 16);
+
+        var maxCount = Math.max(0, Math.min(currentRowCount, 5));
+
+        this.rows += maxCount;
     });
+
+    this.emojiToUnicode = function (s) {
+        return s.match(/\ud83c[\udf00-\udfff]|\ud83d[\udc00-\ude4f]|\ud83d[\ude80-\udeff]/g)
+            .map(e => "\\u" + e.charCodeAt(0).toString(16) + "\\u" + e.charCodeAt(1).toString(16))
+    }
 });
