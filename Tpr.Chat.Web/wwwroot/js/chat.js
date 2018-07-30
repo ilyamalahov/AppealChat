@@ -1,18 +1,19 @@
 ﻿$(document).ready(function () {
-    
     $.getJSON('js/emoji-list.json', function (data) {
         for (var k in data) {
-            var emojiItem = $('<span></span>').html(data[k].unicode);
-            emojiItem.bind("click", function (event) {
-                $('#messageInput').append($(this).text());
+            var emojiItem = $('<div></div>').html(data[k].unicode);
+
+            emojiItem.bind("click", function (e) {
+                insertAtCursor($('#messageInput'), $(this).text());
             });
+
             $('#emoji-grid').append(emojiItem);
         }
     });
 
     // Initializing SignalR connection
     const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/chat?access_token=" + localStorage.getItem("access_token"))
+        .withUrl("/chat?access_token=" + sessionStorage.getItem("access_token"))
         .configureLogging(signalR.LogLevel.Trace)
         .build();
 
@@ -62,11 +63,11 @@
 
     // Sending message
     $('#sendButton').on('click', event => {
+        var message = $('#messageInput').val();
+        console.log(message);
 
-        var message = this.emojiToUnicode($('#messageInput').text());
-
-        connection.invoke("SendMessage", message)
-            .catch(error => console.error(error));
+        //connection.invoke("SendMessage", message)
+        //    .catch(error => console.error(error));
     });
 
     // Adding message to list
@@ -85,8 +86,17 @@
         this.rows += maxCount;
     });
 
-    this.emojiToUnicode = function (s) {
-        return s.match(/\ud83c[\udf00-\udfff]|\ud83d[\udc00-\ude4f]|\ud83d[\ude80-\udeff]/g)
-            .map(e => "\\u" + e.charCodeAt(0).toString(16) + "\\u" + e.charCodeAt(1).toString(16))
+    insertAtCursor = function (element, value) {
+        if (document.selection) {
+            element.focus();
+            var selection = document.selection.createRange();
+            selection.text = value;
+        } else if (element.prop('selectionStart') || element.prop('selectionStart') === '0') {
+            var startSubstring = element.val().substring(0, element.prop('selectionStart'));
+            var endSubstring = element.val().substring(element.prop('selectionEnd'), element.val().length);
+            element.val(startSubstring + value + endSubstring);
+        } else {
+            element.val(element.val() + value);
+        }
     }
 });

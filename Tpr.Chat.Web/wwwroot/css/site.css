@@ -167,10 +167,10 @@ form {
     text-align: center;
     border-top: 1px solid #000;
 }
-    .emoji-grid span {
+    .emoji-grid div {
         padding: 10px;
     }
-        .emoji-grid span:hover {
+        .emoji-grid div:hover {
             background: #ebebeb;
             cursor: pointer;
         }

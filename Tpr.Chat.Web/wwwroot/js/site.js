@@ -4,11 +4,11 @@
 // Write your JavaScript code.
 
 $(document).ready(function () {
-    var accessToken = localStorage.getItem('access_token');
+    var accessToken = sessionStorage.getItem('access_token');
 
     if (!accessToken) {
         $.ajax({ method: "POST", url: "token", data: { appealId: appealId }, async: false })
-            .done(function (response) { localStorage.setItem("access_token", response.accessToken); })
+            .done(function (response) { sessionStorage.setItem("access_token", response.accessToken); })
             .fail(function (xhr, status, error) { console.log(error); });
     }
 
