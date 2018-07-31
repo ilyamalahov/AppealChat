@@ -9,12 +9,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Tpr.Chat.Core.Repositories;
 using Tpr.Chat.Web.Hubs;
 using Tpr.Chat.Web.Jwt;
+using Tpr.Chat.Web.Providers;
 
 namespace Tpr.Chat.Web
 {
@@ -47,6 +49,8 @@ namespace Tpr.Chat.Web
 
             // SignalR
             services.AddSignalR(options => options.EnableDetailedErrors = true).AddJsonProtocol();
+
+            services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
             // Authentication
             var jwtConfiguration = Configuration.GetSection("JWT");

@@ -9,8 +9,6 @@
 
             $('#emojiGrid').append(emojiItem);
         }
-
-        $('#emojiGrid').hide();
     });
 
     // Initializing SignalR connection
@@ -25,7 +23,7 @@
     // Receiving message from user
     connection.on("Receive", (message) => {
         const messageDate = new Date(message.createDate);
-        const isExpert = message.nickName == "Консультант";
+        const isExpert = message.nickName === "Консультант";
 
         const messageBubble = '<div class="message-bubble">' + message.messageString + '</div>';
 
@@ -37,7 +35,7 @@
     // Joining user to chat
     connection.on("Join", (message) => {
         const messageDate = new Date(message.createDate);
-        const isExpert = message.nickName == "Консультант";
+        const isExpert = message.nickName === "Консультант";
 
         const messageElement = '<span class="nickname">' + message.nickName + '</span> подключился к консультации (' + messageDate.toLocaleTimeString() + ')';
 
@@ -47,20 +45,12 @@
     // Leave user from chat
     connection.on("Leave", (message) => {
         const messageDate = new Date(message.createDate);
-        const isExpert = message.nickName == "Консультант";
+        const isExpert = message.nickName === "Консультант";
 
         const messageElement = '<span class="nickname">' + message.nickName + '</span> покинул консультацию (' + messageDate.toLocaleTimeString() + ')';
 
         createListItem(messageElement, isExpert);
     });
-
-    createListItem = function (htmlElement, isExpert) {
-        var div = $('<div class="message ' + (isExpert ? 'place-right' : 'place-left') + '"></div>').html(htmlElement);
-
-        var li = $('<li></li>').html(div);
-
-        $("#messagesList").append(li).scrollTo(li);
-    }
 
     // Sending message
     $('#sendButton').on('click', event => {
@@ -82,6 +72,21 @@
         this.rows += maxCount;
     });
 
+    $("#messageInput").on("change", function () {
+        var enableAttr = $(this).val() ? 'enabled' : 'disabled';
+
+        $("#sendButton").attr(enableAttr, enableAttr);
+    });
+
+    // 
+    createListItem = function (htmlElement, isExpert) {
+        var div = $('<div class="message ' + (isExpert ? 'place-right' : 'place-left') + '"></div>').html(htmlElement);
+
+        var li = $('<li></li>').html(div);
+
+        $("#messagesList").append(li).scrollTo(li);
+    };
+
     // Insert text in textarea at cursor position
     insertAtCursor = function (element, value) {
         if (document.selection) {
@@ -95,7 +100,7 @@
         } else {
             element.val(element.val() + value);
         }
-    }
+    };
 
     jQuery.fn.scrollTo = function (element) {
         $(this).scrollTop($(this).scrollTop() - $(this).offset().top + $(element).offset().top);
@@ -103,13 +108,21 @@
         return this;
     };
 
-    $('#emojiToggle').on('click', function () {
+    switchEmojiPanel = function () {
         $('#emojiGrid').toggle();
-    });
+        $('#emojiButton i').toggleClass("far fa-smile");
+        $('#emojiButton i').toggleClass("fas fa-chevron-circle-down");
+    }
 
-    $("#messageInput").on("change", function () {
-        var enableAttr = $(this).val() ? 'enabled' : 'disabled';
+    switchInfoPanel = function (isVisible) {
+        if (isVisible) {
+            $('#infoPanel').show();
+            $('#hideInfoPanelButton').hide();
+        } else {
+            $('#infoPanel').hide();
+            $('#hideInfoPanelButton').show();
+        }
+    };
 
-        $("#sendButton").attr(enableAttr, enableAttr);
-    });
+    switchInfoPanel(true);
 });
