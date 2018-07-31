@@ -11,7 +11,7 @@ namespace Tpr.Chat.Web.ViewModels
     {
         public Guid AppealId { get; set; }
 
-        public ChatRole Role { get; internal set; }
+        public int ExpertKey { get; set; }
 
         public ICollection<ChatMessage> Messages { get; set; }
     }

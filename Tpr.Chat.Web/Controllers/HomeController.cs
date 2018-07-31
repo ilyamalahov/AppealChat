@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Tpr.Chat.Core.Constants;
+using Tpr.Chat.Core.Models;
 using Tpr.Chat.Core.Repositories;
 using Tpr.Chat.Web.Jwt;
 using Tpr.Chat.Web.Models;
@@ -47,12 +48,15 @@ namespace Tpr.Chat.Web.Controllers
                 return View("Complete");
             }
             
-            ChatRole role = ChatRole.Appeal;
+            //Expert expert = null;
 
             // Expert checkings
             if (key > 0)
             {
-                role = ChatRole.Expert;
+                //expert = new Expert
+                //{
+                //    Key = key
+                //};
 
                 // Secret checkings, etc...
             }
@@ -61,7 +65,7 @@ namespace Tpr.Chat.Web.Controllers
             var viewModel = new IndexViewModel
             {
                 AppealId = appealId,
-                Role = role,
+                ExpertKey = key,
                 Messages = chatRepository.GetChatMessages(appealId)
             };
             

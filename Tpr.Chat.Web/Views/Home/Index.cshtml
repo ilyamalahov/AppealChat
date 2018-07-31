@@ -5,7 +5,7 @@
     ViewData["Title"] = "Home Page";
 }
 <div class="sidebar">
-    @if (Model.Role == ChatRole.Appeal)
+    @if (Model.ExpertKey == 0)
     {
         <div class="expert-info" style="text-align: center; padding: 10px; border-bottom: 1px solid #000">
             <div class="expert-image"><img style="width: 150px; height: 150px;" src="~/images/account.png" alt="Account" /></div>
@@ -35,21 +35,21 @@
         <ul id="messagesList">
             @foreach (var message in Model.Messages)
             {
-                var isAppeal = message.NickName == "Аппелянт";
+                var isExpert = message.NickName == "Консультант";
 
                 var messageDate = @message.CreateDate.ToString("HH:mm:ss");
 
-                <li class="message@(isAppeal ? " place-left" : " place-right")">
+                <li class="message @(isExpert ? "place-right" : "place-left")">
                     @switch (message.ChatMessageTypeId)
                     {
                         case ChatMessageTypes.Joined:
-                            <span>@message.NickName</span><p>подключился к консультации </p><span>(@messageDate)</span>
+                            <span>@message.NickName</span> @:подключился к консультации <span>(@messageDate)</span>
                             break;
                         case ChatMessageTypes.Message:
                             <div class="message-bubble">@Html.Raw(message.MessageString)</div><span class="nickname">@message.NickName</span> <span>(@messageDate)</span>
                             break;
                         case ChatMessageTypes.Leave:
-                            <span>@message.NickName</span><p>покинул консультацию </p><span>(@messageDate)</span>
+                            <span>@message.NickName</span> @:покинул консультацию <span>(@messageDate)</span>
                             break;
                     }
                 </li>
@@ -60,16 +60,16 @@
         <div class="time-caption">До конца консультации осталось <span id="remaining-time">{ REMAINING_TIME }</span> минут</div>
         <div id="emoji-grid" class="emoji-grid"></div>
         <div class="message-form">
-                <a href="#" class="form-button"><i class="far fa-smile"></i></a>
-                <textarea id="messageInput" class="send-textbox" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
-                <a id="sendButton" href="#" class="form-button"><i class="far fa-paper-plane"></i></a>
+            <div class="form-button"><i class="far fa-smile"></i></div>
+            <textarea id="messageInput" class="send-textbox" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
+            <div id="sendButton" class="form-button"><i class="far fa-paper-plane"></i></div>
         </div>
     </div>
 </div>
 <script>
     var appealId = "@Model.AppealId";
+    var expertKey = "@Model.ExpertKey";
 </script>
 
-<script src="~/lib/emoji-js/emoji.min.js" type="text/javascript"></script>
 <script src="~/lib/signalr/signalr.js"></script>
 <script src="~/js/chat.js"></script>

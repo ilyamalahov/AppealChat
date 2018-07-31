@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Tpr.Chat.Core.Constants;
+using Tpr.Chat.Core.Models;
 using Tpr.Chat.Core.Repositories;
 
 namespace Tpr.Chat.Web.Controllers
@@ -48,25 +49,33 @@ namespace Tpr.Chat.Web.Controllers
                 return BadRequest(chatSession);
             }
 
-            ChatRole role = ChatRole.Appeal;
+            // Nick name
+            string nickname = key > 0 ? "Консультант" : "Аппелянт";
 
-            // Expert checkings
-            if (key > 0)
-            {
-                role = ChatRole.Expert;
-
-                // Secret checkings, etc...
-            }
-
-            // Jwt Token Process
-
-            var jwtConfiguration = configuration.GetSection("JWT");
-
+            // Identity claims
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, appealId.ToString()),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, role.ToString())
+                new Claim("Nickname", nickname),
             };
+
+            // Expert
+            //Expert expert = null;
+
+            if (key > 0)
+            {
+                //expert = new Expert
+                //{
+                //    Key = key
+                //};
+
+                // Secret checkings, etc...
+
+                claims.Add(new Claim("ExpertKey", key.ToString()));
+            }
+
+            // Jwt Token Process
+            var jwtConfiguration = configuration.GetSection("JWT");
             
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration["SecretKey"]));
 
@@ -81,7 +90,9 @@ namespace Tpr.Chat.Web.Controllers
             // JSON Response
             var response = new
             {
-                accessToken = new JwtSecurityTokenHandler().WriteToken(token)
+                accessToken = new JwtSecurityTokenHandler().WriteToken(token),
+                remainingMinutes = 0,
+                currentTime = DateTime.Now
             };
 
             return Ok(response);

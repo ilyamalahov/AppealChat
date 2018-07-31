@@ -24,17 +24,17 @@ namespace Tpr.Chat.Web.Hubs
         
         public async Task SendMessage(string message)
         {
-
-            Guid appealId = Guid.Empty;
-
-            if(Guid.TryParse(Context.User.Identity.Name, out appealId))
+            try
             {
+                var appealId = Guid.Parse(Context.User.Identity.Name);
+                var nicknameClaim = Context.User.Claims.First(c => c.Type == "Nickname");
+
                 var chatMessage = new ChatMessage
                 {
                     AppealId = appealId,
                     ChatMessageTypeId = ChatMessageTypes.Message,
                     CreateDate = DateTime.Now,
-                    NickName = GetNickname(),
+                    NickName = nicknameClaim.Value,
                     MessageString = message
                 };
 
@@ -42,72 +42,67 @@ namespace Tpr.Chat.Web.Hubs
                 {
                     await Clients.All.SendAsync("Receive", chatMessage);
                 }
+
                 //await Clients.All.SendAsync("Receive", chatMessage);
+            }
+            catch (Exception)
+            {
+                return;
             }
         }
 
         public override async Task OnConnectedAsync()
         {
-            Guid appealId = Guid.Empty;
-
-            if(Guid.TryParse(Context.User.Identity.Name, out appealId))
+            try
             {
+                var appealId = Guid.Parse(Context.User.Identity.Name);
+                var nicknameClaim = Context.User.Claims.First(c => c.Type == "Nickname");
+
                 var chatMessage = new ChatMessage
                 {
                     AppealId = appealId,
                     ChatMessageTypeId = ChatMessageTypes.Joined,
                     CreateDate = DateTime.Now,
-                    NickName = GetNickname()
+                    NickName = nicknameClaim.Value
                 };
 
                 //if (chatRepository.WriteChatMessage(chatMessage) > 0)
                 //{
                 //    await Clients.All.SendAsync("Join", chatMessage);
                 //}
+
                 await Clients.All.SendAsync("Join", chatMessage);
-
-                //string nickname = GetNickname();
-
-                //chatRepository.WriteJoined(appealId, nickname);
-
-                //await Clients.All.SendAsync("Join", nickname);
+            }
+            catch (Exception)
+            {
+                return;
             }
         }
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            Guid appealId = Guid.Empty;
-
-            if (Guid.TryParse(Context.User.Identity.Name, out appealId))
+            try
             {
+                var appealId = Guid.Parse(Context.User.Identity.Name);
+                var nicknameClaim = Context.User.Claims.First(c => c.Type == "Nickname");
+
                 var chatMessage = new ChatMessage
                 {
                     AppealId = appealId,
                     ChatMessageTypeId = ChatMessageTypes.Leave,
                     CreateDate = DateTime.Now,
-                    NickName = GetNickname()
+                    NickName = nicknameClaim.Value
                 };
 
                 //if (chatRepository.WriteChatMessage(chatMessage) > 0)
                 //{
                 //    await Clients.All.SendAsync("Leave", chatMessage);
                 //}
+
                 await Clients.All.SendAsync("Leave", chatMessage);
-            }
-        }
-
-        private string GetNickname()
-        {
-            try
-            {
-                var roleClaim = Context.User.Claims.Single(c => c.Type == ClaimTypes.Role);
-
-                var role = Enum.Parse<ChatRole>(roleClaim?.Value);
-
-                return role == ChatRole.Expert ? "Консультант" : "Аппелянт";
             }
             catch (Exception)
             {
-                return null;
+                return;
             }
         }
     }

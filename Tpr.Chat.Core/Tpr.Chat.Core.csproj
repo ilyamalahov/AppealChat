@@ -49,15 +49,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\ChatRole.cs" />
-    <Compile Include="Models\Role.cs" />
-    <Compile Include="Models\User.cs" />
+    <Compile Include="Models\Expert.cs" />
     <Compile Include="Repositories\ChatRepository.cs" />
     <Compile Include="Models\ChatMessage.cs" />
     <Compile Include="Models\ChatSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\IChatRepository.cs" />
-    <Compile Include="Repositories\IUserRepository.cs" />
-    <Compile Include="Repositories\UserRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

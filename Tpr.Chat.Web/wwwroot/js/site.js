@@ -7,7 +7,7 @@ $(document).ready(function () {
     var accessToken = sessionStorage.getItem('access_token');
 
     if (!accessToken) {
-        $.ajax({ method: "POST", url: "token", data: { appealId: appealId }, async: false })
+        $.ajax({ method: "POST", url: "token", data: { appealId: appealId, key: expertKey }, async: false })
             .done(function (response) { sessionStorage.setItem("access_token", response.accessToken); })
             .fail(function (xhr, status, error) { console.log(error); });
     }

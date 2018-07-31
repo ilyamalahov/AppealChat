@@ -18,30 +18,30 @@
         .build();
 
     // Starting SignalR connection
-    connection.start().catch(err => console.error(err));
+    connection.start().catch(error => console.error(error));
 
     // Receiving message from user
     connection.on("Receive", (message) => {
         const messageDate = new Date(message.createDate);
+        const isExpert = message.nickName == "Консультант";
 
         const messageBubble = $('<div class="message-bubble"></div>').html(message.messageString);
 
-        const messageSign = '<span class="nickname">' + message.nickName + '</span> (' + messageDate.toLocaleTimeString() + ')';
+        const messageSigning = '<span class="nickname">' + message.nickName + '</span> (' + messageDate.toLocaleTimeString() + ')';
 
-        const messageElement = $('<li class="message ' + (false ? 'place-right' : 'place-left') + '"></li>').html(messageSign).prepend(messageBubble);
+        const messageElement = $('<li class="message ' + (isExpert ? 'place-right' : 'place-left') + '"></li>').html(messageSigning).prepend(messageBubble);
 
         $("#messagesList").append(messageElement);
-
-        //  this.appendToList(messageString, false);
     });
 
     // Joining user to chat
     connection.on("Join", (message) => {
         const messageDate = new Date(message.createDate);
+        const isExpert = message.nickName == "Консультант";
 
-        const messageSign = '<span class="nickname">' + message.nickName + '</span> подключился к консультации (' + messageDate.toLocaleTimeString() + ')';
+        const messageElement = '<span class="nickname">' + message.nickName + '</span> подключился к консультации (' + messageDate.toLocaleTimeString() + ')';
 
-        const li = $('<li class="message ' + (false ? 'place-right' : 'place-left') + '"></li>').html(messageSign);
+        const li = $('<li class="message ' + (isExpert ? 'place-right' : 'place-left') + '"></li>').html(messageElement);
 
         $("#messagesList").append(li);
 
@@ -51,31 +51,24 @@
     // Leave user from chat
     connection.on("Leave", (message) => {
         const messageDate = new Date(message.createDate);
+        const isExpert = message.nickName == "Консультант";
 
-        const messageSign = $('<span class="nickname">' + message.nickName + '</span> покинул консультацию (' + messageDate.toLocaleTimeString() + ')');
+        const messageElement = $('<span class="nickname">' + message.nickName + '</span> покинул консультацию (' + messageDate.toLocaleTimeString() + ')');
 
-        const li = $('<li class="message ' + (false ? 'place-right' : 'place-left') + '"></li>').text(messageSign);
+        const li = $('<li class="message ' + (isExpert ? 'place-right' : 'place-left') + '"></li>').html(messageElement);
 
         $("#messagesList").append(li);
-
-        // this.appendToList(messageString, false);
     });
 
     // Sending message
     $('#sendButton').on('click', event => {
         var message = $('#messageInput').val();
-        console.log(message);
 
-        //connection.invoke("SendMessage", message)
-        //    .catch(error => console.error(error));
+        connection.invoke("SendMessage", message)
+            .catch(error => console.error(error));
     });
 
-    // Adding message to list
-    //this.appendToList = function (messageString, isExpert) {
-    //    const li = $('<li class="message' + (isExpert ? ' place-right' : '') + '"></li>').text(messageString);
-
-    //    $("#messagesList").append(li);
-    //}
+    // Textarea auto rows count
     $('#messageInput').on('input.autoExpand', function () {
         this.rows = $(this).data('min-rows') | 0;
 
@@ -86,6 +79,7 @@
         this.rows += maxCount;
     });
 
+    // Insert text in textarea at cursor position
     insertAtCursor = function (element, value) {
         if (document.selection) {
             element.focus();
