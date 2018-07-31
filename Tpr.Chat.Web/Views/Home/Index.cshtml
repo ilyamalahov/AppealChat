@@ -4,7 +4,7 @@
 @{
     ViewData["Title"] = "Home Page";
 }
-<div class="sidebar">
+<div class="sidebar" style="display:none">
     @if (Model.ExpertKey == 0)
     {
         <div class="expert-info" style="text-align: center; padding: 10px; border-bottom: 1px solid #000">
@@ -28,39 +28,38 @@
 </div>
 <div class="content">
     <div class="header">
+        <div style="float: right; border-left: 1px solid #000" class="hide-info-panel"><i class="fas fa-chevron-circle-down" style="margin-right: 5px; font-size: 20px; vertical-align: middle;"></i>Показать информационную панель</div>
         <a href="/" class="complete-button link-button"><i class="fas fa-check-circle glyph"></i>Завершить консультацию</a>
         <div class="caption"><i class="fab fa-adn glyph" style="font-size: 26px;"></i>Система онлайн-консультирования по вопросам...</div>
     </div>
-    <div class="message-history">
-        <ul id="messagesList">
+        <ul id="messagesList" class="message-history">
             @foreach (var message in Model.Messages)
             {
-                var isExpert = message.NickName == "Консультант";
-
                 var messageDate = @message.CreateDate.ToString("HH:mm:ss");
 
-                <li class="message @(isExpert ? "place-right" : "place-left")">
-                    @switch (message.ChatMessageTypeId)
-                    {
-                        case ChatMessageTypes.Joined:
-                            <span>@message.NickName</span> @:подключился к консультации <span>(@messageDate)</span>
-                            break;
-                        case ChatMessageTypes.Message:
-                            <div class="message-bubble">@Html.Raw(message.MessageString)</div><span class="nickname">@message.NickName</span> <span>(@messageDate)</span>
-                            break;
-                        case ChatMessageTypes.Leave:
-                            <span>@message.NickName</span> @:покинул консультацию <span>(@messageDate)</span>
-                            break;
-                    }
-                </li>
-            }
+                <li>
+                    <div class="message @(message.NickName == "Консультант" ? "place-right" : "place-left")">
+                        @switch (message.ChatMessageTypeId)
+                        {
+                            case ChatMessageTypes.Joined:
+                                <span>@message.NickName</span> @:подключился к консультации <span>(@messageDate) </span>
+                                    break;
+                                case ChatMessageTypes.Message:
+                                    <div class="message-bubble">@Html.Raw(message.MessageString)</div><span class="nickname">@message.NickName</span> <span>(@messageDate)</span>
+                                    break;
+                                case ChatMessageTypes.Leave:
+                                    <span>@message.NickName</span> @:покинул консультацию <span>(@messageDate)</span>
+                                        break;
+                            }
+                </div>
+            </li>
+        }
         </ul>
-    </div>
     <div class="footer">
         <div class="time-caption">До конца консультации осталось <span id="remaining-time">{ REMAINING_TIME }</span> минут</div>
-        <div id="emoji-grid" class="emoji-grid"></div>
+        <div id="emojiGrid" class="emoji-grid"></div>
         <div class="message-form">
-            <div class="form-button"><i class="far fa-smile"></i></div>
+            <div id="emojiToggle" class="form-button"><i class="far fa-smile"></i></div>
             <textarea id="messageInput" class="send-textbox" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
             <div id="sendButton" class="form-button"><i class="far fa-paper-plane"></i></div>
         </div>

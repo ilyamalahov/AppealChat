@@ -7,8 +7,10 @@
                 insertAtCursor($('#messageInput'), $(this).text());
             });
 
-            $('#emoji-grid').append(emojiItem);
+            $('#emojiGrid').append(emojiItem);
         }
+
+        $('#emojiGrid').hide();
     });
 
     // Initializing SignalR connection
@@ -25,13 +27,11 @@
         const messageDate = new Date(message.createDate);
         const isExpert = message.nickName == "Консультант";
 
-        const messageBubble = $('<div class="message-bubble"></div>').html(message.messageString);
+        const messageBubble = '<div class="message-bubble">' + message.messageString + '</div>';
 
-        const messageSigning = '<span class="nickname">' + message.nickName + '</span> (' + messageDate.toLocaleTimeString() + ')';
+        const messageInfo = '<span class="nickname">' + message.nickName + '</span> (' + messageDate.toLocaleTimeString() + ')';
 
-        const messageElement = $('<li class="message ' + (isExpert ? 'place-right' : 'place-left') + '"></li>').html(messageSigning).prepend(messageBubble);
-
-        $("#messagesList").append(messageElement);
+        createListItem(messageBubble + messageInfo, isExpert);
     });
 
     // Joining user to chat
@@ -41,11 +41,7 @@
 
         const messageElement = '<span class="nickname">' + message.nickName + '</span> подключился к консультации (' + messageDate.toLocaleTimeString() + ')';
 
-        const li = $('<li class="message ' + (isExpert ? 'place-right' : 'place-left') + '"></li>').html(messageElement);
-
-        $("#messagesList").append(li);
-
-        // this.appendToList(messageString, false);
+        createListItem(messageElement, isExpert);
     });
 
     // Leave user from chat
@@ -53,19 +49,26 @@
         const messageDate = new Date(message.createDate);
         const isExpert = message.nickName == "Консультант";
 
-        const messageElement = $('<span class="nickname">' + message.nickName + '</span> покинул консультацию (' + messageDate.toLocaleTimeString() + ')');
+        const messageElement = '<span class="nickname">' + message.nickName + '</span> покинул консультацию (' + messageDate.toLocaleTimeString() + ')';
 
-        const li = $('<li class="message ' + (isExpert ? 'place-right' : 'place-left') + '"></li>').html(messageElement);
-
-        $("#messagesList").append(li);
+        createListItem(messageElement, isExpert);
     });
+
+    createListItem = function (htmlElement, isExpert) {
+        var div = $('<div class="message ' + (isExpert ? 'place-right' : 'place-left') + '"></div>').html(htmlElement);
+
+        var li = $('<li></li>').html(div);
+
+        $("#messagesList").append(li).scrollTo(li);
+    }
 
     // Sending message
     $('#sendButton').on('click', event => {
         var message = $('#messageInput').val();
 
         connection.invoke("SendMessage", message)
-            .catch(error => console.error(error));
+            .catch(error => console.error(error))
+            .finally($('#messageInput').val(''));
     });
 
     // Textarea auto rows count
@@ -93,4 +96,20 @@
             element.val(element.val() + value);
         }
     }
+
+    jQuery.fn.scrollTo = function (element) {
+        $(this).scrollTop($(this).scrollTop() - $(this).offset().top + $(element).offset().top);
+
+        return this;
+    };
+
+    $('#emojiToggle').on('click', function () {
+        $('#emojiGrid').toggle();
+    });
+
+    $("#messageInput").on("change", function () {
+        var enableAttr = $(this).val() ? 'enabled' : 'disabled';
+
+        $("#sendButton").attr(enableAttr, enableAttr);
+    });
 });
