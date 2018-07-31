@@ -49,6 +49,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\ChatRole.cs" />
+    <Compile Include="Helpers\HashHelper.cs" />
+    <Compile Include="Helpers\ExpertKeyHelper.cs" />
     <Compile Include="Models\Expert.cs" />
     <Compile Include="Repositories\ChatRepository.cs" />
     <Compile Include="Models\ChatMessage.cs" />
