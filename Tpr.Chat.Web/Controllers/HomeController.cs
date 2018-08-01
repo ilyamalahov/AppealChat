@@ -162,7 +162,7 @@ namespace Tpr.Chat.Web.Controllers
         public ClaimsIdentity GetIdentity(Guid appealId, int key, string secretKey)
         {
             // Nick name
-            string nickname = key > 0 ? "Консультант" : "Аппелянт";
+            string nickname = key > 0 ? "Член конфликтной комиссии №" + key : "Аппелянт";
 
             // Identity claims
             var claims = new List<Claim>

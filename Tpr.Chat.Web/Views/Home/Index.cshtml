@@ -9,9 +9,9 @@
     {
         <div class="expert-info" style="text-align: center; padding: 10px; border-bottom: 1px solid #000">
             <div class="expert-image"><img style="width: 150px; height: 150px;" src="~/images/account.png" alt="Account" /></div>
-            <div class="expert-name" style="font-size: 20px">Член конфликтной комиссии <br /> №{ EXPERT_NUMBER }</div>
+            <div class="expert-name" style="font-size: 20px">Член конфликтной комиссии <br /> №<span id="expertKey"></span></div>
             <hr />
-            <a href="#" class="link-button"><i class="fas fa-exchange-alt glyph"></i>Сменить собеседника</a>
+            <button id="switchExpert" class="custom-button" style="width: 100%;"><i class="fas fa-exchange-alt glyph"></i>Сменить собеседника</button>
         </div>
     }
     <div class="appeal-info" style="padding:15px;">
@@ -22,14 +22,14 @@
         </ul>
     </div>
     <div class="sidebar-footer" style="text-align: center">
-        <div class="moscow-time" style="padding: 5px; border-bottom: 1px solid">Московское время: { MOSCOW_TIME }</div>
-        <div class="hide-info-panel" onclick="switchInfoPanel(false)"><i class="fas fa-chevron-circle-up glyph" style="font-size: 20px;"></i>Скрыть информационную панель</div>
+        <div class="moscow-time" style="padding: 5px; border-bottom: 1px solid">Московское время: <span id="moscowTime"></span></div>
+        <div id="hideInfoPanelButton" class="infopanel-button"><i class="fas fa-chevron-circle-up glyph"></i>Скрыть информационную панель</div>
     </div>
 </div>
 <div class="content">
     <div class="header">
-        <div id="hideInfoPanelButton" onclick="switchInfoPanel(true)" style="float: right; border-left: 1px solid #000" class="hide-info-panel"><i class="fas fa-chevron-circle-down glyph" style="font-size: 20px;"></i>Показать информационную панель</div>
-        <a href="#" class="complete-button link-button"><i class="fas fa-check-circle glyph"></i>Завершить консультацию</a>
+        <div id="showInfoPanelButton" style="float: right; border-left: 1px solid #000" class="infopanel-button"><i class="fas fa-chevron-circle-down glyph"></i>Показать информационную панель</div>
+        <button class="complete-button custom-button"><i class="fas fa-check-circle glyph"></i>Завершить консультацию</button>
         <div class="caption"><i class="fab fa-adn glyph" style="font-size: 26px;"></i>Система онлайн-консультирования по вопросам...</div>
     </div>
         <ul id="messagesList" class="message-history">
@@ -38,7 +38,7 @@
                 var messageDate = @message.CreateDate.ToString("HH:mm:ss");
 
                 <li>
-                    <div class="message @(message.NickName == "Консультант" ? "place-right" : "place-left")">
+                    <div class="message @(message.NickName == "Аппелянт" ? "place-left" : "place-right")">
                         @switch (message.ChatMessageTypeId)
                         {
                             case ChatMessageTypes.Joined:
@@ -59,9 +59,9 @@
         <div class="time-caption">До конца консультации осталось <span id="remaining-time">{ REMAINING_TIME }</span> минут</div>
         <div id="emojiGrid" class="emoji-grid" style="display:none;"></div>
         <div class="message-form">
-            <div id="emojiButton" class="form-button" onclick="switchEmojiPanel()"><i class="far fa-smile"></i></div>
+            <button id="emojiButton" class="form-button"><i class="far fa-smile"></i></button>
             <textarea id="messageInput" class="send-textbox" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
-            <div id="sendButton" class="form-button"><i class="far fa-paper-plane"></i></div>
+            <button id="sendButton" class="form-button"><i class="far fa-paper-plane"></i></button>
         </div>
     </div>
 </div>

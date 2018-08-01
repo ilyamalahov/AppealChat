@@ -83,7 +83,7 @@ namespace Tpr.Chat.Web
                     {
                         OnMessageReceived = context =>
                         {
-                            var accessToken = context.Request.Query["access_token"];
+                            var accessToken = context.Request.Query["token"];
 
                             // If the request is for our hub...
                             if (!string.IsNullOrEmpty(accessToken) && (context.HttpContext.Request.Path.StartsWithSegments("/chat")))
