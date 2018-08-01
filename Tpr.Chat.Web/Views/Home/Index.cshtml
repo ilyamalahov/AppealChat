@@ -1,9 +1,10 @@
-﻿@using Tpr.Chat.Core.Constants
-@using Tpr.Chat.Core.Models
+﻿@using Tpr.Chat.Core.Models
 @model Tpr.Chat.Web.Models.IndexViewModel
+
 @{
     ViewData["Title"] = "Home Page";
 }
+
 <div id="infoPanel" class="sidebar">
     @if (Model.ExpertKey == 0)
     {
@@ -14,11 +15,11 @@
             <button id="switchExpert" class="custom-button" style="width: 100%;"><i class="fas fa-exchange-alt glyph"></i>Сменить собеседника</button>
         </div>
     }
-    <div class="appeal-info" style="padding:15px;">
-        <ul style="list-style: none; margin: 0; padding: 0">
-            <li style="border-bottom: 1px solid #000; padding: 15px 0;"><span>Номер аппеляции</span><span style="float: right">{ APPEAL_NUMBER }</span></li>
-            <li style="border-bottom: 1px solid #000; padding: 15px 0;"><span>Предмет</span><span style="float: right">{ APPEAL_SUBJECT }</span></li>
-            <li style="padding: 15px 0;"><span>Дата экзамена</span><span style="float: right">{ APPEAL_EXAMDATE }</span></li>
+    <div class="appeal-info">
+        <ul>
+            <li class="list-item"><span>Номер аппеляции</span><span id="appealNumber" class="place-right"></span></li>
+            <li class="list-item"><span>Предмет</span><span id="appealSubject" class="place-right"></span></li>
+            <li class="list-item"><span>Дата экзамена</span><span id="appealExamDate" class="place-right"></span></li>
         </ul>
     </div>
     <div class="sidebar-footer" style="text-align: center">

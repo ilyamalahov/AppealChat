@@ -215,3 +215,22 @@ form {
     padding: 25px 20px;
     font-size: 16px;
 }
+
+.appeal-info {
+    padding: 15px;
+}
+    .appeal-info ul {
+        list-style: none;
+        margin: 0;
+        padding: 0
+    }
+    .appeal-info .list-item {
+        border-bottom: 1px solid #000;
+        padding: 15px 0;
+    }
+    .appeal-info .list-item:last-child {
+        border: none;
+    }
+        .appeal-info .list-item .place-right {
+            float: right;
+        }
