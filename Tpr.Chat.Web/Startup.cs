@@ -15,7 +15,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Tpr.Chat.Core.Repositories;
 using Tpr.Chat.Web.Hubs;
-using Tpr.Chat.Web.Jwt;
 using Tpr.Chat.Web.Providers;
 
 namespace Tpr.Chat.Web

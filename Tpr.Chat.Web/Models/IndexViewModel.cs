@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Tpr.Chat.Core.Constants;
 using Tpr.Chat.Core.Models;
 
-namespace Tpr.Chat.Web.ViewModels
+namespace Tpr.Chat.Web.Models
 {
     public class IndexViewModel
     {

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Tpr.Chat.Web.ViewModels;
+using Tpr.Chat.Web.Models;
 
 namespace Tpr.Chat.Web.Controllers
 {

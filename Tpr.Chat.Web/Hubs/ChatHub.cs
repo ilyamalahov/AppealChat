@@ -43,7 +43,7 @@ namespace Tpr.Chat.Web.Hubs
                     await Clients.User(Context.UserIdentifier).SendAsync("Receive", chatMessage);
                 }
 
-                //await Clients.All.SendAsync("Receive", chatMessage);
+                //await Clients.User(Context.UserIdentifier).SendAsync("Receive", chatMessage);
             }
             catch (Exception exception)
             {
@@ -69,7 +69,7 @@ namespace Tpr.Chat.Web.Hubs
 
                 if (chatRepository.WriteChatMessage(chatMessage) > 0)
                 {
-                    await Clients.All.SendAsync("Join", chatMessage);
+                    await Clients.User(Context.UserIdentifier).SendAsync("Join", chatMessage);
                 }
 
                 //await Clients.User(Context.UserIdentifier).SendAsync("Join", chatMessage);
@@ -96,7 +96,7 @@ namespace Tpr.Chat.Web.Hubs
 
                 if (chatRepository.WriteChatMessage(chatMessage) > 0)
                 {
-                    await Clients.All.SendAsync("Leave", chatMessage);
+                    await Clients.User(Context.UserIdentifier).SendAsync("Leave", chatMessage);
                 }
 
                 //await Clients.User(Context.UserIdentifier).SendAsync("Leave", chatMessage);
