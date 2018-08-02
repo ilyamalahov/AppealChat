@@ -74,17 +74,17 @@
         });
 
         $('#messageInput').on('keypress', function (e) {
-            if (e.keyCode == 13 && !e.shiftKey) {
+            if (e.keyCode === 13 && !e.shiftKey) {
                 e.preventDefault();
 
-                if ($(this).val() != '') {
+                if ($(this).val() !== '') {
                     sendMessage($(this).val());
                 }
             }
         });
 
         $('#messageInput').on('change keyup', function (e) {
-            setButtonDisable($(this).val() == '');
+            setButtonDisable($(this).val() === '');
         });
 
         $('#showInfoPanelButton').on('click', function () { switchInfoPanel(true); });
@@ -140,10 +140,34 @@
                 $('#showInfoPanelButton').show();
             }
         };
+        updateInfo = function (interval) {
+            $.ajax({
+                method: "POST",
+                url: "update",
+                headers: { "Authorization": "Bearer " + sessionStorage.getItem("access_token") },
+                success: function (response) {
+                    // Current Time
+                    var currentDate = new Date(response.currentDate);
+                    $('#moscowTime').text(currentDate.toLocaleTimeString());
+
+                    // Remaining Time
+                    var remainingDate = new Date(response.remainingTime);
+                    $('#remainingTime').text(remainingDate.toLocaleTimeString());
+
+                    // Recursive invoke setTimeout()
+                    setTimeout(updateInfo, interval, interval);
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        };
 
         setButtonDisable(true);
 
         switchInfoPanel(true);
+
+        updateInfo(10000);
     };
 
     var accessToken = sessionStorage.getItem('access_token');

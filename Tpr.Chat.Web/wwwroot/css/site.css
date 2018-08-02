@@ -17,19 +17,23 @@ form {
 }
 
 .sidebar {
+    display:flex;
+    flex-direction:column;
     float: right;
     width: 350px;
     border-left: 1px solid #000;
-    position: relative;
+    /*position: relative;*/
     height: 100%;
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 
 .sidebar-footer {
-    position: absolute;
+    /*position: absolute;
     bottom: 0;
     width: 100%;
-    background: #fff;
+    background: #fff;*/
+    flex:none;
+    text-align:center;
 }
 
 .content {
@@ -128,7 +132,7 @@ form {
 
 .message-form {
     border-top: 1px solid #000;
-    padding: 5px;
+    padding: 4px;
     display: flex;
     align-items: center;
 }
@@ -234,3 +238,14 @@ form {
         .appeal-info .list-item .place-right {
             float: right;
         }
+
+.sidebar-content {
+    flex:auto;
+    overflow:auto;
+}
+
+@media screen and (max-width: 767px) {
+    .sidebar{
+        display:none;
+    }
+}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -33,7 +34,7 @@ namespace Tpr.Chat.Web.Controllers
         public IActionResult Index(Guid appealId, int key = 0, string secretKey = null)
         {
             var chatSession = chatRepository.GetChatSession(appealId);
-            
+
             // Check if chat session is exists
             if (chatSession == null)
             {
@@ -65,13 +66,8 @@ namespace Tpr.Chat.Web.Controllers
                 ExpertKey = key,
                 Messages = chatRepository.GetChatMessages(appealId)
             };
-            
-            return View(viewModel);
-        }
 
-        public IActionResult Privacy()
-        {
-            return View();
+            return View(viewModel);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -106,11 +102,11 @@ namespace Tpr.Chat.Web.Controllers
 
             var identity = GetIdentity(appealId, key, secretKey);
 
-            if(identity == null)
+            if (identity == null)
             {
                 return Error();
             }
-            
+
             var accessToken = CreateToken(identity, chatSession.FinishTime);
 
             // JSON Response
@@ -129,31 +125,34 @@ namespace Tpr.Chat.Web.Controllers
             // Appeal Identifier
             Guid appealId = Guid.Empty;
 
-            if(!Guid.TryParse(HttpContext.User.Identity.Name, out appealId))
+            if (!Guid.TryParse(HttpContext.User.Identity.Name, out appealId))
             {
                 return Error();
             }
+
+            // Chat session
+            var chatSession = chatRepository.GetChatSession(appealId);
+
+            if (chatSession == null)
+            {
+                return Error();
+            }
+
+            // Current Date
+            var currentDate = DateTimeOffset.Now;
 
             // Remaining Time
-            var remainingTime = DateTime.Now;
+            var remainingTime = chatSession.FinishTime.Subtract(currentDate.TimeOfDay);
 
-            //var chatSession = chatRepository.GetChatSession(appealId);
-            //var remainingTime = chatSession.FinishTime.Subtract(DateTime.Now);
-
-            var expiredTimestamp = HttpContext.User.FindFirstValue(ClaimTypes.Expired);
-
-            if(!DateTime.TryParse(expiredTimestamp, out remainingTime))
-            {
-                return Error();
-            }
-
-            var currentTime = DateTime.Now;
+            // Begin Time
+            var beginTime = chatSession.StartTime.Subtract(currentDate.TimeOfDay);
 
             // JSON Response
             var response = new
             {
-                remainingTime,
-                currentTime
+                currentDate = currentDate.ToUnixTimeMilliseconds(),
+                remainingTime = remainingTime.ToUnixTimeMilliseconds(),
+                beginTime = beginTime.ToUnixTimeMilliseconds()
             };
 
             return Ok(response);
@@ -161,42 +160,56 @@ namespace Tpr.Chat.Web.Controllers
 
         public ClaimsIdentity GetIdentity(Guid appealId, int key, string secretKey)
         {
-            // Nick name
-            string nickname = key > 0 ? "Член конфликтной комиссии №" + key : "Аппелянт";
-
-            // Identity claims
-            var claims = new List<Claim>
+            try
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, appealId.ToString()),
-                new Claim("Nickname", nickname),
-            };
+                // Nick name
+                string nickname = key > 0 ? "Член конфликтной комиссии №" + key : "Аппелянт";
 
-            // Expert
-            if (key > 0)
-            {
-                // Secret checkings, etc...
+                // Identity claims
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimsIdentity.DefaultNameClaimType, appealId.ToString()),
+                    new Claim("Nickname", nickname),
+                };
 
-                claims.Add(new Claim("ExpertKey", key.ToString()));
+                // Expert
+                if (key > 0)
+                {
+                    // Secret checkings, etc...
+
+                    claims.Add(new Claim("ExpertKey", key.ToString()));
+                }
+
+                return new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme);
             }
-
-            return new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme);
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
-        public string CreateToken(ClaimsIdentity identity, DateTime expiresDate)
+        public string CreateToken(ClaimsIdentity identity, DateTimeOffset expiresDate)
         {
-            var jwtConfiguration = configuration.GetSection("JWT");
+            try
+            {
+                var jwtConfiguration = configuration.GetSection("JWT");
 
-            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration["SecretKey"]));
+                var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration["SecretKey"]));
 
-            var token = new JwtSecurityToken(
-                issuer: jwtConfiguration["Issuer"],
-                audience: jwtConfiguration["Audience"],
-                claims: identity.Claims,
-                expires: expiresDate,
-                signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
-            );
+                var token = new JwtSecurityToken(
+                    issuer: jwtConfiguration["Issuer"],
+                    audience: jwtConfiguration["Audience"],
+                    claims: identity.Claims,
+                    expires: expiresDate.DateTime,
+                    signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
+                );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+                return new JwtSecurityTokenHandler().WriteToken(token);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

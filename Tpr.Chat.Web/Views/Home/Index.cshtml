@@ -6,24 +6,26 @@
 }
 
 <div id="infoPanel" class="sidebar">
-    @if (Model.ExpertKey == 0)
-    {
-        <div class="expert-info" style="text-align: center; padding: 10px; border-bottom: 1px solid #000">
-            <div class="expert-image"><img style="width: 150px; height: 150px;" src="~/images/account.png" alt="Account" /></div>
-            <div class="expert-name" style="font-size: 20px">Член конфликтной комиссии <br /> №<span id="expertKey"></span></div>
-            <hr />
-            <button id="switchExpert" class="custom-button" style="width: 100%;"><i class="fas fa-exchange-alt glyph"></i>Сменить собеседника</button>
+    <div class="sidebar-content">
+        @if (Model.ExpertKey == 0)
+        {
+            <div class="expert-info" style="text-align: center; padding: 10px; border-bottom: 1px solid #000">
+                <div class="expert-image"><img style="width: 150px; height: 150px;" src="~/images/account.png" alt="Account" /></div>
+                <div class="expert-name" style="font-size: 20px">Член конфликтной комиссии <br /> №<span id="expertKey">000</span></div>
+                <hr />
+                <button id="switchExpert" class="custom-button" style="width: 100%;"><i class="fas fa-exchange-alt glyph"></i>Сменить собеседника</button>
+            </div>
+        }
+        <div class="appeal-info">
+            <ul>
+                <li class="list-item"><span>Номер аппеляции</span><span id="appealNumber" class="place-right">000</span></li>
+                <li class="list-item"><span>Предмет</span><span id="appealSubject" class="place-right">Отсутствует</span></li>
+                <li class="list-item"><span>Дата экзамена</span><span id="appealExamDate" class="place-right">00.00.0000</span></li>
+            </ul>
         </div>
-    }
-    <div class="appeal-info">
-        <ul>
-            <li class="list-item"><span>Номер аппеляции</span><span id="appealNumber" class="place-right"></span></li>
-            <li class="list-item"><span>Предмет</span><span id="appealSubject" class="place-right"></span></li>
-            <li class="list-item"><span>Дата экзамена</span><span id="appealExamDate" class="place-right"></span></li>
-        </ul>
     </div>
     <div class="sidebar-footer" style="text-align: center">
-        <div class="moscow-time" style="padding: 5px; border-bottom: 1px solid">Московское время: <span id="moscowTime"></span></div>
+        <div class="moscow-time" style="padding: 5px; border-bottom: 1px solid">Московское время: <span id="moscowTime">00:00</span></div>
         <div id="hideInfoPanelButton" class="infopanel-button"><i class="fas fa-chevron-circle-up glyph"></i>Скрыть информационную панель</div>
     </div>
 </div>
@@ -33,31 +35,31 @@
         <button class="complete-button custom-button"><i class="fas fa-check-circle glyph"></i>Завершить консультацию</button>
         <div class="caption"><i class="fab fa-adn glyph" style="font-size: 26px;"></i>Система онлайн-консультирования по вопросам...</div>
     </div>
-        <ul id="messagesList" class="message-history">
-            @foreach (var message in Model.Messages)
-            {
-                var messageDate = @message.CreateDate.ToString("HH:mm:ss");
+    <ul id="messagesList" class="message-history">
+        @foreach (var message in Model.Messages)
+        {
+            var messageDate = @message.CreateDate.ToString("HH:mm:ss");
 
-                <li>
-                    <div class="message @(message.NickName == "Аппелянт" ? "place-left" : "place-right")">
-                        @switch (message.ChatMessageTypeId)
-                        {
-                            case ChatMessageTypes.Joined:
-                                <span>@message.NickName</span> @:подключился к консультации <span>(@messageDate) </span>
-                                    break;
-                                case ChatMessageTypes.Message:
-                                    <div class="message-bubble">@Html.Raw(message.MessageString)</div><span class="nickname">@message.NickName</span> <span>(@messageDate)</span>
-                                    break;
-                                case ChatMessageTypes.Leave:
-                                    <span>@message.NickName</span> @:покинул консультацию <span>(@messageDate)</span>
-                                        break;
-                            }
+            <li>
+                <div class="message @(message.NickName == "Аппелянт" ? "place-left" : "place-right")">
+                    @switch (message.ChatMessageTypeId)
+                    {
+                        case ChatMessageTypes.Joined:
+                            <span class="nickname">@message.NickName</span> @:подключился к консультации <span>(@messageDate) </span>
+                            break;
+                        case ChatMessageTypes.Message:
+                            <div class="message-bubble">@Html.Raw(message.MessageString)</div><span class="nickname">@message.NickName</span> <span>(@messageDate)</span>
+                            break;
+                        case ChatMessageTypes.Leave:
+                            <span class="nickname">@message.NickName</span> @:покинул консультацию <span>(@messageDate)</span>
+                            break;
+                    }
                 </div>
             </li>
         }
-        </ul>
+    </ul>
     <div class="footer">
-        <div class="time-caption">До конца консультации осталось <span id="remaining-time">{ REMAINING_TIME }</span> минут</div>
+        <div class="time-caption">До конца консультации осталось: <span id="remainingTime">00</span></div>
         <div id="emojiGrid" class="emoji-grid" style="display:none;"></div>
         <div class="message-form">
             <button id="emojiButton" class="form-button"><i class="far fa-smile"></i></button>
