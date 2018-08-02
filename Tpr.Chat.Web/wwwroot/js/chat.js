@@ -12,17 +12,19 @@
             }
         });
 
+        // Chat connection
+
         // Initializing SignalR connection
-        const connection = new signalR.HubConnectionBuilder()
+        const chatConnection = new signalR.HubConnectionBuilder()
             .withUrl("/chat?token=" + accessToken)
             .configureLogging(signalR.LogLevel.Trace)
             .build();
 
         // Starting SignalR connection
-        connection.start().catch(error => console.error(error));
+        chatConnection.start().catch(error => console.error(error));
 
         // Receiving message from user
-        connection.on("Receive", (message) => {
+        chatConnection.on("Receive", (message) => {
             const messageDate = new Date(message.createDate);
             const isAppeal = message.nickName === "Аппелянт";
 
@@ -34,7 +36,7 @@
         });
 
         // Joining user to chat
-        connection.on("Join", (message) => {
+        chatConnection.on("Join", (message) => {
             const messageDate = new Date(message.createDate);
             const isAppeal = message.nickName === "Аппелянт";
 
@@ -44,7 +46,7 @@
         });
 
         // Leave user from chat
-        connection.on("Leave", (message) => {
+        chatConnection.on("Leave", (message) => {
             const messageDate = new Date(message.createDate);
             const isAppeal = message.nickName === "Аппелянт";
 
@@ -52,6 +54,25 @@
 
             createListItem(messageElement, isAppeal);
         });
+
+
+        // Update information connection
+        updateInfo = function (info) {
+            console.log(info);
+
+            infoConnection.invoke("UpdateInfo").then(function () { setTimeout(updateInfo, 10000); });
+        };
+
+        const infoConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/info?token=" + accessToken)
+            .configureLogging(signalR.LogLevel.Trace)
+            .build();
+
+        infoConnection.start().catch(error => console.error(error));
+
+        infoConnection.on("Connect", updateInfo);
+        infoConnection.on("UpdateInfo", updateInfo);
+        //infoConnection.on("Disconnect", function () { clearTimeout(); });
 
         // Sending message
         $('#sendButton').on('click', function () { sendMessage($('#messageInput').val()); });
@@ -116,7 +137,7 @@
         };
 
         sendMessage = function (message) {
-            connection.invoke("SendMessage", message)
+            chatConnection.invoke("SendMessage", message)
                 .catch(error => console.error(error))
                 .finally($('#messageInput').val(''));
         };
@@ -140,34 +161,36 @@
                 $('#showInfoPanelButton').show();
             }
         };
-        updateInfo = function (interval) {
-            $.ajax({
-                method: "POST",
-                url: "update",
-                headers: { "Authorization": "Bearer " + sessionStorage.getItem("access_token") },
-                success: function (response) {
-                    // Current Time
-                    var currentDate = new Date(response.currentDate);
-                    $('#moscowTime').text(currentDate.toLocaleTimeString());
+        //updateInfo = function (interval) {
+        //    $.ajax({
+        //        method: "POST",
+        //        url: "update",
+        //        headers: { "Authorization": "Bearer " + sessionStorage.getItem("access_token") },
+        //        success: function (response) {
+        //            // Current Time
+        //            var currentDate = new Date(response.currentDate);
+        //            $('#moscowTime').text(currentDate.toLocaleTimeString());
 
-                    // Remaining Time
-                    var remainingDate = new Date(response.remainingTime);
-                    $('#remainingTime').text(remainingDate.toLocaleTimeString());
+        //            // Remaining Time
+        //            var remainingDate = new Date(response.remainingTime);
+        //            $('#remainingTime').text(remainingDate.toLocaleTimeString());
 
-                    // Recursive invoke setTimeout()
-                    setTimeout(updateInfo, interval, interval);
-                },
-                error: function (xhr, status, error) {
-                    console.error(error);
-                }
-            });
-        };
+        //            // Recursive invoke setTimeout()
+        //            setTimeout(updateInfo, interval, interval);
+        //        },
+        //        error: function (xhr, status, error) {
+        //            console.error(error);
+        //        }
+        //    });
+        //};
 
         setButtonDisable(true);
 
         switchInfoPanel(true);
 
-        updateInfo(10000);
+        //updateInfo(10000);
+
+
     };
 
     var accessToken = sessionStorage.getItem('access_token');

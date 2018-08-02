@@ -16,6 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 using Tpr.Chat.Core.Repositories;
 using Tpr.Chat.Web.Hubs;
 using Tpr.Chat.Web.Providers;
+using Tpr.Chat.Web.Service;
 
 namespace Tpr.Chat.Web
 {
@@ -36,12 +37,15 @@ namespace Tpr.Chat.Web
             // Chat repository
             services.AddTransient<IChatRepository, ChatRepository>(repository => new ChatRepository(connectionString));
 
-            // Cross-Origin Request S?
+            // Common service
+            services.AddTransient<ICommonService, CommonService>();
+
+            // Cross-Origin Request Sharing
             services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
             {
                 builder.AllowAnyMethod()
                     .AllowAnyHeader()
-                    .AllowAnyOrigin()
+                    .WithOrigins("https://localhost:44370")
                     .AllowCredentials();
             })
             );
@@ -59,24 +63,24 @@ namespace Tpr.Chat.Web
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        // укзывает, будет ли валидироваться издатель при валидации токена
+                        // Validate the issuer when validating the token
                         ValidateIssuer = true,
-                        // строка, представляющая издателя
+                        // Token issuer
                         ValidIssuer = jwtConfiguration["Issuer"],
 
-                        // будет ли валидироваться потребитель токена
+                        // Validate the token audience
                         ValidateAudience = true,
-                        // установка потребителя токена
+                        // Token audience
                         ValidAudience = jwtConfiguration["Audience"],
 
-                        // установка ключа безопасности
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfiguration["SecretKey"])),
-                        // валидация ключа безопасности
+                        // Validate signing key
                         ValidateIssuerSigningKey = true,
+                        // Issuer Signing Key
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfiguration["SecretKey"])),
 
-                        // будет ли валидироваться время существования
+                        // Validate token lifetime
                         ValidateLifetime = true,
-                        //  
+                        // Skew
                         ClockSkew = TimeSpan.Zero
                     };
                     options.Events = new JwtBearerEvents
@@ -95,17 +99,10 @@ namespace Tpr.Chat.Web
                         },
                         OnAuthenticationFailed = context =>
                         {
-
                             Console.WriteLine(context.Exception.Message);
 
                             return Task.CompletedTask;
-                        },
-                        //OnTokenValidated = context =>
-                        //{
-                        //    Console.WriteLine(context.Result.Succeeded);
-
-                        //    return Task.CompletedTask;
-                        //}
+                        }
                     };
                 });
 
@@ -139,6 +136,7 @@ namespace Tpr.Chat.Web
             app.UseSignalR(routes =>
             {
                 routes.MapHub<ChatHub>("/chat");
+                routes.MapHub<InfoHub>("/info");
             });
 
             // Authentication
