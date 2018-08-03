@@ -9,7 +9,7 @@ namespace Tpr.Chat.Core.Models
         [ExplicitKey]
         public Guid AppealId { get; set; }
         public int AppealNumber { get; set; }
-        public DateTimeOffset StartTime { get; set; }
-        public DateTimeOffset FinishTime { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime FinishTime { get; set; }
     }
 }
