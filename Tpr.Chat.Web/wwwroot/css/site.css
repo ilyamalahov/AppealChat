@@ -3,8 +3,11 @@
     padding: 0;
     height: 100%;
     min-height: 100%;
-    color: #565656;
     font-family: Calibri;
+}
+
+header {
+    line-height: 1;
 }
 
 form {

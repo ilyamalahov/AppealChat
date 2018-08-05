@@ -3,11 +3,26 @@
 
 // Write your JavaScript code.
 $(document).ready(function () {
-    var accessToken = sessionStorage.getItem('access_token');
+    updateInfo = function (interval) {
+        $.ajax({
+            method: "POST",
+            url: "update",
+            headers: { "Authorization": "Bearer " + sessionStorage.getItem("access_token") },
+            success: function (response) {
+                // Current Time
+                var currentDate = new Date(response.currentDate);
+                $('#moscowTime').text(currentDate.toLocaleTimeString());
 
-    if (!accessToken) {
-        $.ajax({ method: "POST", url: "token", data: { appealId: appealId, key: expertKey }, async: false })
-            .done(function (response) { sessionStorage.setItem("access_token", response.accessToken); })
-            .fail(function (xhr, status, error) { console.log(error); });
-    }
+                // Remaining Time
+                var remainingDate = new Date(response.remainingTime);
+                $('#remainingTime').text(remainingDate.toLocaleTimeString());
+
+                // Recursive invoke setTimeout()
+                setTimeout(updateInfo, interval, interval);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            }
+        });
+    };
 });

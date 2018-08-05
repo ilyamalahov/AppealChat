@@ -57,21 +57,19 @@
 
 
         // Update information connection
-        updateInfo = function (info) {
-            console.log(info);
+        //updateInfo = function (info) {
+        //    infoConnection.invoke("UpdateInfo").then(function () { setTimeout(updateInfo, 10000); });
+        //};
 
-            infoConnection.invoke("UpdateInfo").then(function () { setTimeout(updateInfo, 10000); });
-        };
+        //const infoConnection = new signalR.HubConnectionBuilder()
+        //    .withUrl("/info?token=" + accessToken)
+        //    .configureLogging(signalR.LogLevel.Trace)
+        //    .build();
 
-        const infoConnection = new signalR.HubConnectionBuilder()
-            .withUrl("/info?token=" + accessToken)
-            .configureLogging(signalR.LogLevel.Trace)
-            .build();
+        //infoConnection.start().catch(error => console.error(error));
 
-        infoConnection.start().catch(error => console.error(error));
-
-        infoConnection.on("Connect", updateInfo);
-        infoConnection.on("UpdateInfo", updateInfo);
+        //infoConnection.on("Connect", updateInfo);
+        //infoConnection.on("UpdateInfo", updateInfo);
         //infoConnection.on("Disconnect", function () { clearTimeout(); });
 
         // Sending message
@@ -137,7 +135,7 @@
         };
 
         sendMessage = function (message) {
-            chatConnection.invoke("SendMessage", message)
+            chatConnection.sendMessage(message)
                 .catch(error => console.error(error))
                 .finally($('#messageInput').val(''));
         };
@@ -161,36 +159,10 @@
                 $('#showInfoPanelButton').show();
             }
         };
-        //updateInfo = function (interval) {
-        //    $.ajax({
-        //        method: "POST",
-        //        url: "update",
-        //        headers: { "Authorization": "Bearer " + sessionStorage.getItem("access_token") },
-        //        success: function (response) {
-        //            // Current Time
-        //            var currentDate = new Date(response.currentDate);
-        //            $('#moscowTime').text(currentDate.toLocaleTimeString());
-
-        //            // Remaining Time
-        //            var remainingDate = new Date(response.remainingTime);
-        //            $('#remainingTime').text(remainingDate.toLocaleTimeString());
-
-        //            // Recursive invoke setTimeout()
-        //            setTimeout(updateInfo, interval, interval);
-        //        },
-        //        error: function (xhr, status, error) {
-        //            console.error(error);
-        //        }
-        //    });
-        //};
 
         setButtonDisable(true);
 
-        switchInfoPanel(true);
-
-        //updateInfo(10000);
-
-
+        //switchInfoPanel(true);
     };
 
     var accessToken = sessionStorage.getItem('access_token');

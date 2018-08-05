@@ -5,36 +5,40 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div id="infoPanel" class="sidebar">
+<div id="infoPanel" class="sidebar" style="padding: 20px;">
     <div class="sidebar-content">
-        @if (Model.ExpertKey == 0)
-        {
-            <div class="expert-info" style="text-align: center; padding: 10px; border-bottom: 1px solid #000">
-                <div class="expert-image"><img style="width: 150px; height: 150px;" src="~/images/account.png" alt="Account" /></div>
-                <div class="expert-name" style="font-size: 20px">Член конфликтной комиссии <br /> №<span id="expertKey">000</span></div>
-                <hr />
-                <button id="switchExpert" class="custom-button" style="width: 100%;"><i class="fas fa-exchange-alt glyph"></i>Сменить собеседника</button>
+        <div class="sidebar-block" style="text-align: center; border-bottom: 1px solid #000">
+            <div class="expert-info">
+                <div>Вас консультирует</div>
+                <div style="font-size: 20px">Член конфликтной комиссии</div>
+                <div>№<span id="expertKey">000</span></div>
+                <div>№<span id="expertKey">000</span></div>
             </div>
-        }
-        <div class="appeal-info">
-            <ul>
-                <li class="list-item"><span>Номер аппеляции</span><span id="appealNumber" class="place-right">000</span></li>
-                <li class="list-item"><span>Предмет</span><span id="appealSubject" class="place-right">Отсутствует</span></li>
-                <li class="list-item"><span>Дата экзамена</span><span id="appealExamDate" class="place-right">00.00.0000</span></li>
-            </ul>
+            <button id="switchExpert" class="custom-button" style="width: 100%;"><i class="fas fa-exchange-alt glyph"></i>Сменить собеседника</button>
+            <button class="complete-button custom-button"><i class="fas fa-check-circle glyph"></i>Завершить консультацию</button>
+        </div>
+        <div class="sidebar-block">
+            <div>Номер аппеляции</div>
+            <div id="appealNumber">000</div>
+            <div>Подано заявление</div>
+            <div id="appealExamDate">00.00.0000</div>
+            <div>Зарегистрирована</div>
+            <div id="appealExamDate">00.00.0000</div>
+            <div>Предмет</div>
+            <div id="appealSubject">Отсутствует</div>
+            <div>Дата экзамена</div>
+            <div id="appealExamDate">00.00.0000</div>
+        </div>
+        <div class="sidebar-block">
+            <div><a href="#">Инструкция по работе с чатом</a></div>
+            <div>Справочная служба конфликтной комиссии г. Москвы</div>
+            <div><i class="fas fa-exchange-alt glyph"></i>+7 (499) 653-94-50</div>
+            <div><i class="fas fa-exchange-alt glyph"></i>kk77@mcko.ru</div>
         </div>
     </div>
-    <div class="sidebar-footer" style="text-align: center">
-        <div class="moscow-time" style="padding: 5px; border-bottom: 1px solid">Московское время: <span id="moscowTime">00:00</span></div>
-        <div id="hideInfoPanelButton" class="infopanel-button"><i class="fas fa-chevron-circle-up glyph"></i>Скрыть информационную панель</div>
-    </div>
+    <div class="sidebar-footer" style="text-align: center">Московское время: <span id="moscowTime">00:00</span></div>
 </div>
 <div class="content">
-    <div class="header">
-        <div id="showInfoPanelButton" style="float: right; border-left: 1px solid #000" class="infopanel-button"><i class="fas fa-chevron-circle-down glyph"></i>Показать информационную панель</div>
-        <button class="complete-button custom-button"><i class="fas fa-check-circle glyph"></i>Завершить консультацию</button>
-        <div class="caption"><i class="fab fa-adn glyph" style="font-size: 26px;"></i>Система онлайн-консультирования по вопросам...</div>
-    </div>
     <ul id="messagesList" class="message-history">
         @foreach (var message in Model.Messages)
         {
@@ -68,10 +72,12 @@
         </div>
     </div>
 </div>
-<script>
-    var appealId = "@Model.AppealId";
-    var expertKey = "@Model.ExpertKey";
-</script>
 
-<script src="~/lib/signalr/signalr.js"></script>
-<script src="~/js/chat.js"></script>
+@section Scripts {
+    <script>
+        var appealId = "@Model.AppealId";
+        var expertKey = "@Model.ExpertKey";
+    </script>
+    <script type="text/javascript" src="~/lib/signalr/signalr.js"></script>
+    <script type="text/javascript" src="~/js/chat.js"></script>
+}

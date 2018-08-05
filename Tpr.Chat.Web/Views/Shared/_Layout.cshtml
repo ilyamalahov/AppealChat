@@ -33,10 +33,21 @@
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
 
-    @RenderSection("Scripts", required: false)
-
     <div class="body-content">
-        @RenderBody()
+        <header style="border-bottom: 2px solid #d6dade; padding: 20px;">
+            <div style="color: #565656;">Конфликтная комиссия города Москвы</div>
+            <div style="font-size: 24px; font-weight: bold; ">Онлайн консультации по результатам рассмотрения апелляций о несогласии с выставленными баллами ГИА</div>
+        </header>
+
+        @RenderSection("Scripts", required: false)
+
+        <div>
+            @RenderBody()
+        </div>
+
+        <footer style="border-top: 2px solid #d6dade; padding: 20px; text-align: center;">
+            2018 (C) Конфликтная комиссия города Москвы
+        </footer>
     </div>
 </body>
 </html>
