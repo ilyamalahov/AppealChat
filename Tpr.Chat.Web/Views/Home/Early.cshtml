@@ -2,35 +2,38 @@
     ViewData["Title"] = "Система онлайн консультирования по вопросам";
 }
 
-<div class="early-block" style="padding: 50px; border-bottom: 1px solid #ccc; color: #151515;">
-    <div style="margin-bottom: 20px; overflow: hidden;">
-        <img style="float: left; margin-right: 10px;" src="~/images/hourglass.png" />
-        <div style="color: #ff6a00; font-size:24px; font-weight: bold; line-height: 1em">Время онлайн консультации по Вашей апелляции еще не наступило</div>
+@section Styles{
+    <link rel="stylesheet" type="text/css" href="~/css/early-complete.css" />
+}
+
+<div class="header">
+    <div class="info">
+        <img style="display: inline-block; vertical-align: middle;" src="~/images/hourglass.png" />
+        <div style="display: inline-block; vertical-align: middle; font-size: 24px">Время онлайн консультации по Вашей апелляции еще не наступило</div>
     </div>
-    <div style="font-size: 24px;clear:both;">Консультация начнется через: <span id="remainingTime"><b>00</b> часа(-ов) <b>00</b> минут(-ы)</span></div>
+    <div class="remaining-time">Консультация начнется через: <span id="remainingTime"><b>00</b> часа(-ов) <b>00</b> минут(-ы)</span></div>
 </div>
-<div class="early-block" style="padding: 50px; color: #151515;">
-    <div style="margin-bottom: 10px;">
-        <div style="border-bottom: 2px solid #ff6a00; padding: 10px 0; font-size: 20px; font-weight: bold; margin-bottom:10px;">Сведения об аппеляции</div>
-        <div style="font-size: 18px;">
-            <ul style="margin: 0; padding: 0; list-style: none;">
-                <li style="margin-bottom: 5px;">Дата и время подачи заявления: <span style="font-weight: bold;">00.00.0000 00:00</span></li>
-                <li style="margin-bottom: 5px;">Номер апелляции: <span style="font-weight: bold;">00000</span></li>
-                <li style="margin-bottom: 5px;">Дата и время регистрации заявления: <span style="font-weight: bold;">00.00.0000 00:00</span></li>
-                <li style="margin-bottom: 5px;">Предмет: <span style="font-weight: bold;">Отсутствует</span></li>
-                <li style="margin-bottom: 5px;">Дата экзамена: <span style="font-weight: bold;">00.00.0000</span></li>
-                <li style="margin-bottom: 5px;">Дата и время начала онлайн консультации: <span style="font-weight: bold;">00.00.0000 00:00</span></li>
-                <li style="margin-bottom: 5px;">Дата и время завершения онлайн консультации: <span style="font-weight: bold;">00.00.0000 00:00</span></li>
-            </ul>
-        </div>
+<div class="main">
+    <div class="info-block">
+        <div class="header">Сведения об аппеляции</div>
+        <ul>
+            <li class="info-item">Дата и время подачи заявления: <strong>00.00.0000 00:00</strong></li>
+            <li class="info-item">Номер апелляции: <strong>00000</strong></li>
+            <li class="info-item">Дата и время регистрации заявления: <strong>00.00.0000 00:00</strong></li>
+            <li class="info-item">Предмет: <strong>Отсутствует</strong></li>
+            <li class="info-item">Дата экзамена: <strong>00.00.0000</strong></li>
+            <li class="info-item">Дата и время начала онлайн консультации: <strong>00.00.0000 00:00</strong></li>
+            <li class="info-item">Дата и время завершения онлайн консультации: <strong>00.00.0000 00:00</strong></li>
+        </ul>
     </div>
-    <div>
-        <div style="border-bottom: 2px solid #ff6a00; padding: 10px 0; font-size: 20px; font-weight: bold; margin-bottom:10px;">Справочная информация</div>
-        <div style="font-size: 18px;">
-            <div style="margin-bottom: 10px;">Инструкция по работе с онлайн чатом и видеотрансляцией заседания конфликтной комиссии</div>
+    <div class="info-block">
+        <div class="header">Справочная информация</div>
+        <div>
+            <div>Инструкция по работе с онлайн чатом и видеотрансляцией заседания конфликтной комиссии</div>
             <div>Справочная служба конфликтной комиссии г. Москвы</div>
             <div>+7 (499) 653-94-50</div>
             <div>kk77@mcko.ru</div>
+            <div>Время работы: понедельник - суббота с 9:00 до 18:00, выходные - воскресенье и праздничные дни</div>
         </div>
     </div>
 </div>

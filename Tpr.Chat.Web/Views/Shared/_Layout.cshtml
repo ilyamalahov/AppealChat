@@ -15,6 +15,8 @@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
     </environment>
+
+    @RenderSection("Styles", required: false)
 </head>
 <body>
     <partial name="_CookieConsentPartial" />
@@ -33,21 +35,19 @@
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
 
-    <div class="body-content">
-        <header style="border-bottom: 2px solid #d6dade; padding: 20px;">
-            <div style="color: #565656;">Конфликтная комиссия города Москвы</div>
-            <div style="font-size: 24px; font-weight: bold; ">Онлайн консультации по результатам рассмотрения апелляций о несогласии с выставленными баллами ГИА</div>
+    <div class="container">
+        <header>
+            <div class="subtitle">Конфликтная комиссия города Москвы</div>
+            <div class="title">Онлайн консультации по результатам рассмотрения апелляций о несогласии с выставленными баллами ГИА</div>
         </header>
 
         @RenderSection("Scripts", required: false)
 
-        <div>
+        <div class="content">
             @RenderBody()
         </div>
 
-        <footer style="border-top: 2px solid #d6dade; padding: 20px; text-align: center;">
-            2018 (C) Конфликтная комиссия города Москвы
-        </footer>
+        <footer>2018 (C) Конфликтная комиссия города Москвы</footer>
     </div>
 </body>
 </html>

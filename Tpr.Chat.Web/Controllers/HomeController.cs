@@ -42,10 +42,26 @@ namespace Tpr.Chat.Web.Controllers
                 return Error();
             }
 
+            var model = new IndexViewModel
+            {
+                AppealId = appealId,
+                ExpertKey = key
+            };
+
             // Check if current date less than chat start time
             if (DateTime.Now < chatSession.StartTime)
             {
-                return View("Early");
+                return View("Early", model);
+            }
+
+            // Expert checkings
+            if (key > 0)
+            {
+                // Secret checkings, etc...
+
+                model.Messages = chatRepository.GetChatMessages(appealId);
+
+                return View("Expert", model);
             }
 
             // Check if current date more than chat finish time
@@ -54,21 +70,9 @@ namespace Tpr.Chat.Web.Controllers
                 return View("Complete");
             }
 
-            // Expert checkings
-            if (key > 0)
-            {
-                // Secret checkings, etc...
-            }
+            model.Messages = chatRepository.GetChatMessages(appealId);
 
-            // View model
-            var viewModel = new IndexViewModel
-            {
-                AppealId = appealId,
-                ExpertKey = key,
-                Messages = chatRepository.GetChatMessages(appealId)
-            };
-
-            return View(viewModel);
+            return View("Appeal", model);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
