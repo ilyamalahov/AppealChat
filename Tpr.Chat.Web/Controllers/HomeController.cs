@@ -121,5 +121,18 @@ namespace Tpr.Chat.Web.Controllers
 
             return Ok(response);
         }
+
+        [Authorize]
+        [Produces("application/json")]
+        [HttpPost("/update")]
+        public IActionResult Update()
+        {
+            var response = new
+            {
+                currentText = "Current text"
+            };
+
+            return Ok(response);
+        }
     }
 }

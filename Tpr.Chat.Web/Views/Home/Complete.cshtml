@@ -6,31 +6,38 @@
     <link rel="stylesheet" type="text/css" href="~/css/early-complete.css" />
 }
 
-    <div class="header">
-        <div class="moscow-time">
-            <div class="highlight">00 месяц 0000</div>
-            <div>Московское время: <span class="highlight">00:00</span></div>
+    <div class="container">
+        <partial name="_Header" />
+
+        <div class="content">
+            <div class="header">
+                <div class="moscow-time">
+                    <div class="highlight">00 месяц 0000</div>
+                    <div>Московское время: <span class="highlight">00:00</span></div>
+                </div>
+                <div class="complete-text">Консультация по апелляции завершена.</div>
+            </div>
+            <div class="main">
+                <div class="info-block">
+                    <div class="header">Сведения о заседании конфликтной комиссии</div>
+                    <ul>
+                        <li class="info-item">Заседание конфликтной комиссии, в рамках которого будет вынесено Решение по Вашей апелляции, состоится <strong>00.00.0000</strong></li>
+                        <li class="info-item">Запланированное время рассмотрения Вашей апелляции <strong>с <span>00:00</span> до <span>00:00</span></strong></li>
+                        <li class="info-item">Онлайн-трансляцию заседания конфликтной комиссии Вы сможете посмотреть, перейдя по данной ссылке <a href="#">http://test.com</a></li>
+                        <li class="info-item">По итогам рассмотрения апелляции вам будет направлено Решение конфликтной комиссии, ознакомиться с которым Вы сможете в личном кабинете на портале.</li>
+                    </ul>
+                </div>
+                <div class="info-block">
+                    <div class="header">Справочная информация</div>
+                    <div>
+                        <div>Инструкция по работе с онлайн чатом и видеотрансляцией заседания конфликтной комиссии</div>
+                        <div>Справочная служба конфликтной комиссии г. Москвы</div>
+                        <div>+7 (499) 653-94-50</div>
+                        <div>kk77@mcko.ru</div>
+                        <div>Время работы: понедельник - суббота с 9:00 до 18:00, выходные - воскресенье и праздничные дни</div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="complete-text">Консультация по апелляции завершена.</div>
+        <partial name="_Footer" />
     </div>
-<div class="main">
-    <div class="info-block">
-        <div class="header">Сведения о заседании конфликтной комиссии</div>
-        <ul>
-            <li class="info-item">Заседание конфликтной комиссии, в рамках которого будет вынесено Решение по Вашей апелляции, состоится <strong>00.00.0000</strong></li>
-            <li class="info-item">Запланированное время рассмотрения Вашей апелляции <strong>с <span>00:00</span> до <span>00:00</span></strong></li>
-            <li class="info-item">Онлайн-трансляцию заседания конфликтной комиссии Вы сможете посмотреть, перейдя по данной ссылке <a href="#">http://test.com</a></li>
-            <li class="info-item">По итогам рассмотрения апелляции вам будет направлено Решение конфликтной комиссии, ознакомиться с которым Вы сможете в личном кабинете на портале.</li>
-        </ul>
-    </div>
-    <div class="info-block">
-        <div class="header">Справочная информация</div>
-        <div>
-            <div>Инструкция по работе с онлайн чатом и видеотрансляцией заседания конфликтной комиссии</div>
-            <div>Справочная служба конфликтной комиссии г. Москвы</div>
-            <div>+7 (499) 653-94-50</div>
-            <div>kk77@mcko.ru</div>
-            <div>Время работы: понедельник - суббота с 9:00 до 18:00, выходные - воскресенье и праздничные дни</div>
-        </div>
-    </div>
-</div>

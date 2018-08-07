@@ -6,34 +6,41 @@
     <link rel="stylesheet" type="text/css" href="~/css/early-complete.css" />
 }
 
-<div class="header">
-    <div class="info">
-        <img style="display: inline-block; vertical-align: middle;" src="~/images/hourglass.png" />
-        <div style="display: inline-block; vertical-align: middle; font-size: 24px">Время онлайн консультации по Вашей апелляции еще не наступило</div>
-    </div>
-    <div class="remaining-time">Консультация начнется через: <span id="remainingTime"><b>00</b> часа(-ов) <b>00</b> минут(-ы)</span></div>
-</div>
-<div class="main">
-    <div class="info-block">
-        <div class="header">Сведения об аппеляции</div>
-        <ul>
-            <li class="info-item">Дата и время подачи заявления: <strong>00.00.0000 00:00</strong></li>
-            <li class="info-item">Номер апелляции: <strong>00000</strong></li>
-            <li class="info-item">Дата и время регистрации заявления: <strong>00.00.0000 00:00</strong></li>
-            <li class="info-item">Предмет: <strong>Отсутствует</strong></li>
-            <li class="info-item">Дата экзамена: <strong>00.00.0000</strong></li>
-            <li class="info-item">Дата и время начала онлайн консультации: <strong>00.00.0000 00:00</strong></li>
-            <li class="info-item">Дата и время завершения онлайн консультации: <strong>00.00.0000 00:00</strong></li>
-        </ul>
-    </div>
-    <div class="info-block">
-        <div class="header">Справочная информация</div>
-        <div>
-            <div>Инструкция по работе с онлайн чатом и видеотрансляцией заседания конфликтной комиссии</div>
-            <div>Справочная служба конфликтной комиссии г. Москвы</div>
-            <div>+7 (499) 653-94-50</div>
-            <div>kk77@mcko.ru</div>
-            <div>Время работы: понедельник - суббота с 9:00 до 18:00, выходные - воскресенье и праздничные дни</div>
+    <div class="container">
+        <partial name="_Header" />
+
+        <div class="content">
+            <div class="header">
+                <div class="info">
+                    <img style="display: inline-block; vertical-align: middle;" src="~/images/hourglass.png" />
+                    <div style="display: inline-block; vertical-align: middle; font-size: 24px">Время онлайн консультации по Вашей апелляции еще не наступило</div>
+                </div>
+                <div class="remaining-time">Консультация начнется через: <span id="remainingTime"><b>00</b> часа(-ов) <b>00</b> минут(-ы)</span></div>
+            </div>
+            <div class="main">
+                <div class="info-block">
+                    <div class="header">Сведения об аппеляции</div>
+                    <ul>
+                        <li class="info-item">Дата и время подачи заявления: <strong>00.00.0000 00:00</strong></li>
+                        <li class="info-item">Номер апелляции: <strong>00000</strong></li>
+                        <li class="info-item">Дата и время регистрации заявления: <strong>00.00.0000 00:00</strong></li>
+                        <li class="info-item">Предмет: <strong>Отсутствует</strong></li>
+                        <li class="info-item">Дата экзамена: <strong>00.00.0000</strong></li>
+                        <li class="info-item">Дата и время начала онлайн консультации: <strong>00.00.0000 00:00</strong></li>
+                        <li class="info-item">Дата и время завершения онлайн консультации: <strong>00.00.0000 00:00</strong></li>
+                    </ul>
+                </div>
+                <div class="info-block">
+                    <div class="header">Справочная информация</div>
+                    <div>
+                        <div>Инструкция по работе с онлайн чатом и видеотрансляцией заседания конфликтной комиссии</div>
+                        <div>Справочная служба конфликтной комиссии г. Москвы</div>
+                        <div>+7 (499) 653-94-50</div>
+                        <div>kk77@mcko.ru</div>
+                        <div>Время работы: понедельник - суббота с 9:00 до 18:00, выходные - воскресенье и праздничные дни</div>
+                    </div>
+                </div>
+            </div>
         </div>
+        <partial name="_Footer" />
     </div>
-</div>

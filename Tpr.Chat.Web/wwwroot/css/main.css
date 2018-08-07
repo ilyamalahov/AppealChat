@@ -1,0 +1,111 @@
+﻿.content {
+    display: flex;
+}
+
+/* Main */
+.main {
+    flex: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.remaining-time {
+    text-align: right;
+    padding: 5px;
+    color: #d32723;
+}
+
+    .remaining-time span {
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+.form-footer {
+    border-top: 2px solid #d6dade;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    flex: none;
+}
+
+.message-text {
+    width: 100%;
+    padding: 6px;
+    resize: none;
+    line-height: 1;
+}
+
+.form-button {
+    padding: 5px;
+    color: #565656;
+    border: none;
+    background: none;
+}
+
+    .form-button img {
+        width: 24px;
+        height: 24px;
+    }
+
+    .form-button:hover {
+        cursor: pointer;
+    }
+
+    .form-button:disabled {
+        cursor: auto;
+    }
+
+/* Sidebar */
+
+.sidebar {
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    background: #f7f7f7;
+    border-left: 2px solid #d6dade;
+}
+
+    .sidebar .main {
+        flex: auto;
+        padding: 15px;
+        overflow-y: auto;
+    }
+
+    .sidebar .footer {
+        border-top: 2px solid #ccc;
+        text-align: center;
+        padding: 10px;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+.emoji-grid {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto auto auto;
+    text-align: center;
+    border-top: 1px solid #000;
+}
+
+    .emoji-grid div {
+        padding: 10px;
+    }
+
+        .emoji-grid div:hover {
+            background: #ebebeb;
+            cursor: pointer;
+        }
+
+.custom-button {
+    text-align: center;
+    font-size: 16px;
+    width: 100%;
+    border: 2px solid #476cd4;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+@media screen and (max-width: 767px) {
+    .sidebar {
+        display: none;
+    }
+}

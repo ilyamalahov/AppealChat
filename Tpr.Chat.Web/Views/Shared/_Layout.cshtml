@@ -9,21 +9,17 @@
 
     <environment include="Development">
         <link rel="stylesheet" href="~/css/site.css" />
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
     </environment>
 
     @RenderSection("Styles", required: false)
 </head>
 <body>
-    <partial name="_CookieConsentPartial" />
-
     <environment include="Development">
-        <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script type="text/javascript" src="~/lib/jquery/dist/jquery.js"></script>
+        <script type="text/javascript" src="~/js/site.js" asp-append-version="true"></script>
     </environment>
     <environment exclude="Development">
         <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
@@ -35,19 +31,8 @@
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
 
-    <div class="container">
-        <header>
-            <div class="subtitle">Конфликтная комиссия города Москвы</div>
-            <div class="title">Онлайн консультации по результатам рассмотрения апелляций о несогласии с выставленными баллами ГИА</div>
-        </header>
+    @RenderSection("Scripts", required: false)
 
-        @RenderSection("Scripts", required: false)
-
-        <div class="content">
-            @RenderBody()
-        </div>
-
-        <footer>2018 (C) Конфликтная комиссия города Москвы</footer>
-    </div>
+    @RenderBody()
 </body>
 </html>

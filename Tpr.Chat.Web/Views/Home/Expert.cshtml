@@ -1,7 +1,62 @@
-﻿
+﻿@using Tpr.Chat.Core.Models
+@model Tpr.Chat.Web.Models.IndexViewModel
+
 @{
     ViewData["Title"] = "Expert";
 }
 
-<h2>Expert</h2>
+@section Styles {
+    <link rel="stylesheet" type="text/css" href="~/css/expert.css" />
+}
 
+@section Scripts {
+    <script>
+        var appealId = "@Model.AppealId";
+        var expertKey = "@Model.ExpertKey";
+    </script>
+    <script type="text/javascript" src="~/lib/signalr/signalr.js"></script>
+    <script type="text/javascript" src="~/js/expert.js"></script>
+}
+
+<div class="container">
+    <div class="block appeal-info">
+        <button class="close-button">Close</button>
+        <div>Участник по аппеляции</div>
+        <div style="font-weight:bold;">№ <span>00000</span></div>
+        <div style="font-weight:bold; color: #009966;">Подключен к чату</div>
+    </div>
+
+    <ul class="block message-history">
+        @foreach (var message in Model.Messages)
+        {
+            var messageDate = @message.CreateDate.ToString("HH:mm:ss");
+
+            <li>
+                <div class="message @(message.NickName == "Аппелянт" ? "place-right" : "place-left")">
+                    @switch (message.ChatMessageTypeId)
+                    {
+                        case ChatMessageTypes.Joined:
+                            <span>@message.NickName</span> @:подключился к консультации <b>(@messageDate) </b>
+                            break;
+                        case ChatMessageTypes.Message:
+                            <div class="message-bubble">@Html.Raw(message.MessageString)</div><span>@message.NickName</span> <b>(@message.CreateDate.ToString("HH:mm:ss"))</b>
+                            break;
+                        case ChatMessageTypes.Leave:
+                            <span>@message.NickName</span> @:покинул консультацию <b>(@messageDate)</b>
+                            break;
+                    }
+                </div>
+            </li>
+        }
+    </ul>
+
+    <div class="block" style="flex: none;">
+        <div id="quickReplyBlock" class="quick-reply" style="display: none;"></div>
+
+        <textarea id="messageInput" class="message-text" rows="5" autocomplete="off" placeholder="Введите сообщение..."></textarea>
+    </div>
+    <div class="block buttons">
+        <button id="quickReplyButton" class="form-button">Quick reply</button>
+        <button id="sendButton" class="form-button send-button">Send message</button>
+    </div>
+</div>

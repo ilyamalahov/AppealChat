@@ -1,0 +1,60 @@
+﻿.content {
+    display: flex;
+    flex-flow: column;
+}
+
+.block {
+    margin: 5px;
+}
+
+.appeal-info {
+    position: relative;
+    border: 1px solid #ccc;
+    padding: 5px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.close-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 5px;
+}
+
+.message-history {
+    border: 1px solid #ccc;
+}
+
+.quick-reply {
+    display: flex;
+    min-height: 200px;
+    background: #ccc;
+}
+
+.message-text {
+    width: 100%;
+    resize: vertical;
+    padding: 5px;
+}
+
+.buttons {
+    flex: none;
+    display: flex;
+    justify-content: space-between;
+}
+.form-button {
+    background: #fff;
+    border: 1px solid #476cd4;
+    border-radius: 5px;
+    padding: 8px;
+}
+    .form-button:hover {
+        background: #476cd4;
+        color: #fff;
+        cursor: pointer;
+    }
+    .send-button {
+        background: #476cd4;
+        color: #fff;
+    }
