@@ -26,7 +26,7 @@
         <div style="font-weight:bold; color: #009966;">Подключен к чату</div>
     </div>
 
-    <ul class="block message-history">
+    <ul id="messagesList" class="block message-history">
         @foreach (var message in Model.Messages)
         {
             var messageDate = @message.CreateDate.ToString("HH:mm:ss");
@@ -53,7 +53,7 @@
     <div class="block" style="flex: none;">
         <div id="quickReplyBlock" class="quick-reply" style="display: none;"></div>
 
-        <textarea id="messageInput" class="message-text" rows="5" autocomplete="off" placeholder="Введите сообщение..."></textarea>
+        <textarea id="messageText" class="message-text" rows="5" autocomplete="off" placeholder="Введите сообщение..."></textarea>
     </div>
     <div class="block buttons">
         <button id="quickReplyButton" class="form-button">Quick reply</button>

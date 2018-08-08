@@ -50,7 +50,7 @@ namespace Tpr.Chat.Web.Service
             }
         }
 
-        public string CreateToken(ClaimsIdentity identity, DateTime expiredDate)
+        public string CreateToken(ClaimsIdentity identity, DateTime beginDate, DateTime finishDate)
         {
             try
             {
@@ -59,11 +59,12 @@ namespace Tpr.Chat.Web.Service
                 var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration["SecretKey"]));
 
                 var token = new JwtSecurityToken(
-                    issuer: jwtConfiguration["Issuer"],
-                    audience: jwtConfiguration["Audience"],
-                    claims: identity.Claims,
-                    expires: expiredDate,
-                    signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
+                    jwtConfiguration["Issuer"],
+                    jwtConfiguration["Audience"],
+                    identity.Claims,
+                    beginDate,
+                    finishDate,
+                    new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
                 );
 
                 return new JwtSecurityTokenHandler().WriteToken(token);

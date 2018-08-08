@@ -1,14 +1,14 @@
 ﻿//$(document).ready(function () {
     // Update info in interval
-    const updateInfo = function (interval, accessToken) {
-        return new Promise((resolve, reject) => {
-            $.ajax({ method: "POST", url: "update", headers: { "Authorization": "Bearer " + accessToken } })
-                .done(function (response) {
-                    setTimeout(updateInfo, interval, interval, accessToken);
-                    resolve(response);
-                })
-                .fail(reject);
-        });
+    const updateInfo = function (interval, accessToken, callback) {
+        $.ajax({ method: "POST", url: "update", headers: { "Authorization": "Bearer " + accessToken } })
+            .done(callback
+            //    function (response) {
+            //    callback(response);
+
+            //    setTimeout(updateInfo, interval, interval, accessToken, callback);
+            //}
+            );
     };
 
     // Convert current timestamp to human-readable date on Moscow timezone

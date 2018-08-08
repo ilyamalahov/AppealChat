@@ -63,6 +63,7 @@
     flex-direction: column;
     background: #f7f7f7;
     border-left: 2px solid #d6dade;
+    flex: none;
 }
 
     .sidebar .main {

@@ -23,7 +23,7 @@
 
         <div class="content">
             <div class="main">
-                <ul class="message-history">
+                <ul id="messagesList" class="message-history">
                     @foreach (var message in Model.Messages)
                     {
                         var messageDate = @message.CreateDate.ToString("dd-MM-yyyy HH:mm:ss");
@@ -46,14 +46,11 @@
                         </li>
                     }
                 </ul>
-                <div class="remaining-time">
-                    До конца консультации осталось:
-                    <span id="remainingTime">00 минут</span>
-                </div>
+                <div class="remaining-time">До конца консультации осталось:<span id="remainingTime">00 минут</span></div>
                 <div id="emojiGrid" class="emoji-grid" style="display:none;"></div>
                 <div class="form-footer">
                     <button id="emojiButton" class="form-button"><img alt="Emoji" src="~/images/OpenSmilesTab.png" /></button>
-                    <textarea id="messageInput" class="message-text" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
+                    <textarea id="messageText" class="message-text" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
                     <button id="sendButton" class="form-button"><img alt="Send" src="~/images/send.png" /></button>
                 </div>
             </div>

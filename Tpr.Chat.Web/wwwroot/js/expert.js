@@ -1,4 +1,4 @@
-﻿//$(document).ready(function () {
+﻿$(document).ready(function () {
     getAccessToken().then(function (accessToken) {
         // Initializing SignalR connection
         const chatConnection = new signalR.HubConnectionBuilder()
@@ -18,24 +18,27 @@
 
             const messageInfo = '<span class="nickname">' + message.nickName + '</span> (' + messageDate.toLocaleTimeString() + ')';
 
-            var div = $('<div class="message ' + (isAppeal ? 'place-left' : 'place-right') + '"></div>').html(messageBubble + messageInfo);
+            var div = $('<div class="message ' + (isAppeal ? 'place-right' : 'place-left') + '"></div>').html(messageBubble + messageInfo);
 
             var li = $('<li></li>').html(div);
 
             $("#messagesList").append(li).scrollTo(li);
         });
 
-
-        // Send message
-        const sendMessage = function (message) {
-            chatConnection.sendMessage(message)
+        $('#sendButton').on('click', (e) => {
+            chatConnection.invoke('SendMessage', $('#messageText').val())
                 .catch(error => console.error(error))
 
-            $('#messageText').val('').trigger('change');
-        };
+            $('#messageText').val('');
+        });
 
-        updateInfo(10000, accessToken).then(function (response) {
-            console.log(response);
-        })
+        // Send message
+        //const sendMessage = function (message) {
+        //    chatConnection.sendMessage(message)
+        //        .catch(error => console.error(error))
+
+        //    $('#messageText').val('').trigger('change');
+        //};
+
     }).catch(function (error) { alert(error); });
-//});
+});

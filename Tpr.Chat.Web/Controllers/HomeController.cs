@@ -114,7 +114,7 @@ namespace Tpr.Chat.Web.Controllers
 
             //identity.AddClaim(new Claim("BeginDate", ""));
 
-            var accessToken = commonService.CreateToken(identity, chatSession.FinishTime);
+            var accessToken = commonService.CreateToken(identity, chatSession.StartTime, chatSession.FinishTime);
 
             // JSON Response
             var response = new { accessToken };
@@ -127,9 +127,38 @@ namespace Tpr.Chat.Web.Controllers
         [HttpPost("/update")]
         public IActionResult Update()
         {
+            // Current Time
+            var moscowDate = DateTime.Now;
+
+            // Begin Time
+            long beginTimestamp;
+
+            if(!long.TryParse(HttpContext.User.FindFirstValue("nbf"), out beginTimestamp))
+            {
+                return BadRequest(beginTimestamp);
+            }
+
+            var beginDate = DateTimeOffset.FromUnixTimeSeconds(beginTimestamp);
+
+            // Remaining Time
+            long finishTimestamp;
+
+            if (!long.TryParse(HttpContext.User.FindFirstValue("exp"), out finishTimestamp))
+            {
+                return BadRequest(beginTimestamp);
+            }
+
+            var finishDate = DateTimeOffset.FromUnixTimeSeconds(finishTimestamp);
+
+            var beginTime = beginDate.Subtract(moscowDate);
+
+            var remainingTime = finishDate.Subtract(moscowDate);
+
             var response = new
             {
-                currentText = "Current text"
+                moscowDate,
+                beginTime,
+                remainingTime
             };
 
             return Ok(response);
