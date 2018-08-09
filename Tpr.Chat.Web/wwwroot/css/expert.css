@@ -50,7 +50,8 @@
     padding: 8px;
 }
     .form-button:hover {
-        background: #476cd4;
+        background: #3054b9;
+        border-color: #3054b9;
         color: #fff;
         cursor: pointer;
     }

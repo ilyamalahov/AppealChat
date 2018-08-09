@@ -11,13 +11,6 @@
             );
     };
 
-    // Convert current timestamp to human-readable date on Moscow timezone
-    const toMoscowDate = function (timestamp) {
-        var timestampDate = new Date();
-
-        return timestampDate;
-    }
-
     // Get JWT access token
     const getAccessToken = function () {
         return new Promise((resolve, reject) => {

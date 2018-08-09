@@ -14,94 +14,95 @@
         var appealId = "@Model.AppealId";
         var expertKey = "@Model.ExpertKey";
     </script>
+    <script type="text/javascript" src="~/js/luxon.min.js"></script>
     <script type="text/javascript" src="~/lib/signalr/signalr.js"></script>
     <script type="text/javascript" src="~/js/appeal.js"></script>
 }
 
-    <div class="container">
-        <partial name="_Header" />
+<div class="container">
+    <partial name="_Header" />
 
-        <div class="content">
-            <div class="main">
-                <ul id="messagesList" class="message-history">
-                    @foreach (var message in Model.Messages)
-                    {
-                        var messageDate = @message.CreateDate.ToString("dd-MM-yyyy HH:mm:ss");
+    <div class="content">
+        <div class="main">
+            <ul id="messagesList" class="message-history">
+                @foreach (var message in Model.Messages)
+                {
+                    var messageDate = @message.CreateDate.ToString("dd-MM-yyyy HH:mm:ss");
 
-                        <li>
-                            <div class="message @(message.NickName == "Аппелянт" ? "place-left" : "place-right")">
-                                @switch (message.ChatMessageTypeId)
-                                {
-                                    case ChatMessageTypes.Joined:
-                                        <span>@message.NickName</span> @:подключился к консультации <b>(@messageDate) </b>
-                                        break;
-                                    case ChatMessageTypes.Message:
-                                        <div class="message-bubble">@Html.Raw(message.MessageString)</div><span>@message.NickName</span> <b>(@message.CreateDate.ToString("HH:mm:ss"))</b>
-                                        break;
-                                    case ChatMessageTypes.Leave:
-                                        <span>@message.NickName</span> @:покинул консультацию <b>(@messageDate)</b>
-                                        break;
-                                }
-                            </div>
-                        </li>
-                    }
-                </ul>
-                <div class="remaining-time">До конца консультации осталось:<span id="remainingTime">00 минут</span></div>
-                <div id="emojiGrid" class="emoji-grid" style="display:none;"></div>
-                <div class="form-footer">
-                    <button id="emojiButton" class="form-button"><img alt="Emoji" src="~/images/OpenSmilesTab.png" /></button>
-                    <textarea id="messageText" class="message-text" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
-                    <button id="sendButton" class="form-button"><img alt="Send" src="~/images/send.png" /></button>
-                </div>
-            </div>
-            <div class="sidebar">
-                <div class="main">
-                    <div style="border-bottom: 1px solid #ccc;">
-                        <div style="margin-bottom:15px; text-align: center; background:#fff; border: 2px solid #ff8d00; padding: 10px; overflow: hidden; border-radius: 5px;">
-                            <div style="font-size: 14px; color: #757575">Вас консультирует</div>
-                            <div style="font-size: 22px; font-weight: bold;">Член<br />конфликтной комиссии</div>
-                            <div style="font-size: 28px; font-weight: bold;">№ <span id="expertNumber">2384</span></div>
-                            <div style="float: right">В сети</div>
+                    <li>
+                        <div class="message @(message.NickName == "Аппелянт" ? "place-left" : "place-right")">
+                            @switch (message.ChatMessageTypeId)
+                            {
+                                case ChatMessageTypes.Joined:
+                                    <span>@message.NickName</span> @:подключился к консультации <b>(@messageDate) </b>
+                                    break;
+                                case ChatMessageTypes.Message:
+                                    <div class="message-bubble">@Html.Raw(message.MessageString)</div><span>@message.NickName</span> <b>(@message.CreateDate.ToString("HH:mm:ss"))</b>
+                                    break;
+                                case ChatMessageTypes.Leave:
+                                    <span>@message.NickName</span> @:покинул консультацию <b>(@messageDate)</b>
+                                    break;
+                            }
                         </div>
-                        <button class="custom-button" style="margin-bottom: 15px; background: #fff;">Сменить собеседника</button>
-                        <button class="custom-button" style="margin-bottom: 15px; background: #476cd4; color: #fff;">Завершить консультацию</button>
-                    </div>
-                    <div style="border-bottom: 1px solid #ccc; font-size: 18px; padding: 10px 0;">
-                        <ul>
-                            <li style="margin: 5px 0;">
-                                <div>Номер апелляции</div>
-                                <div style="font-weight: bold;">00000</div>
-                            </li>
-                            <li style="margin: 5px 0;">
-                                <div>Подано заявление</div>
-                                <div style="font-weight: bold;">26.07.2018 14:15</div>
-                            </li>
-                            <li style="margin: 5px 0;">
-                                <div>Зарегистрирована</div>
-                                <div style="font-weight: bold;">26.07.2018 14:20</div>
-                            </li>
-                            <li style="margin: 5px 0;">
-                                <div>Предмет</div>
-                                <div style="font-weight: bold;">Русский язык</div>
-                            </li>
-                            <li style="margin: 5px 0;">
-                                <div>Дата экзамена</div>
-                                <div style="font-weight: bold;">14.06.2018</div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div style="font-size: 18px; padding: 10px 0;">
-                        <div>
-                            <a href="#">Инструкция по работе с чатом</a>
-                        </div>
-                        <div>Справочная служба конфликтной комиссии г. Москвы</div>
-                        <div>+7 (499) 653-94-50</div>
-                        <div>kk77@mcko.ru</div>
-                    </div>
-                </div>
-                <div class="footer">Московское время: <span id="moscowTime">9:32</span></div>
+                    </li>
+                }
+            </ul>
+            <div class="remaining-time">До конца консультации осталось: <span id="remainingTime">00 минут</span></div>
+            <div id="emojiGrid" class="emoji-grid" style="display:none;"></div>
+            <div class="form-footer">
+                <button id="emojiButton" class="form-button"><img alt="Emoji" src="~/images/OpenSmilesTab.png" /></button>
+                <textarea id="messageText" class="message-text" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
+                <button id="sendButton" class="form-button"><img alt="Send" src="~/images/send.png" /></button>
             </div>
         </div>
-        <partial name="_Footer" />
+        <div class="sidebar">
+            <div class="main">
+                <div style="border-bottom: 1px solid #ccc;">
+                    <div style="margin-bottom:15px; text-align: center; background:#fff; border: 2px solid #ff8d00; padding: 10px; overflow: hidden; border-radius: 5px;">
+                        <div style="font-size: 14px; color: #757575">Вас консультирует</div>
+                        <div style="font-size: 22px; font-weight: bold;">Член<br />конфликтной комиссии</div>
+                        <div style="font-size: 28px; font-weight: bold;">№ <span id="expertNumber">2384</span></div>
+                        <div id="onlineStatus" style="float: right">В сети</div>
+                    </div>
+                    <button class="custom-button" style="margin-bottom: 15px;">Сменить собеседника</button>
+                    <button class="custom-button complete-button" style="margin-bottom: 15px;">Завершить консультацию</button>
+                </div>
+                <div style="border-bottom: 1px solid #ccc; font-size: 18px; padding: 10px 0;">
+                    <ul>
+                        <li style="margin: 5px 0;">
+                            <div>Номер апелляции</div>
+                            <div style="font-weight: bold;">00000</div>
+                        </li>
+                        <li style="margin: 5px 0;">
+                            <div>Подано заявление</div>
+                            <div style="font-weight: bold;">26.07.2018 14:15</div>
+                        </li>
+                        <li style="margin: 5px 0;">
+                            <div>Зарегистрирована</div>
+                            <div style="font-weight: bold;">26.07.2018 14:20</div>
+                        </li>
+                        <li style="margin: 5px 0;">
+                            <div>Предмет</div>
+                            <div style="font-weight: bold;">Русский язык</div>
+                        </li>
+                        <li style="margin: 5px 0;">
+                            <div>Дата экзамена</div>
+                            <div style="font-weight: bold;">14.06.2018</div>
+                        </li>
+                    </ul>
+                </div>
+                <div style="font-size: 18px; padding: 10px 0;">
+                    <div>
+                        <a href="#">Инструкция по работе с чатом</a>
+                    </div>
+                    <div>Справочная служба конфликтной комиссии г. Москвы</div>
+                    <div>+7 (499) 653-94-50</div>
+                    <div>kk77@mcko.ru</div>
+                </div>
+            </div>
+            <div class="footer">Московское время: <span id="moscowTime">9:32</span></div>
+        </div>
     </div>
+    <partial name="_Footer" />
+</div>
 

@@ -103,6 +103,18 @@
     border: 2px solid #476cd4;
     border-radius: 5px;
     padding: 10px;
+    background: #fff;
+}
+    .custom-button:hover {
+        background: #3054b9;
+        border-color: #3054b9;
+        color: #fff;
+        cursor: pointer;
+    }
+
+.complete-button {
+    background: #476cd4;
+    color: #fff;
 }
 
 @media screen and (max-width: 767px) {

@@ -11,9 +11,9 @@
         chatConnection.start().catch(error => console.error(error));
 
         // Receiving message from user
-        chatConnection.on("Receive", (message) => {
+        chatConnection.on("Receive", (message, isAppeal) => {
             const messageDate = new Date(message.createDate);
-            const isAppeal = message.nickName === "Аппелянт";
+            //const isAppeal = message.nickName === "Аппелянт";
 
             const messageBubble = '<div class="message-bubble">' + message.messageString + '</div>';
 
@@ -23,9 +23,9 @@
         });
 
         // Joining user to chat
-        chatConnection.on("Join", (message) => {
+        chatConnection.on("Join", (message, isAppeal) => {
             const messageDate = new Date(message.createDate);
-            const isAppeal = message.nickName === "Аппелянт";
+            //const isAppeal = message.nickName === "Аппелянт";
 
             const messageElement = '<span class="nickname">' + message.nickName + '</span> подключился к консультации (' + messageDate.toLocaleTimeString() + ')';
 
@@ -33,9 +33,9 @@
         });
 
         // Leave user from chat
-        chatConnection.on("Leave", (message) => {
+        chatConnection.on("Leave", (message, isAppeal) => {
             const messageDate = new Date(message.createDate);
-            const isAppeal = message.nickName === "Аппелянт";
+            //const isAppeal = message.nickName === "Аппелянт";
 
             const messageElement = '<span class="nickname">' + message.nickName + '</span> покинул консультацию (' + messageDate.toLocaleTimeString() + ')';
 
@@ -99,14 +99,14 @@
         };
 
         // Update information callback
-
         const updateCallback = (response) => {
-            //var remainingTime = response.remainingTime;
+            var moscowDate = luxon.DateTime.fromMillis(response.moscowDate, { zone: 'utc+3' });
 
-            var beginDate = new Date();
-            
+            var remainingDuration = luxon.Duration.fromMillis(response.remainingTime);
 
-            console.log(response);
+            $('#remainingTime').text(remainingDuration.toFormat("mm 'минут'"));
+
+            $('#moscowTime').text(moscowDate.toFormat('hh:mm'));
 
             setTimeout(updateInfo, interval, interval, accessToken, updateCallback);
         };

@@ -127,8 +127,11 @@ namespace Tpr.Chat.Web.Controllers
         [HttpPost("/update")]
         public IActionResult Update()
         {
+            // Moskow Date
+            //var moscowDate = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTimeOffset.UtcNow, "Russian Standard Time");
+
             // Current Time
-            var moscowDate = DateTime.Now;
+            var moscowDate = DateTimeOffset.Now;
 
             // Begin Time
             long beginTimestamp;
@@ -140,6 +143,8 @@ namespace Tpr.Chat.Web.Controllers
 
             var beginDate = DateTimeOffset.FromUnixTimeSeconds(beginTimestamp);
 
+            var beginTime = beginDate.Subtract(moscowDate).TotalMilliseconds;
+
             // Remaining Time
             long finishTimestamp;
 
@@ -150,13 +155,12 @@ namespace Tpr.Chat.Web.Controllers
 
             var finishDate = DateTimeOffset.FromUnixTimeSeconds(finishTimestamp);
 
-            var beginTime = beginDate.Subtract(moscowDate);
+            var remainingTime = finishDate.Subtract(moscowDate).TotalMilliseconds;
 
-            var remainingTime = finishDate.Subtract(moscowDate);
-
+            // JSON Response
             var response = new
             {
-                moscowDate,
+                moscowDate = moscowDate.ToUnixTimeMilliseconds(),
                 beginTime,
                 remainingTime
             };

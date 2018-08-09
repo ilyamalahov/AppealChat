@@ -14,6 +14,7 @@
         var appealId = "@Model.AppealId";
         var expertKey = "@Model.ExpertKey";
     </script>
+    <script type="text/javascript" src="~/js/luxon.min.js"></script>
     <script type="text/javascript" src="~/lib/signalr/signalr.js"></script>
     <script type="text/javascript" src="~/js/expert.js"></script>
 }
@@ -49,6 +50,8 @@
             </li>
         }
     </ul>
+
+    <div class="block">До конца консультации осталось: <span id="remainingTime">00 минут</span></div>
 
     <div class="block" style="flex: none;">
         <div id="quickReplyBlock" class="quick-reply" style="display: none;"></div>
