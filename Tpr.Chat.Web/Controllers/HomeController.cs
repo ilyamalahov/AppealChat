@@ -10,11 +10,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Tpr.Chat.Core.Constants;
 using Tpr.Chat.Core.Models;
 using Tpr.Chat.Core.Repositories;
+using Tpr.Chat.Web.Hubs;
 using Tpr.Chat.Web.Models;
 using Tpr.Chat.Web.Service;
 
@@ -24,11 +26,19 @@ namespace Tpr.Chat.Web.Controllers
     {
         private readonly IChatRepository chatRepository;
         private readonly ICommonService commonService;
+        private readonly IConnectionService connectionService;
+        private readonly IHubContext<ChatHub, IChat> hubContext;
 
-        public HomeController(IChatRepository chatRepository, ICommonService commonService)
+        public HomeController(
+            IChatRepository chatRepository, 
+            ICommonService commonService, 
+            IConnectionService connectionService,
+            IHubContext<ChatHub, IChat> hubContext)
         {
             this.chatRepository = chatRepository;
             this.commonService = commonService;
+            this.connectionService = connectionService;
+            this.hubContext = hubContext;
         }
 
         [HttpGet("/{appealId}")]
@@ -45,7 +55,7 @@ namespace Tpr.Chat.Web.Controllers
             var model = new IndexViewModel
             {
                 AppealId = appealId,
-                ExpertKey = key
+                expertKey = key
             };
 
             // Check if current date less than chat start time
@@ -111,6 +121,16 @@ namespace Tpr.Chat.Web.Controllers
             {
                 return Error();
             }
+
+            //var connection = connectionService.Get(appealId);
+
+            //if(connection != null)
+            //{
+            //    // Send "Change status" to client-caller
+            //    var connectionId = key > 0 ? connection.AppealConnectionId : connection.ExpertConnectionId;
+
+            //    await hubContext.Clients.Clients(connectionId).ChangeStatus(true);
+            //}
 
             var accessToken = commonService.CreateToken(identity, chatSession.StartTime, chatSession.FinishTime);
 

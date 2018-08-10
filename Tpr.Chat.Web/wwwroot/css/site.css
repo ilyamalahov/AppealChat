@@ -98,7 +98,7 @@ footer {
     margin-bottom: 5px;
     background: #fff;
     color: #000;
-    word-wrap: break-word;
+    word-break: break-all;
 }
 
     .message-bubble::before {

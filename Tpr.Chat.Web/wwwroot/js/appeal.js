@@ -50,6 +50,10 @@
             if (!isAppeal) { changeStatus(false); }
         });
 
+        chatConnection.on("ChangeStatus", (status) => {
+            console.log(status);
+        });
+
         // Sending message
         $('#sendButton').on('click', () => {
             sendMessage($('#messageText').val());
@@ -97,7 +101,7 @@
 
         const sendMessage = function (message) {
             chatConnection.invoke('SendMessage', message)
-                .catch(error => console.error(error))
+                .catch(error => console.error(error));
 
             $('#messageText').val('');
         };
@@ -127,7 +131,7 @@
             const statusText = isOnline ? 'В сети' : 'Не в сети';
 
             $('#onlineStatus').text(statusText);
-        }
+        };
 
         // Update time information
         const interval = 10000;

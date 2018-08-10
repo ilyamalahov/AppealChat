@@ -31,7 +31,7 @@ namespace Tpr.Chat.Web.Service
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimsIdentity.DefaultNameClaimType, appealId.ToString()),
-                    new Claim("Nickname", nickname),
+                    new Claim("nickname", nickname),
                 };
 
                 // Expert
@@ -39,7 +39,7 @@ namespace Tpr.Chat.Web.Service
                 {
                     // Secret checkings, etc...
 
-                    claims.Add(new Claim("ExpertKey", key.ToString()));
+                    claims.Add(new Claim("expertkey", key.ToString()));
                 }
 
                 return new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme);

@@ -40,6 +40,9 @@ namespace Tpr.Chat.Web
             // Common service
             services.AddTransient<ICommonService, CommonService>();
 
+            // Connections service
+            services.AddSingleton<IConnectionService, ConnectionService>();
+
             // Cross-Origin Request Sharing
             services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
             {
