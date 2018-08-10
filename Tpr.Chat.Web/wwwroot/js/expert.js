@@ -12,7 +12,6 @@
         // Receiving message from user
         chatConnection.on("Receive", (message, isAppeal) => {
             const messageDate = new Date(message.createDate);
-            //const isAppeal = message.nickName === "Аппелянт";
 
             const messageBubble = '<div class="message-bubble">' + message.messageString + '</div>';
 
@@ -28,7 +27,6 @@
         // Joining user to chat
         chatConnection.on("Join", (message, isAppeal) => {
             const messageDate = new Date(message.createDate);
-            //const isAppeal = message.nickName === "Аппелянт";
 
             const messageElement = '<span class="nickname">' + message.nickName + '</span> подключился к консультации (' + messageDate.toLocaleTimeString() + ')';
 
@@ -38,13 +36,13 @@
 
             $("#messagesList").append(li).scrollTo(li);
 
-            
+            // Update status
+            if (isAppeal) { changeStatus(true); }
         });
 
         // Leave user from chat
         chatConnection.on("Leave", (message, isAppeal) => {
             const messageDate = new Date(message.createDate);
-            //const isAppeal = message.nickName === "Аппелянт";
 
             const messageElement = '<span class="nickname">' + message.nickName + '</span> покинул консультацию (' + messageDate.toLocaleTimeString() + ')';
 
@@ -53,6 +51,9 @@
             var li = $('<li></li>').html(div);
 
             $("#messagesList").append(li).scrollTo(li);
+
+            // Update status
+            if (isAppeal) { changeStatus(false); }
         });
 
         $('#sendButton').on('click', (e) => {
@@ -62,14 +63,6 @@
             $('#messageText').val('');
         });
 
-        // Send message
-        //const sendMessage = function (message) {
-        //    chatConnection.sendMessage(message)
-        //        .catch(error => console.error(error))
-
-        //    $('#messageText').val('').trigger('change');
-        //};// Update information callback
-
         const updateCallback = (response) => {
             var remainingDuration = luxon.Duration.fromMillis(response.remainingTime);
 
@@ -77,6 +70,13 @@
 
             setTimeout(updateInfo, interval, interval, accessToken, updateCallback);
         };
+
+        // Update status
+        const changeStatus = function (isOnline) {
+            const statusText = isOnline ? 'Подключен к чату' : 'Отключен';
+
+            $('#onlineStatus').text(statusText);
+        }
 
         // Update time information
         const interval = 10000;

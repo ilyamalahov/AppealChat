@@ -40,7 +40,9 @@ namespace Tpr.Chat.Web.Hubs
                 
                 if (chatRepository.WriteChatMessage(chatMessage) > 0)
                 {
-                    await Clients.User(Context.UserIdentifier).SendAsync("Receive", chatMessage);
+                    var isAppeal = Context.User.FindFirstValue("ExpertKey") == null;
+
+                    await Clients.User(Context.UserIdentifier).SendAsync("Receive", chatMessage, isAppeal);
                 }
 
                 //await Clients.User(Context.UserIdentifier).SendAsync("Receive", chatMessage);
@@ -69,7 +71,11 @@ namespace Tpr.Chat.Web.Hubs
 
                 if (chatRepository.WriteChatMessage(chatMessage) > 0)
                 {
-                    await Clients.User(Context.UserIdentifier).SendAsync("Join", chatMessage);
+                    var expertKey = Context.User.FindFirstValue("ExpertKey");
+
+                    var isAppeal = expertKey == null;
+
+                    await Clients.User(Context.UserIdentifier).SendAsync("Join", chatMessage, isAppeal);
                 }
 
                 //await Clients.User(Context.UserIdentifier).SendAsync("Join", chatMessage);
@@ -96,7 +102,9 @@ namespace Tpr.Chat.Web.Hubs
 
                 if (chatRepository.WriteChatMessage(chatMessage) > 0)
                 {
-                    await Clients.User(Context.UserIdentifier).SendAsync("Leave", chatMessage);
+                    var isAppeal = Context.User.FindFirstValue("ExpertKey") == null;
+
+                    await Clients.User(Context.UserIdentifier).SendAsync("Leave", chatMessage, isAppeal);
                 }
 
                 //await Clients.User(Context.UserIdentifier).SendAsync("Leave", chatMessage);

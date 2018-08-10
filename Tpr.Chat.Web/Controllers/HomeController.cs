@@ -112,8 +112,6 @@ namespace Tpr.Chat.Web.Controllers
                 return Error();
             }
 
-            //identity.AddClaim(new Claim("BeginDate", ""));
-
             var accessToken = commonService.CreateToken(identity, chatSession.StartTime, chatSession.FinishTime);
 
             // JSON Response
@@ -127,9 +125,6 @@ namespace Tpr.Chat.Web.Controllers
         [HttpPost("/update")]
         public IActionResult Update()
         {
-            // Moskow Date
-            //var moscowDate = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTimeOffset.UtcNow, "Russian Standard Time");
-
             // Current Time
             var moscowDate = DateTimeOffset.Now;
 

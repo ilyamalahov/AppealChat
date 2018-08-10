@@ -24,12 +24,17 @@
 
         // Joining user to chat
         chatConnection.on("Join", (message, isAppeal) => {
+            console.log(isAppeal);
+
             const messageDate = new Date(message.createDate);
             //const isAppeal = message.nickName === "Аппелянт";
 
             const messageElement = '<span class="nickname">' + message.nickName + '</span> подключился к консультации (' + messageDate.toLocaleTimeString() + ')';
 
             createListItem(messageElement, isAppeal);
+
+            // Update status
+            if (!isAppeal) { changeStatus(true); }
         });
 
         // Leave user from chat
@@ -40,6 +45,9 @@
             const messageElement = '<span class="nickname">' + message.nickName + '</span> покинул консультацию (' + messageDate.toLocaleTimeString() + ')';
 
             createListItem(messageElement, isAppeal);
+
+            // Update status
+            if (!isAppeal) { changeStatus(false); }
         });
 
         // Sending message
@@ -113,6 +121,13 @@
 
         // Disable Send button
         setButtonDisable(true);
+
+        // Update status
+        const changeStatus = function (isOnline) {
+            const statusText = isOnline ? 'В сети' : 'Не в сети';
+
+            $('#onlineStatus').text(statusText);
+        }
 
         // Update time information
         const interval = 10000;
