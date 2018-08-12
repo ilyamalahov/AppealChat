@@ -7,55 +7,75 @@ namespace Tpr.Chat.Web.Service
 {
     public class ConnectionService : IConnectionService
     {
-        private Dictionary<Guid, ChatConnection> connections;
+        private Dictionary<Guid, ChatConnection> connections = new Dictionary<Guid, ChatConnection>();
 
-        public ConnectionService()
+        public string GetConnectionId(Guid appealId, bool isAppeal)
         {
-            connections = new Dictionary<Guid, ChatConnection>();
+            ChatConnection connection;
+
+            if (!connections.TryGetValue(appealId, out connection))
+            {
+                return null;
+            }
+
+            return isAppeal ? connection.AppealConnectionId : connection.ExpertConnectionId;
         }
 
-        public ChatConnection Get(Guid appealId)
+        public void AddConnectionId(Guid appealId, string connectionId, bool isAppeal)
         {
-            if (appealId == null) return null;
-
             ChatConnection connection;
 
             if(!connections.TryGetValue(appealId, out connection))
             {
-                connection = new ChatConnection();
+                lock (connections)
+                {
+                    connection = new ChatConnection();
 
-                var result = Add(appealId, connection);
-
-                if (!result) return null;
-
-                return connection;
+                    if (!connections.TryAdd(appealId, connection)) return;
+                }
             }
 
-            return connection;
+            if(isAppeal)
+            {
+                connection.AppealConnectionId = connectionId;
+            }
+            else
+            {
+                connection.ExpertConnectionId = connectionId;
+            }
         }
 
-        public bool Add(Guid appealId, ChatConnection connection)
+        public void RemoveConnectionId(Guid appealId, bool isAppeal)
         {
-            if (appealId == null) return false;
-            
-            lock (connections)
+            ChatConnection connection;
+
+            if (!connections.TryGetValue(appealId, out connection))
             {
-                connections.Add(appealId, connection);
+                return;
             }
 
-            return true;
+            if (isAppeal)
+            {
+                connection.AppealConnectionId = null;
+            }
+            else
+            {
+                connection.ExpertConnectionId = null;
+            }
         }
 
-        public bool Remove(Guid appealId)
+        public bool isOnline(Guid appealId, bool isAppeal)
         {
-            if (appealId == null) return false;
+            ChatConnection connection;
 
-            lock (connections)
+            if (!connections.TryGetValue(appealId, out connection))
             {
-                connections.Remove(appealId);
+                return false;
             }
 
-            return true;
+            var connectionId = isAppeal ? connection.AppealConnectionId : connection.ExpertConnectionId;
+
+            return !string.IsNullOrEmpty(connectionId);
         }
     }
 }

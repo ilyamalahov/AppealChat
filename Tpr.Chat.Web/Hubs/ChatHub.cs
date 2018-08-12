@@ -34,11 +34,13 @@ namespace Tpr.Chat.Web.Hubs
 
                 if (!Guid.TryParse(Context.User.Identity.Name, out appealId)) return;
 
-                // Nickname from JWT token
-                var nickName = Context.User.FindFirstValue("nickname");
-
                 // Expert key from JWT token
                 var expertKey = Context.User.FindFirstValue("expertkey");
+
+                var isAppealSender = expertKey == null;
+
+                // Nick name
+                var nickName = isAppealSender ? "Аппелянт" : "Член КК №" + expertKey;
 
                 // Chat message
                 var chatMessage = new ChatMessage
@@ -54,9 +56,7 @@ namespace Tpr.Chat.Web.Hubs
                 if (chatRepository.WriteChatMessage(chatMessage) == 0) return;
 
                 // 
-                var isAppeal = expertKey == null;
-
-                await Clients.User(Context.UserIdentifier).Receive(chatMessage, isAppeal);
+                await Clients.User(Context.UserIdentifier).Receive(chatMessage, isAppealSender);
             }
             catch (Exception exception)
             {
@@ -74,28 +74,15 @@ namespace Tpr.Chat.Web.Hubs
 
                 if (!Guid.TryParse(Context.User.Identity.Name, out appealId)) return;
 
-                // Nickname from JWT token
-                var nickName = Context.User.FindFirstValue("nickname");
-
                 // Expert key from JWT token
                 var expertKey = Context.User.FindFirstValue("expertkey");
 
-                var isAppeal = expertKey == null;
+                var isAppealSender = expertKey == null;
 
-                // Get chat connections by Appeal ID
-                var connection = connectionService.Get(appealId);
+                // Nick name
+                var nickName = isAppealSender ? "Аппелянт" : "Член КК №" + expertKey;
 
-                if (connection == null) return;
-                
-                // 
-                if (isAppeal)
-                {
-                    connection.AppealConnectionId = Context.ConnectionId;
-                }
-                else
-                {
-                    connection.ExpertConnectionId = Context.ConnectionId;
-                }
+                connectionService.AddConnectionId(appealId, Context.ConnectionId, isAppealSender);
 
                 // Chat message
                 var chatMessage = new ChatMessage
@@ -109,19 +96,24 @@ namespace Tpr.Chat.Web.Hubs
                 // 
                 if (chatRepository.WriteChatMessage(chatMessage) == 0) return;
 
+                // 
+                var isAppealOnline = connectionService.isOnline(appealId, isAppealSender);
+
+                // 
+                var isExpertOnline = connectionService.isOnline(appealId, !isAppealSender);
+
                 // Send "Join" message to specified user clients
-                await Clients.User(Context.UserIdentifier).Join(chatMessage, isAppeal);
+                await Clients.User(Context.UserIdentifier).Join(chatMessage, isAppealSender, isAppealOnline, isExpertOnline);
 
                 // Send "Change status" to client-caller
-                //string callerConnectionId = connection.GetConnectionId(expertKey);
-                var callerConnectionId = isAppeal ? connection.AppealConnectionId : connection.ExpertConnectionId;
+                //var callerConnectionId = connectionService.GetConnectionId(appealId, isAppeal);
                 
-                await Clients.Client(callerConnectionId).ChangeStatus(true);
+                //await Clients.Client(callerConnectionId).ChangeStatus(true);
 
-                // Send "Change status" to client other than caller
-                string otherConnectionId = isAppeal ? connection.AppealConnectionId : connection.ExpertConnectionId;
+                //// Send "Change status" to client other than caller
+                //string otherConnectionId = connectionService.GetConnectionId(appealId, !isAppeal);
 
-                await Clients.Client(otherConnectionId).ChangeStatus(true);
+                //await Clients.Client(otherConnectionId).ChangeStatus(true);
             }
             catch (Exception exception)
             {
@@ -138,28 +130,16 @@ namespace Tpr.Chat.Web.Hubs
 
                 if (!Guid.TryParse(Context.User.Identity.Name, out appealId)) return;
                 
-                // Nickname from JWT token
-                var nickName = Context.User.FindFirstValue("nickname");
-                
                 // Expert key from JWT token
                 var expertKey = Context.User.FindFirstValue("expertkey");
 
-                var isAppeal = expertKey == null;
+                var isAppealSender = expertKey == null;
 
-                // Get chat connections by Appeal ID
-                var connection = connectionService.Get(appealId);
+                // Nick name
+                var nickName = isAppealSender ? "Аппелянт" : "Член КК №" + expertKey;
 
-                if (connection == null) return;
-
-                // 
-                if (isAppeal)
-                {
-                    connection.AppealConnectionId = null;
-                }
-                else
-                {
-                    connection.ExpertConnectionId = null;
-                }
+                // Remove caller's connection ID
+                connectionService.RemoveConnectionId(appealId, isAppealSender);
 
                 // Chat message
                 var chatMessage = new ChatMessage
@@ -174,12 +154,12 @@ namespace Tpr.Chat.Web.Hubs
                 if (chatRepository.WriteChatMessage(chatMessage) == 0) return;
 
                 // Send "Leave" message to specified user clients 
-                await Clients.User(Context.UserIdentifier).Leave(chatMessage, isAppeal);
+                await Clients.User(Context.UserIdentifier).Leave(chatMessage, isAppealSender);
 
                 // Send "Change status" to client other than caller
-                string otherConnectionId = isAppeal ? connection.ExpertConnectionId : connection.AppealConnectionId;
+                //string otherConnectionId = connectionService.GetConnectionId(appealId, !isAppeal);
 
-                await Clients.Client(otherConnectionId).ChangeStatus(false);
+                //await Clients.Client(otherConnectionId).ChangeStatus(false);
             }
             catch (Exception throwedException)
             {

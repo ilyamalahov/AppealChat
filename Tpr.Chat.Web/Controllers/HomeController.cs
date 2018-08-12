@@ -1,20 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using Tpr.Chat.Core.Constants;
-using Tpr.Chat.Core.Models;
 using Tpr.Chat.Core.Repositories;
 using Tpr.Chat.Web.Hubs;
 using Tpr.Chat.Web.Models;
@@ -27,23 +16,29 @@ namespace Tpr.Chat.Web.Controllers
         private readonly IChatRepository chatRepository;
         private readonly ICommonService commonService;
         private readonly IConnectionService connectionService;
-        private readonly IHubContext<ChatHub, IChat> hubContext;
 
         public HomeController(
             IChatRepository chatRepository, 
             ICommonService commonService, 
-            IConnectionService connectionService,
-            IHubContext<ChatHub, IChat> hubContext)
+            IConnectionService connectionService)
         {
             this.chatRepository = chatRepository;
             this.commonService = commonService;
             this.connectionService = connectionService;
-            this.hubContext = hubContext;
         }
 
         [HttpGet("/{appealId}")]
         public IActionResult Index(Guid appealId, int key = 0, string secretKey = null)
         {
+            var isExpert = key > 0;
+
+            var connectionId = connectionService.GetConnectionId(appealId, !isExpert);
+
+            if(!string.IsNullOrEmpty(connectionId))
+            {
+                return View("InvalidSession");
+            }
+
             var chatSession = chatRepository.GetChatSession(appealId);
 
             // Check if chat session is exists
@@ -55,7 +50,7 @@ namespace Tpr.Chat.Web.Controllers
             var model = new IndexViewModel
             {
                 AppealId = appealId,
-                expertKey = key
+                ExpertKey = key
             };
 
             // Check if current date less than chat start time
@@ -65,7 +60,7 @@ namespace Tpr.Chat.Web.Controllers
             }
 
             // Expert checkings
-            if (key > 0)
+            if (isExpert)
             {
                 // Secret checkings, etc...
 

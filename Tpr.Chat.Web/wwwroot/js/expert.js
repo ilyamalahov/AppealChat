@@ -10,60 +10,29 @@
         chatConnection.start().catch(error => console.error(error));
 
         // Receiving message from user
-        chatConnection.on("Receive", (message, isAppeal) => {
-            const messageDate = new Date(message.createDate);
-
-            const messageBubble = '<div class="message-bubble">' + message.messageString + '</div>';
-
-            const messageInfo = '<span class="nickname">' + message.nickName + '</span> (' + messageDate.toLocaleTimeString() + ')';
-
-            var div = $('<div class="message ' + (isAppeal ? 'place-right' : 'place-left') + '"></div>').html(messageBubble + messageInfo);
-
-            var li = $('<li></li>').html(div);
-
-            $("#messagesList").append(li).scrollTo(li);
-        });
+        chatConnection.on("Receive", (message, isAppealSender) => receiveMessage(message, !isAppealSender));
 
         // Joining user to chat
-        chatConnection.on("Join", (message, isAppeal) => {
-            const messageDate = new Date(message.createDate);
-
-            const messageElement = '<span class="nickname">' + message.nickName + '</span> подключился к консультации (' + messageDate.toLocaleTimeString() + ')';
-
-            var div = $('<div class="message ' + (isAppeal ? 'place-right' : 'place-left') + '"></div>').html(messageElement);
-
-            var li = $('<li></li>').html(div);
-
-            $("#messagesList").append(li).scrollTo(li);
-
-            // Update status
-            if (isAppeal) { changeStatus(true); }
-        });
+        chatConnection.on("Join", (message, isAppealSender, isAppealOnline, isExpertOnline) => joinUser(message, !isAppealSender, isAppealOnline, isExpertOnline)); // 
 
         // Leave user from chat
-        chatConnection.on("Leave", (message, isAppeal) => {
-            const messageDate = new Date(message.createDate);
-
-            const messageElement = '<span class="nickname">' + message.nickName + '</span> покинул консультацию (' + messageDate.toLocaleTimeString() + ')';
-
-            var div = $('<div class="message ' + (isAppeal ? 'place-right' : 'place-left') + '"></div>').html(messageElement);
-
-            var li = $('<li></li>').html(div);
-
-            $("#messagesList").append(li).scrollTo(li);
-
-            // Update status
-            if (isAppeal) { changeStatus(false); }
-        });
+        chatConnection.on("Leave", (message, isAppealSender) => leaveUser(message, !isAppealSender));
 
         $('#sendButton').on('click', (e) => {
             chatConnection.invoke('SendMessage', $('#messageText').val())
-                .catch(error => console.error(error))
+                .catch(error => console.error(error));
 
             $('#messageText').val('');
         });
 
-        const updateCallback = (response) => {
+        // Update status
+        const changeStatus = function (isOnline) {
+            const statusText = isOnline ? 'Подключен к чату' : 'Отключен от чата';
+
+            $('#onlineStatus').text(statusText);
+        };
+
+        const updateCallback = function (response) {
             var remainingDuration = luxon.Duration.fromMillis(response.remainingTime);
 
             $('#remainingTime').text(remainingDuration.toFormat("mm 'минут'"));
@@ -71,17 +40,10 @@
             setTimeout(updateInfo, interval, interval, accessToken, updateCallback);
         };
 
-        // Update status
-        const changeStatus = function (isOnline) {
-            const statusText = isOnline ? 'Подключен к чату' : 'Отключен';
-
-            $('#onlineStatus').text(statusText);
-        }
-
         // Update time information
         const interval = 10000;
 
         updateInfo(interval, accessToken, updateCallback);
 
-    }).catch(function (error) { alert(error); });
+    }).catch((error) => alert(error));
 });

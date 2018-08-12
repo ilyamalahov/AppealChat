@@ -24,14 +24,10 @@ namespace Tpr.Chat.Web.Service
         {
             try
             {
-                // Nick name
-                string nickname = key > 0 ? "Член конфликтной комиссии №" + key : "Аппелянт";
-
                 // Identity claims
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimsIdentity.DefaultNameClaimType, appealId.ToString()),
-                    new Claim("nickname", nickname),
+                    new Claim(ClaimsIdentity.DefaultNameClaimType, appealId.ToString())
                 };
 
                 // Expert

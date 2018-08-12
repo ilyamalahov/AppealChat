@@ -9,9 +9,9 @@ namespace Tpr.Chat.Web.Hubs
     public interface IChat
     {
         Task Receive(ChatMessage message, bool isAppeal);
-        Task Join(ChatMessage message, bool isAppeal);
+        Task Join(ChatMessage message, bool isAppeal, bool isAppealOnline, bool isExpertOnline);
         Task Leave(ChatMessage message, bool isAppeal);
 
-        Task ChangeStatus(bool status);
+        Task ChangeStatus(bool isOnline);
     }
 }

@@ -11,7 +11,7 @@ footer {
 .main {
     flex: auto;
     display: flex;
-    flex-direction: column;
+    flex-flow: column;
 }
 
 .remaining-time {
@@ -26,25 +26,25 @@ footer {
     }
 
 .form-footer {
-    border-top: 2px solid #d6dade;
-    padding: 5px;
+    flex: none;
     display: flex;
     align-items: center;
-    flex: none;
+    border-top: 2px solid #d6dade;
+    padding: 5px;
 }
 
 .message-text {
+    resize: none;
     width: 100%;
     padding: 6px;
-    resize: none;
     line-height: 1;
 }
 
 .form-button {
-    padding: 5px;
-    color: #565656;
-    border: none;
     background: none;
+    border: none;
+    color: #565656;
+    padding: 5px;
 }
 
     .form-button img {
@@ -63,21 +63,22 @@ footer {
 /* Sidebar */
 
 .sidebar {
-    width: 320px;
+    flex: none;
     display: flex;
-    flex-direction: column;
+    flex-flow: column;
+    width: 320px;
     background: #f7f7f7;
     border-left: 2px solid #d6dade;
-    flex: none;
 }
 
-    .sidebar .main {
+    .sidebar .info {
         flex: auto;
-        padding: 15px;
         overflow-y: auto;
+        padding: 15px;
     }
 
     .sidebar .footer {
+        flex: none;
         border-top: 2px solid #ccc;
         text-align: center;
         padding: 10px;
@@ -101,13 +102,16 @@ footer {
             cursor: pointer;
         }
 
+        .sidebar .custom-button {
+            width: 100%;
+            padding: 10px;
+        }
 .custom-button {
     text-align: center;
     font-size: 16px;
-    width: 100%;
     border: 2px solid #476cd4;
     border-radius: 5px;
-    padding: 10px;
+    padding: 5px;
     background: #fff;
 }
     .custom-button:hover {
@@ -116,14 +120,87 @@ footer {
         color: #fff;
         cursor: pointer;
     }
+    .custom-button:disabled {
+        background: #e0e0e0;
+        border-color: #e0e0e0;
+        color: #636363;
+        cursor: default;
+    }
 
 .complete-button {
     background: #476cd4;
     color: #fff;
 }
 
+.modal {
+    position: fixed;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.72);
+    top: 0;
+    left: 0;
+}
+.modal-window {
+    display: flex;
+    flex-flow: column;
+    border-radius: 10px;
+    background: #fff;
+    color: #484848;
+    width: 500px;
+    min-height: 200px;
+}
+
+.modal-header {
+    flex: none;
+    border-bottom: 2px solid #d6dade;
+    font-size: 20px;
+    font-weight: bold;
+    overflow: hidden;
+}
+    .modal-header .title {
+        padding: 10px 15px;
+    }
+    .modal-header .close {
+        float: right;
+        font-size: 36px;
+        padding: 0 10px;
+        color: #ccc;
+    }
+
+        .modal-header .close:hover {
+            color: #565656;
+            cursor: pointer;
+        }
+
+.modal-content {
+    flex: auto;
+    padding: 10px;
+    font-size: 18px;
+}
+
+.modal-footer {
+    flex: none;
+    display: flex;
+    justify-content: space-between;
+}
+    .modal-footer .custom-button {
+        padding: 10px;
+        margin: 10px;
+        width: 100%;
+    }
+
+
 @media screen and (max-width: 767px) {
     .sidebar {
         display: none;
+    }
+    .modal-window {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
     }
 }

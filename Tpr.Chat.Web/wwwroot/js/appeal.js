@@ -11,48 +11,13 @@
         chatConnection.start().catch(error => console.error(error));
 
         // Receiving message from user
-        chatConnection.on("Receive", (message, isAppeal) => {
-            const messageDate = new Date(message.createDate);
-            //const isAppeal = message.nickName === "Аппелянт";
-
-            const messageBubble = '<div class="message-bubble">' + message.messageString + '</div>';
-
-            const messageInfo = '<span class="nickname">' + message.nickName + '</span> (' + messageDate.toLocaleTimeString() + ')';
-
-            createListItem(messageBubble + messageInfo, isAppeal);
-        });
+        chatConnection.on("Receive", receiveMessage);
 
         // Joining user to chat
-        chatConnection.on("Join", (message, isAppeal) => {
-            console.log(isAppeal);
-
-            const messageDate = new Date(message.createDate);
-            //const isAppeal = message.nickName === "Аппелянт";
-
-            const messageElement = '<span class="nickname">' + message.nickName + '</span> подключился к консультации (' + messageDate.toLocaleTimeString() + ')';
-
-            createListItem(messageElement, isAppeal);
-
-            // Update status
-            if (!isAppeal) { changeStatus(true); }
-        });
+        chatConnection.on("Join", joinUser);
 
         // Leave user from chat
-        chatConnection.on("Leave", (message, isAppeal) => {
-            const messageDate = new Date(message.createDate);
-            //const isAppeal = message.nickName === "Аппелянт";
-
-            const messageElement = '<span class="nickname">' + message.nickName + '</span> покинул консультацию (' + messageDate.toLocaleTimeString() + ')';
-
-            createListItem(messageElement, isAppeal);
-
-            // Update status
-            if (!isAppeal) { changeStatus(false); }
-        });
-
-        chatConnection.on("ChangeStatus", (status) => {
-            console.log(status);
-        });
+        chatConnection.on("Leave", leaveUser);
 
         // Sending message
         $('#sendButton').on('click', () => {
@@ -60,7 +25,7 @@
         });
 
         // Textarea auto rows count
-        $('#messageText').on('input.autoExpand', function () {
+        $('#messageText').on('input.autoExpand', () => {
             //var maxRows = $(this).data('max-rows') | 1;
 
             this.rows = $(this).data('min-rows') | 0;
@@ -84,14 +49,18 @@
             setButtonDisable($(this).val() === '');
         });
 
-        $('#emojiButton').on('click', function () {
+        $('#emojiButton').on('click', () => {
             $('#emojiGrid').toggle();
             $(this).children('i').toggleClass("far fa-smile");
             $(this).children('i').toggleClass("fas fa-chevron-circle-down");
         });
 
+        $('#switchExpertButton').on('click', () => showModal("ajax/changeexpert"));
+
+        $('#completeButton').on('click', () => showModal("ajax/complete"));
+
         // 
-        const createListItem = function (htmlElement, isAppeal) {
+        const createListItem = (htmlElement, isAppeal) => {
             var div = $('<div class="message ' + (isAppeal ? 'place-left' : 'place-right') + '"></div>').html(htmlElement);
 
             var li = $('<li></li>').html(div);
@@ -99,7 +68,7 @@
             $("#messagesList").append(li).scrollTo(li);
         };
 
-        const sendMessage = function (message) {
+        const sendMessage = (message) => {
             chatConnection.invoke('SendMessage', message)
                 .catch(error => console.error(error));
 
@@ -118,7 +87,7 @@
 
             $('#remainingTime').text(remainingDuration.toFormat("mm 'минут'"));
 
-            $('#moscowTime').text(moscowDate.toFormat('hh:mm'));
+            $('#moscowTime').text(moscowDate.toFormat('t'));
 
             setTimeout(updateInfo, interval, interval, accessToken, updateCallback);
         };
@@ -127,7 +96,7 @@
         setButtonDisable(true);
 
         // Update status
-        const changeStatus = function (isOnline) {
+        const changeStatus = (isOnline) => {
             const statusText = isOnline ? 'В сети' : 'Не в сети';
 
             $('#onlineStatus').text(statusText);

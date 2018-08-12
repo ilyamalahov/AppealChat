@@ -12,7 +12,7 @@
 @section Scripts {
     <script>
         var appealId = "@Model.AppealId";
-        var expertKey = "@Model.expertKey";
+        var expertKey = "@Model.ExpertKey";
     </script>
     <script type="text/javascript" src="~/js/luxon.min.js"></script>
     <script type="text/javascript" src="~/lib/signalr/signalr.js"></script>
@@ -30,20 +30,24 @@
     <ul id="messagesList" class="block message-history">
         @foreach (var message in Model.Messages)
         {
-            var messageDate = @message.CreateDate.ToString("HH:mm:ss");
+            var messageDate = message.CreateDate.ToString("G");
+
+            var ownCondition = message.NickName != "Аппелянт" && message.NickName.Contains(Model.ExpertKey.ToString());
+
+            var nickname = ownCondition ? "Вы" : message.NickName;
 
             <li>
-                <div class="message @(message.NickName == "Аппелянт" ? "place-right" : "place-left")">
+                <div class="message @(message.NickName != "Аппелянт" ? "place-left" : "place-right")">
                     @switch (message.ChatMessageTypeId)
                     {
                         case ChatMessageTypes.Joined:
-                            <span>@message.NickName</span> @:подключился к консультации <b>(@messageDate) </b>
+                            <span>@nickname</span> @:подключился к консультации <b>(@messageDate) </b>
                             break;
                         case ChatMessageTypes.Message:
-                            <div class="message-bubble">@Html.Raw(message.MessageString)</div><span>@message.NickName</span> <b>(@message.CreateDate.ToString("HH:mm:ss"))</b>
+                            <div class="message-bubble">@Html.Raw(message.MessageString)</div><span>@nickname</span> <b>(@messageDate)</b>
                             break;
                         case ChatMessageTypes.Leave:
-                            <span>@message.NickName</span> @:покинул консультацию <b>(@messageDate)</b>
+                            <span>@nickname</span> @:покинул консультацию <b>(@messageDate)</b>
                             break;
                     }
                 </div>

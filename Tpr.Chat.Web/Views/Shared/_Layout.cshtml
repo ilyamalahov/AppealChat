@@ -15,8 +15,7 @@
     </environment>
 
     @RenderSection("Styles", required: false)
-</head>
-<body>
+
     <environment include="Development">
         <script type="text/javascript" src="~/lib/jquery/dist/jquery.js"></script>
         <script type="text/javascript" src="~/js/site.js" asp-append-version="true"></script>
@@ -33,6 +32,8 @@
 
     @RenderSection("Scripts", required: false)
 
+</head>
+<body>
     @RenderBody()
 </body>
 </html>
