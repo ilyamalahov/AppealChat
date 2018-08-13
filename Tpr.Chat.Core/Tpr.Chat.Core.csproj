@@ -51,14 +51,10 @@
     <Compile Include="Constants\ChatRole.cs" />
     <Compile Include="Helpers\HashHelper.cs" />
     <Compile Include="Helpers\ExpertKeyHelper.cs" />
-    <Compile Include="Models\AppealInfo.cs" />
-    <Compile Include="Models\Expert.cs" />
-    <Compile Include="Repositories\AppealInfoRepository.cs" />
     <Compile Include="Repositories\ChatRepository.cs" />
     <Compile Include="Models\ChatMessage.cs" />
     <Compile Include="Models\ChatSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\IAppealInfoRepository.cs" />
     <Compile Include="Repositories\IChatRepository.cs" />
   </ItemGroup>
   <ItemGroup>

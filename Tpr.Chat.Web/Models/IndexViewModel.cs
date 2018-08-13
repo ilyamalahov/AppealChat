@@ -9,13 +9,11 @@ namespace Tpr.Chat.Web.Models
 {
     public class IndexViewModel
     {
-        public Guid AppealId { get; set; }
+        //public Guid AppealId { get; set; }
 
-        public int ExpertKey { get; set; }
+        //public int ExpertKey { get; set; }
 
-        public AppealInfo AppealInfo { get; set; }
-
-        public Expert CurrentExpert { get; set; }
+        public ChatSession ChatSession { get; set; }
 
         public ICollection<ChatMessage> Messages { get; set; }
     }

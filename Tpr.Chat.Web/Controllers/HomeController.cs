@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -18,18 +19,15 @@ namespace Tpr.Chat.Web.Controllers
         private readonly IChatRepository chatRepository;
         private readonly ICommonService commonService;
         private readonly IConnectionService connectionService;
-        private readonly IAppealInfoRepository appealInfoRepository;
 
         public HomeController(
             IChatRepository chatRepository, 
             ICommonService commonService, 
-            IConnectionService connectionService,
-            IAppealInfoRepository appealInfoRepository)
+            IConnectionService connectionService)
         {
             this.chatRepository = chatRepository;
             this.commonService = commonService;
             this.connectionService = connectionService;
-            this.appealInfoRepository = appealInfoRepository;
         }
 
         [HttpGet("/{appealId}")]
@@ -41,31 +39,32 @@ namespace Tpr.Chat.Web.Controllers
             // 
             var connectionId = connectionService.GetConnectionId(appealId, connectionType);
 
-            // 
             if(!string.IsNullOrEmpty(connectionId))
             {
                 return BadRequest("Сессия все еще запущена на другом устройстве");
             }
 
-            // 
+            // Check if chat session is exists
             var chatSession = chatRepository.GetChatSession(appealId);
 
-            // Check if chat session is exists
             if (chatSession == null)
             {
                 return BadRequest("Сессии по данному ID не существует");
             }
 
-            var appealInfo = await appealInfoRepository.Get(chatSession.AppealNumber);
-
-            var currentExpert = chatRepository.GetExpert(chatSession.CurrentExpert);
-
-            var model = new IndexViewModel
+            // 
+            if(connectionType == ContextType.Expert)
             {
-                AppealId = appealId,
-                ExpertKey = key,
-                AppealInfo = appealInfo
-            };
+                var expertIsInSession = chatRepository.IsExists(key, appealId);
+
+                if (!expertIsInSession)
+                {
+                    return BadRequest("");
+                }
+            }
+
+            // 
+            var model = new IndexViewModel { ChatSession = chatSession };
 
             // Check if current date less than chat start time
             if (DateTime.Now < chatSession.StartTime)
@@ -73,11 +72,16 @@ namespace Tpr.Chat.Web.Controllers
                 return View("Early", model);
             }
 
+            // 
             model.Messages = chatRepository.GetChatMessages(appealId);
 
             // Expert checkings
             if (connectionType == ContextType.Expert)
             {
+                //if (key != chatSession.CurrentExpert)
+                //{
+                //    return BadRequest("");
+                //}
                 // Secret checkings, etc...
 
                 return View("Expert", model);
@@ -93,8 +97,6 @@ namespace Tpr.Chat.Web.Controllers
             //{
             //    return BadRequest("Вы не можете зайти в консультацию, пока к ней не привязан консультант");
             //}
-
-            model.CurrentExpert = currentExpert;
 
             return View("Appeal", model);
         }

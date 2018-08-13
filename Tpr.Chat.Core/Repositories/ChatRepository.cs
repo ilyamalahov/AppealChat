@@ -82,13 +82,27 @@ namespace Tpr.Chat.Core.Repositories
             }
         }
 
-        public Expert GetExpert(int currentExpert)
+        public IEnumerable<int> GetExperts(Guid appealId)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
-                return connection.Get<Expert>(currentExpert);
+                string sql = "SELECT * FROM dbo.SessionExperts WHERE AppealId = @AppealId";
+
+                return connection.Query<int>(sql, new { appealId });
+            }
+        }
+
+        public bool IsExists(int key, Guid appealId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string sql = "SELECT COUNT(Id) FROM dbo.SessionExperts WHERE Key = @Key AND AppealId = @AppealId";
+
+                return connection.ExecuteScalar<int>(sql, new { key, appealId }) > 0;
             }
         }
     }

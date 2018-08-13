@@ -11,8 +11,8 @@
 
 @section Scripts {
     <script>
-        var appealId = "@Model.AppealId";
-        var expertKey = "@Model.ExpertKey";
+        var appealId = "@Model.ChatSession.AppealId";
+        var expertKey = "@Model.ChatSession.CurrentExpert";
     </script>
     <script type="text/javascript" src="~/js/luxon.min.js"></script>
     <script type="text/javascript" src="~/lib/signalr/signalr.js"></script>
@@ -23,7 +23,7 @@
     <div class="block appeal-info">
         <button class="close-button">Close</button>
         <div>Участник по аппеляции</div>
-        <div style="font-weight:bold;">№ <span>@Model.AppealInfo.Number</span></div>
+        <div style="font-weight:bold;">№ <span>@Model.ChatSession.AppealNumber</span></div>
         <div id="onlineStatus" style="font-weight:bold; color: #009966;">Онлайн-статус</div>
     </div>
 
@@ -34,7 +34,7 @@
 
             var isExpert = message.NickName.Contains("Член КК");
 
-            var isCurrent = isExpert && message.NickName.Contains(Model.ExpertKey.ToString());
+            var isCurrent = isExpert && message.NickName.Contains(Model.ChatSession.CurrentExpert.ToString());
 
             var nickname = isCurrent ? "Вы" : message.NickName;
 
