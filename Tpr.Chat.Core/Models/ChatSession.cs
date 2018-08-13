@@ -11,5 +11,7 @@ namespace Tpr.Chat.Core.Models
         public int AppealNumber { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime FinishTime { get; set; }
+
+        public int CurrentExpert { get; set; }
     }
 }

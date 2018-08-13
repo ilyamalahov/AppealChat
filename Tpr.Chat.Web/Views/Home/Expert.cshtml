@@ -23,7 +23,7 @@
     <div class="block appeal-info">
         <button class="close-button">Close</button>
         <div>Участник по аппеляции</div>
-        <div style="font-weight:bold;">№ <span>00000</span></div>
+        <div style="font-weight:bold;">№ <span>@Model.AppealInfo.Number</span></div>
         <div id="onlineStatus" style="font-weight:bold; color: #009966;">Онлайн-статус</div>
     </div>
 
@@ -32,22 +32,24 @@
         {
             var messageDate = message.CreateDate.ToString("G");
 
-            var ownCondition = message.NickName == "Член КК" && message.NickName.Contains(Model.ExpertKey.ToString());
+            var isExpert = message.NickName.Contains("Член КК");
 
-            var nickname = ownCondition ? "Вы" : message.NickName;
+            var isCurrent = isExpert && message.NickName.Contains(Model.ExpertKey.ToString());
+
+            var nickname = isCurrent ? "Вы" : message.NickName;
 
             <li>
-                <div class="message @(message.NickName == "Член КК" ? "place-left" : "place-right")">
+                <div class="message @(isExpert ? "place-left" : "place-right")">
                     @switch (message.ChatMessageTypeId)
                     {
                         case ChatMessageTypes.Joined:
-                            <span>@nickname</span> @:подключился к консультации <b>(@messageDate) </b>
+                            @nickname @(isCurrent ? " подключились" : " подключился") @:к консультации <b>(@messageDate) </b>
                             break;
                         case ChatMessageTypes.Message:
-                            <div class="message-bubble">@Html.Raw(message.MessageString)</div><span>@nickname</span> <b>(@messageDate)</b>
+                            <div class="message-bubble">@Html.Raw(message.MessageString)</div>@nickname <b>(@messageDate)</b>
                             break;
                         case ChatMessageTypes.Leave:
-                            <span>@nickname</span> @:покинул консультацию <b>(@messageDate)</b>
+                            @nickname @(isCurrent ? " покинули" : " покинул") @:консультацию <b>(@messageDate)</b>
                             break;
                     }
                 </div>

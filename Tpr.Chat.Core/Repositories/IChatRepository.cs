@@ -12,5 +12,6 @@ namespace Tpr.Chat.Core.Repositories
         long WriteJoined(Guid appealId, string nickName);
         long WriteLeave(Guid appealId, string nickName);
         long WriteChatMessage(ChatMessage message);
+        Expert GetExpert(int currentExpert);
     }
 }

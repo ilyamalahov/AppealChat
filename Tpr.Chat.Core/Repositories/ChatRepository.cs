@@ -81,5 +81,15 @@ namespace Tpr.Chat.Core.Repositories
                 return 0;
             }
         }
+
+        public Expert GetExpert(int currentExpert)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                return connection.Get<Expert>(currentExpert);
+            }
+        }
     }
 }

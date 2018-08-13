@@ -13,6 +13,10 @@ namespace Tpr.Chat.Web.Models
 
         public int ExpertKey { get; set; }
 
+        public AppealInfo AppealInfo { get; set; }
+
+        public Expert CurrentExpert { get; set; }
+
         public ICollection<ChatMessage> Messages { get; set; }
     }
 }

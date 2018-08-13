@@ -47,9 +47,11 @@ const insertAtCursor = function (element, value) {
 const receiveMessage = (message, isSender) => {
     const messageDate = luxon.DateTime.fromISO(message.createDate);
 
+    const nickname = isSender ? 'Вы' : message.nickName;
+
     const messageBubble = '<div class="message-bubble">' + message.messageString + '</div>';
 
-    const messageInfo = '<span class="nickname">' + message.nickName + '</span> <b>(' + messageDate.toFormat("F") + ')</b>';
+    const messageInfo = nickname + ' <b>(' + messageDate.toFormat("F") + ')</b>';
 
     return addMessage(messageBubble + messageInfo, isSender);
 };
@@ -58,23 +60,27 @@ const receiveMessage = (message, isSender) => {
 const joinUser = function (message, isSender, isAppealOnline, isExpertOnline) {
     const messageDate = luxon.DateTime.fromISO(message.createDate);
 
-    const element = '<span class="nickname">' + message.nickName + '</span> подключился к консультации <b>(' + messageDate.toFormat("F") + ')</b>';
+    const messageText = isSender ? 'Вы подключились к консультации' : message.nickName + ' подключился к консультации';
 
-    return addMessage(element, isSender);
+    const html = messageText + ' <b>(' + messageDate.toFormat("F") + ')</b>';
+
+    return addMessage(html, isSender);
 };
 
 // Return new "Leave user" message
 const leaveUser = (message, isSender) => {
     const messageDate = luxon.DateTime.fromISO(message.createDate);
 
-    const element = '<span class="nickname">' + message.nickName + '</span> покинул консультацию <b>(' + messageDate.toFormat("F") + ')</b>';
+    const messageText = isSender ? 'Вы покинули консультацию' : message.nickName + ' покинул консультацию';
 
-    return addMessage(element, isSender);
+    const html = messageText + ' <b>(' + messageDate.toFormat("F") + ')</b>';
+
+    return addMessage(html, isSender);
 };
 
 // Return new list item
-const addMessage = (element, isSender) => {
-    const div = $('<div class="message ' + (isSender ? 'place-left' : 'place-right') + '"></div>').html(element);
+const addMessage = (html, isSender) => {
+    const div = $('<div class="message ' + (isSender ? 'place-left' : 'place-right') + '"></div>').html(html);
 
     return $('<li></li>').html(div);
 };
@@ -101,6 +107,6 @@ const showModal = (url, data) => {
 // Close modal window
 const closeModal = () => {
     $('#modal').html('').fadeOut();
-}
+};
 
 //});

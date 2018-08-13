@@ -57,7 +57,7 @@ namespace Tpr.Chat.Web.Hubs
                 if (chatRepository.WriteChatMessage(chatMessage) == 0) return;
 
                 // 
-                string sender = senderType == ContextType.Appeal ? "appeal" : "sender";
+                string sender = senderType == ContextType.Appeal ? "appeal" : "expert";
 
                 // 
                 await Clients.User(Context.UserIdentifier).Receive(chatMessage, sender);
@@ -109,7 +109,7 @@ namespace Tpr.Chat.Web.Hubs
                 var isExpertOnline = connectionService.isOnline(appealId, ContextType.Expert);
 
                 // 
-                string sender = senderType == ContextType.Appeal ? "appeal" : "sender";
+                string sender = senderType == ContextType.Appeal ? "appeal" : "expert";
 
                 // Send "Join" message to specified user clients
                 await Clients.User(Context.UserIdentifier).Join(chatMessage, sender, isAppealOnline, isExpertOnline);
@@ -153,7 +153,7 @@ namespace Tpr.Chat.Web.Hubs
                 if (chatRepository.WriteChatMessage(chatMessage) == 0) return;
 
                 // 
-                string sender = senderType == ContextType.Appeal ? "appeal" : "sender";
+                string sender = senderType == ContextType.Appeal ? "appeal" : "expert";
 
                 // Send "Leave" message to specified user clients 
                 await Clients.User(Context.UserIdentifier).Leave(chatMessage, sender);

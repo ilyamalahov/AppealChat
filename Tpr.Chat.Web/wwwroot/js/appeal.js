@@ -12,14 +12,14 @@
 
         // Receiving message from user
         chatConnection.on("Receive", (message, sender) => {
-            const li = receiveMessage(message, sender == "appeal");
+            const li = receiveMessage(message, sender === "appeal");
 
             $('#messagesList').append(li).scrollTo(li);
         });
 
         // Joining user to chat
         chatConnection.on("Join", (message, sender, isAppealOnline, isExpertOnline) => {
-            const li = joinUser(message, sender == "appeal", isAppealOnline, isExpertOnline);
+            const li = joinUser(message, sender === "appeal", isAppealOnline, isExpertOnline);
 
             $("#messagesList").append(li).scrollTo(li);
 
@@ -28,7 +28,7 @@
 
         // Leave user from chat
         chatConnection.on("Leave", (message, sender) => {
-            const li = leaveUser(message, sender == "appeal");
+            const li = leaveUser(message, sender === "appeal");
 
             $("#messagesList").append(li).scrollTo(li);
 

@@ -1,9 +1,13 @@
-﻿[
+[
   {
     "outputFileName": "wwwroot/css/site.min.css",
     "inputFiles": [
       "wwwroot/css/site.css"
-    ]
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
   },
   {
     "outputFileName": "wwwroot/js/site.min.js",
@@ -13,7 +17,24 @@
     "minify": {
       "enabled": true,
       "renameLocals": true
-    },
-    "sourceMap": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/js/appeal.min.js",
+    "inputFiles": [
+      "wwwroot/js/appeal.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/expert.min.js",
+    "inputFiles": [
+      "wwwroot/js/expert.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/early.min.js",
+    "inputFiles": [
+      "wwwroot/js/early.js"
+    ]
   }
 ]

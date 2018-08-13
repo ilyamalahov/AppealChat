@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Tpr.Chat.Core.Repositories;
@@ -16,19 +18,22 @@ namespace Tpr.Chat.Web.Controllers
         private readonly IChatRepository chatRepository;
         private readonly ICommonService commonService;
         private readonly IConnectionService connectionService;
+        private readonly IAppealInfoRepository appealInfoRepository;
 
         public HomeController(
             IChatRepository chatRepository, 
             ICommonService commonService, 
-            IConnectionService connectionService)
+            IConnectionService connectionService,
+            IAppealInfoRepository appealInfoRepository)
         {
             this.chatRepository = chatRepository;
             this.commonService = commonService;
             this.connectionService = connectionService;
+            this.appealInfoRepository = appealInfoRepository;
         }
 
         [HttpGet("/{appealId}")]
-        public IActionResult Index(Guid appealId, int key = 0, string secretKey = null)
+        public async Task<IActionResult> Index(Guid appealId, int key = 0, string secretKey = null)
         {
             // 
             var connectionType = key > 0 ? ContextType.Expert : ContextType.Appeal;
@@ -39,21 +44,27 @@ namespace Tpr.Chat.Web.Controllers
             // 
             if(!string.IsNullOrEmpty(connectionId))
             {
-                return View("InvalidSession");
+                return BadRequest("Сессия все еще запущена на другом устройстве");
             }
 
+            // 
             var chatSession = chatRepository.GetChatSession(appealId);
 
             // Check if chat session is exists
             if (chatSession == null)
             {
-                return Error();
+                return BadRequest("Сессии по данному ID не существует");
             }
+
+            var appealInfo = await appealInfoRepository.Get(chatSession.AppealNumber);
+
+            var currentExpert = chatRepository.GetExpert(chatSession.CurrentExpert);
 
             var model = new IndexViewModel
             {
                 AppealId = appealId,
-                ExpertKey = key
+                ExpertKey = key,
+                AppealInfo = appealInfo
             };
 
             // Check if current date less than chat start time
@@ -62,12 +73,12 @@ namespace Tpr.Chat.Web.Controllers
                 return View("Early", model);
             }
 
+            model.Messages = chatRepository.GetChatMessages(appealId);
+
             // Expert checkings
             if (connectionType == ContextType.Expert)
             {
                 // Secret checkings, etc...
-
-                model.Messages = chatRepository.GetChatMessages(appealId);
 
                 return View("Expert", model);
             }
@@ -78,15 +89,14 @@ namespace Tpr.Chat.Web.Controllers
                 return View("Complete");
             }
 
-            model.Messages = chatRepository.GetChatMessages(appealId);
+            //if (currentExpert == null)
+            //{
+            //    return BadRequest("Вы не можете зайти в консультацию, пока к ней не привязан консультант");
+            //}
+
+            model.CurrentExpert = currentExpert;
 
             return View("Appeal", model);
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
         [Produces("application/json")]
@@ -179,6 +189,12 @@ namespace Tpr.Chat.Web.Controllers
             };
 
             return Ok(response);
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

@@ -37,6 +37,9 @@ namespace Tpr.Chat.Web
             // Chat repository
             services.AddTransient<IChatRepository, ChatRepository>(repository => new ChatRepository(connectionString));
 
+            // Appeal info repository
+            services.AddTransient<IAppealInfoRepository, AppealInfoRepository>(repository => new AppealInfoRepository(connectionString));
+
             // Common service
             services.AddTransient<ICommonService, CommonService>();
 
@@ -125,6 +128,9 @@ namespace Tpr.Chat.Web
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+
+            //
+            app.UseStatusCodePages();
 
             // HTTPS rediretion
             app.UseHttpsRedirection();
