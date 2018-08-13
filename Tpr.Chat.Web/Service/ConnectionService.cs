@@ -9,7 +9,7 @@ namespace Tpr.Chat.Web.Service
     {
         private Dictionary<Guid, ChatConnection> connections = new Dictionary<Guid, ChatConnection>();
 
-        public string GetConnectionId(Guid appealId, bool isAppeal)
+        public string GetConnectionId(Guid appealId, ContextType connectionType)
         {
             ChatConnection connection;
 
@@ -18,10 +18,18 @@ namespace Tpr.Chat.Web.Service
                 return null;
             }
 
-            return isAppeal ? connection.AppealConnectionId : connection.ExpertConnectionId;
+            switch (connectionType)
+            {
+                case ContextType.Appeal:
+                    return connection.AppealConnectionId;
+                case ContextType.Expert:
+                    return connection.ExpertConnectionId;
+                default:
+                    return null;
+            }
         }
 
-        public void AddConnectionId(Guid appealId, string connectionId, bool isAppeal)
+        public void AddConnectionId(Guid appealId, string connectionId, ContextType connectionType)
         {
             ChatConnection connection;
 
@@ -34,18 +42,19 @@ namespace Tpr.Chat.Web.Service
                     if (!connections.TryAdd(appealId, connection)) return;
                 }
             }
-
-            if(isAppeal)
+            
+            switch (connectionType)
             {
-                connection.AppealConnectionId = connectionId;
-            }
-            else
-            {
-                connection.ExpertConnectionId = connectionId;
+                case ContextType.Appeal:
+                    connection.AppealConnectionId = connectionId;
+                    break;
+                case ContextType.Expert:
+                    connection.ExpertConnectionId = connectionId;
+                    break;
             }
         }
 
-        public void RemoveConnectionId(Guid appealId, bool isAppeal)
+        public void RemoveConnectionId(Guid appealId, ContextType connectionType)
         {
             ChatConnection connection;
 
@@ -54,17 +63,18 @@ namespace Tpr.Chat.Web.Service
                 return;
             }
 
-            if (isAppeal)
+            switch (connectionType)
             {
-                connection.AppealConnectionId = null;
-            }
-            else
-            {
-                connection.ExpertConnectionId = null;
+                case ContextType.Appeal:
+                    connection.AppealConnectionId = null;
+                    break;
+                case ContextType.Expert:
+                    connection.ExpertConnectionId = null;
+                    break;
             }
         }
 
-        public bool isOnline(Guid appealId, bool isAppeal)
+        public bool isOnline(Guid appealId, ContextType connectionType)
         {
             ChatConnection connection;
 
@@ -73,7 +83,20 @@ namespace Tpr.Chat.Web.Service
                 return false;
             }
 
-            var connectionId = isAppeal ? connection.AppealConnectionId : connection.ExpertConnectionId;
+            string connectionId;
+
+            switch (connectionType)
+            {
+                case ContextType.Appeal:
+                    connectionId = connection.AppealConnectionId;
+                    break;
+                case ContextType.Expert:
+                    connectionId = connection.ExpertConnectionId;
+                    break;
+                default:
+                    connectionId = null;
+                    break;
+            }
 
             return !string.IsNullOrEmpty(connectionId);
         }

@@ -7,13 +7,13 @@ namespace Tpr.Chat.Web.Service
         public string AppealConnectionId { get; set; }
         public string ExpertConnectionId { get; set; }
 
-        public string GetConnectionId(string expertKey)
+        public string GetConnectionId(ContextType connectionType)
         {
-            return expertKey != null ? AppealConnectionId : ExpertConnectionId;
+            return connectionType == ContextType.Appeal ? AppealConnectionId : ExpertConnectionId;
         }
     }
 
-    public enum ConnectionType
+    public enum ContextType
     {
         Appeal,
         Expert

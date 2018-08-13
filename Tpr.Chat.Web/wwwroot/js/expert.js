@@ -10,13 +10,29 @@
         chatConnection.start().catch(error => console.error(error));
 
         // Receiving message from user
-        chatConnection.on("Receive", (message, isAppealSender) => receiveMessage(message, !isAppealSender));
+        chatConnection.on("Receive", (message, sender) => {
+            const li = receiveMessage(message, sender == "expert");
+
+            $('#messagesList').append(li).scrollTo(li);
+        });
 
         // Joining user to chat
-        chatConnection.on("Join", (message, isAppealSender, isAppealOnline, isExpertOnline) => joinUser(message, !isAppealSender, isAppealOnline, isExpertOnline)); // 
+        chatConnection.on("Join", (message, sender, isAppealOnline, isExpertOnline) => {
+            const li = joinUser(message, sender == "expert", isAppealOnline, isExpertOnline);
+
+            $("#messagesList").append(li).scrollTo(li);
+
+            changeStatus(isAppealOnline);
+        });
 
         // Leave user from chat
-        chatConnection.on("Leave", (message, isAppealSender) => leaveUser(message, !isAppealSender));
+        chatConnection.on("Leave", (message, sender) => {
+            const li = leaveUser(message, sender == "expert");
+
+            $("#messagesList").append(li).scrollTo(li);
+
+            changeStatus(false);
+        });
 
         $('#sendButton').on('click', (e) => {
             chatConnection.invoke('SendMessage', $('#messageText').val())

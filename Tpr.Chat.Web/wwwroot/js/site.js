@@ -1,4 +1,5 @@
 ﻿//$(document).ready(function () {
+
 // Update info in interval
 const updateInfo = function (interval, accessToken, callback) {
     $.ajax({
@@ -42,49 +43,40 @@ const insertAtCursor = function (element, value) {
     }
 };
 
-//
-const receiveMessage = (message, isAppealSender) => {
+// Return new "Receive" message
+const receiveMessage = (message, isSender) => {
     const messageDate = luxon.DateTime.fromISO(message.createDate);
 
     const messageBubble = '<div class="message-bubble">' + message.messageString + '</div>';
 
     const messageInfo = '<span class="nickname">' + message.nickName + '</span> <b>(' + messageDate.toFormat("F") + ')</b>';
 
-    var div = $('<div class="message ' + (isAppealSender ? 'place-left' : 'place-right') + '"></div>').html(messageBubble + messageInfo);
-
-    var li = $('<li></li>').html(div);
-
-    $("#messagesList").append(li).scrollTo(li);
+    return addMessage(messageBubble + messageInfo, isSender);
 };
 
-//
-const joinUser = function (message, isAppealSender, isAppealOnline, isExpertOnline) {
+// Return new "Join user" message
+const joinUser = function (message, isSender, isAppealOnline, isExpertOnline) {
     const messageDate = luxon.DateTime.fromISO(message.createDate);
 
-    const messageElement = '<span class="nickname">' + message.nickName + '</span> подключился к консультации <b>(' + messageDate.toFormat("F") + ')</b>';
+    const element = '<span class="nickname">' + message.nickName + '</span> подключился к консультации <b>(' + messageDate.toFormat("F") + ')</b>';
 
-    var div = $('<div class="message ' + (isAppealSender ? 'place-left' : 'place-right') + '"></div>').html(messageElement);
-
-    var li = $('<li></li>').html(div);
-
-    $("#messagesList").append(li).scrollTo(li);
-
-    //changeStatus(isAppealOnline);
+    return addMessage(element, isSender);
 };
 
-//
-const leaveUser = (message, isAppealSender) => {
+// Return new "Leave user" message
+const leaveUser = (message, isSender) => {
     const messageDate = luxon.DateTime.fromISO(message.createDate);
 
-    const messageElement = '<span class="nickname">' + message.nickName + '</span> покинул консультацию <b>(' + messageDate.toFormat("F") + ')</b>';
+    const element = '<span class="nickname">' + message.nickName + '</span> покинул консультацию <b>(' + messageDate.toFormat("F") + ')</b>';
 
-    var div = $('<div class="message ' + (isAppealSender ? 'place-left' : 'place-right') + '"></div>').html(messageElement);
+    return addMessage(element, isSender);
+};
 
-    var li = $('<li></li>').html(div);
+// Return new list item
+const addMessage = (element, isSender) => {
+    const div = $('<div class="message ' + (isSender ? 'place-left' : 'place-right') + '"></div>').html(element);
 
-    $("#messagesList").append(li).scrollTo(li);
-
-    //changeStatus(false);
+    return $('<li></li>').html(div);
 };
 
 // Scroll to element
@@ -94,6 +86,7 @@ jQuery.fn.scrollTo = function (element) {
     return this;
 };
 
+// Show modal window
 const showModal = (url, data) => {
     return new Promise((resolve, reject) => {
         $.get(url, data)
@@ -104,6 +97,8 @@ const showModal = (url, data) => {
             .fail(reject);
     });
 };
+
+// Close modal window
 const closeModal = () => {
     $('#modal').html('').fadeOut();
 }

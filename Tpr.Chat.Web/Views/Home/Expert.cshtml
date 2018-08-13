@@ -32,12 +32,12 @@
         {
             var messageDate = message.CreateDate.ToString("G");
 
-            var ownCondition = message.NickName != "Аппелянт" && message.NickName.Contains(Model.ExpertKey.ToString());
+            var ownCondition = message.NickName == "Член КК" && message.NickName.Contains(Model.ExpertKey.ToString());
 
             var nickname = ownCondition ? "Вы" : message.NickName;
 
             <li>
-                <div class="message @(message.NickName != "Аппелянт" ? "place-left" : "place-right")">
+                <div class="message @(message.NickName == "Член КК" ? "place-left" : "place-right")">
                     @switch (message.ChatMessageTypeId)
                     {
                         case ChatMessageTypes.Joined:

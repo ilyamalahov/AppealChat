@@ -30,10 +30,13 @@ namespace Tpr.Chat.Web.Controllers
         [HttpGet("/{appealId}")]
         public IActionResult Index(Guid appealId, int key = 0, string secretKey = null)
         {
-            var isExpert = key > 0;
+            // 
+            var connectionType = key > 0 ? ContextType.Expert : ContextType.Appeal;
 
-            var connectionId = connectionService.GetConnectionId(appealId, !isExpert);
+            // 
+            var connectionId = connectionService.GetConnectionId(appealId, connectionType);
 
+            // 
             if(!string.IsNullOrEmpty(connectionId))
             {
                 return View("InvalidSession");
@@ -60,7 +63,7 @@ namespace Tpr.Chat.Web.Controllers
             }
 
             // Expert checkings
-            if (isExpert)
+            if (connectionType == ContextType.Expert)
             {
                 // Secret checkings, etc...
 

@@ -37,10 +37,11 @@ namespace Tpr.Chat.Web.Hubs
                 // Expert key from JWT token
                 var expertKey = Context.User.FindFirstValue("expertkey");
 
-                var isAppealSender = expertKey == null;
+                // 
+                var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
 
                 // Nick name
-                var nickName = isAppealSender ? "Аппелянт" : "Член КК №" + expertKey;
+                var nickName = senderType == ContextType.Appeal ? "Аппелянт" : "Член КК №" + expertKey;
 
                 // Chat message
                 var chatMessage = new ChatMessage
@@ -56,7 +57,10 @@ namespace Tpr.Chat.Web.Hubs
                 if (chatRepository.WriteChatMessage(chatMessage) == 0) return;
 
                 // 
-                await Clients.User(Context.UserIdentifier).Receive(chatMessage, isAppealSender);
+                string sender = senderType == ContextType.Appeal ? "appeal" : "sender";
+
+                // 
+                await Clients.User(Context.UserIdentifier).Receive(chatMessage, sender);
             }
             catch (Exception exception)
             {
@@ -77,12 +81,14 @@ namespace Tpr.Chat.Web.Hubs
                 // Expert key from JWT token
                 var expertKey = Context.User.FindFirstValue("expertkey");
 
-                var isAppealSender = expertKey == null;
+                // 
+                var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
+
+                // 
+                connectionService.AddConnectionId(appealId, Context.ConnectionId, senderType);
 
                 // Nick name
-                var nickName = isAppealSender ? "Аппелянт" : "Член КК №" + expertKey;
-
-                connectionService.AddConnectionId(appealId, Context.ConnectionId, isAppealSender);
+                var nickName = senderType == ContextType.Appeal ? "Аппелянт" : "Член КК №" + expertKey;
 
                 // Chat message
                 var chatMessage = new ChatMessage
@@ -97,23 +103,16 @@ namespace Tpr.Chat.Web.Hubs
                 if (chatRepository.WriteChatMessage(chatMessage) == 0) return;
 
                 // 
-                var isAppealOnline = connectionService.isOnline(appealId, isAppealSender);
+                var isAppealOnline = connectionService.isOnline(appealId, ContextType.Appeal);
 
                 // 
-                var isExpertOnline = connectionService.isOnline(appealId, !isAppealSender);
+                var isExpertOnline = connectionService.isOnline(appealId, ContextType.Expert);
+
+                // 
+                string sender = senderType == ContextType.Appeal ? "appeal" : "sender";
 
                 // Send "Join" message to specified user clients
-                await Clients.User(Context.UserIdentifier).Join(chatMessage, isAppealSender, isAppealOnline, isExpertOnline);
-
-                // Send "Change status" to client-caller
-                //var callerConnectionId = connectionService.GetConnectionId(appealId, isAppeal);
-                
-                //await Clients.Client(callerConnectionId).ChangeStatus(true);
-
-                //// Send "Change status" to client other than caller
-                //string otherConnectionId = connectionService.GetConnectionId(appealId, !isAppeal);
-
-                //await Clients.Client(otherConnectionId).ChangeStatus(true);
+                await Clients.User(Context.UserIdentifier).Join(chatMessage, sender, isAppealOnline, isExpertOnline);
             }
             catch (Exception exception)
             {
@@ -133,13 +132,13 @@ namespace Tpr.Chat.Web.Hubs
                 // Expert key from JWT token
                 var expertKey = Context.User.FindFirstValue("expertkey");
 
-                var isAppealSender = expertKey == null;
-
-                // Nick name
-                var nickName = isAppealSender ? "Аппелянт" : "Член КК №" + expertKey;
+                var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
 
                 // Remove caller's connection ID
-                connectionService.RemoveConnectionId(appealId, isAppealSender);
+                connectionService.RemoveConnectionId(appealId, senderType);
+
+                // Nick name
+                var nickName = senderType == ContextType.Appeal ? "Аппелянт" : "Член КК №" + expertKey;
 
                 // Chat message
                 var chatMessage = new ChatMessage
@@ -153,13 +152,11 @@ namespace Tpr.Chat.Web.Hubs
                 // 
                 if (chatRepository.WriteChatMessage(chatMessage) == 0) return;
 
+                // 
+                string sender = senderType == ContextType.Appeal ? "appeal" : "sender";
+
                 // Send "Leave" message to specified user clients 
-                await Clients.User(Context.UserIdentifier).Leave(chatMessage, isAppealSender);
-
-                // Send "Change status" to client other than caller
-                //string otherConnectionId = connectionService.GetConnectionId(appealId, !isAppeal);
-
-                //await Clients.Client(otherConnectionId).ChangeStatus(false);
+                await Clients.User(Context.UserIdentifier).Leave(chatMessage, sender);
             }
             catch (Exception throwedException)
             {
