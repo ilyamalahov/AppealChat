@@ -17,14 +17,31 @@ namespace Tpr.Chat.Core.Repositories
             _connectionString = connectionString;
         }
 
+        #region Session
+        
         public ChatSession GetChatSession(Guid appealId)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
+
                 return connection.Get<ChatSession>(appealId);
             }
         }
+
+        public bool UpdateSession(ChatSession chatSession)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                return connection.Update(chatSession);
+            }
+        }
+
+        #endregion
+        
+        #region Messages
 
         public IList<ChatMessage> GetChatMessages(Guid appealId)
         {
@@ -81,29 +98,35 @@ namespace Tpr.Chat.Core.Repositories
                 return 0;
             }
         }
+        
+        #endregion
+
+        #region Experts
 
         public IEnumerable<int> GetExperts(Guid appealId)
         {
+            string sql = "SELECT ExpertKey FROM dbo.SessionExperts WHERE AppealId = @appealId";
+
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-
-                string sql = "SELECT * FROM dbo.SessionExperts WHERE AppealId = @AppealId";
 
                 return connection.Query<int>(sql, new { appealId });
             }
         }
 
-        public bool IsExists(int key, Guid appealId)
+        public bool AddExpert(Guid appealId, int expertKey)
         {
+            string sql = "INSERT INTO dbo.SessionExperts (ExpertKey, AppealId) VALUES (@key, @appealId)";
+
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
-                string sql = "SELECT COUNT(Id) FROM dbo.SessionExperts WHERE Key = @Key AND AppealId = @AppealId";
-
-                return connection.ExecuteScalar<int>(sql, new { key, appealId }) > 0;
+                return connection.Execute(sql) > 0;
             }
         }
+
+        #endregion
     }
 }

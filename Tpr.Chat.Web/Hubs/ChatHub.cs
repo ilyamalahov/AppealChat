@@ -47,10 +47,10 @@ namespace Tpr.Chat.Web.Hubs
                 var chatMessage = new ChatMessage
                 {
                     AppealId = appealId,
-                    ChatMessageTypeId = ChatMessageTypes.Message,
                     CreateDate = DateTime.Now,
+                    MessageString = message,
                     NickName = nickName,
-                    MessageString = message
+                    ChatMessageTypeId = ChatMessageTypes.Message
                 };
 
                 // 

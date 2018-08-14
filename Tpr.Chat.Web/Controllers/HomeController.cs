@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -55,26 +56,27 @@ namespace Tpr.Chat.Web.Controllers
             // 
             if(connectionType == ContextType.Expert)
             {
-                var expertIsInSession = chatRepository.IsExists(key, appealId);
+                var experts = chatRepository.GetExperts(appealId);
 
-                if (!expertIsInSession)
+                if (!experts.Contains(key))
                 {
-                    return BadRequest("");
+                    return BadRequest(string.Format("Ключ эксперта ({0}) не прикреплен к сессии", key));
                 }
             }
 
             // 
-            var model = new IndexViewModel { ChatSession = chatSession };
+            var model = new IndexViewModel
+            {
+                ExpertKey = key,
+                ChatSession = chatSession
+            };
 
             // Check if current date less than chat start time
             if (DateTime.Now < chatSession.StartTime)
             {
                 return View("Early", model);
             }
-
-            // 
-            model.Messages = chatRepository.GetChatMessages(appealId);
-
+            
             // Expert checkings
             if (connectionType == ContextType.Expert)
             {
@@ -84,19 +86,23 @@ namespace Tpr.Chat.Web.Controllers
                 //}
                 // Secret checkings, etc...
 
+                model.Messages = chatRepository.GetChatMessages(appealId);
+
                 return View("Expert", model);
             }
 
             // Check if current date more than chat finish time
             if (DateTime.Now > chatSession.FinishTime)
             {
-                return View("Complete");
+                return View("Complete", model);
             }
 
             //if (currentExpert == null)
             //{
             //    return BadRequest("Вы не можете зайти в консультацию, пока к ней не привязан консультант");
             //}
+
+            model.Messages = chatRepository.GetChatMessages(appealId);
 
             return View("Appeal", model);
         }

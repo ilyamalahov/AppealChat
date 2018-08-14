@@ -41,19 +41,15 @@
         });
 
         // Textarea auto rows count
-        $('#messageText').on('input.autoExpand', () => {
-            //var maxRows = $(this).data('max-rows') | 1;
+        $('#messageText').on('input', function (e) {
+            var rows = calculateExpandRows(e.target);
+            
+            $(this).attr('rows', rows);
 
-            this.rows = $(this).data('min-rows') | 0;
-
-            var currentRowCount = Math.ceil((this.scrollHeight - this.clientHeight) / 16);
-
-            var maxCount = Math.max(0, Math.min(currentRowCount, 4));
-
-            this.rows += maxCount;
+            setButtonDisable($(this).val() === '');
         });
 
-        $('#messageText').on('change keyup', function (e) {
+        $('#messageText').on('keyup', function (e) {
             if (e.keyCode === 13 && !e.shiftKey) {
                 e.preventDefault();
 
@@ -61,8 +57,6 @@
                     sendMessage($(this).val());
                 }
             }
-
-            setButtonDisable($(this).val() === '');
         });
 
         $('#emojiButton').on('click', () => {
@@ -71,8 +65,10 @@
             $(this).children('i').toggleClass("fas fa-chevron-circle-down");
         });
 
+        // 
         $('#switchExpertButton').on('click', () => showModal("ajax/changeexpert"));
 
+        // 
         $('#completeButton').on('click', () => showModal("ajax/complete"));
 
         // 
@@ -88,12 +84,24 @@
             chatConnection.invoke('SendMessage', message)
                 .catch(error => console.error(error));
 
-            $('#messageText').val('');
+            $('#messageText').val('').trigger('input');
         };
 
-        const setButtonDisable = function (isDisabled) {
+        const setButtonDisable = (isDisabled) => {
             $('#sendButton').prop('disabled', isDisabled);
         };
+
+        const calculateExpandRows = (textarea) => {
+            //var maxRows = $(this).data('max-rows') | 1;
+
+            var minRows = textarea.dataset.minRows | 1;
+
+            textarea.rows = minRows;
+
+            var currentRowCount = Math.ceil((textarea.scrollHeight - textarea.clientHeight) / 16);
+
+            return Math.max(minRows, Math.min(currentRowCount, 5));
+        }
 
         // Update information callback
         const updateCallback = (response) => {
@@ -107,9 +115,6 @@
 
             setTimeout(updateInfo, interval, interval, accessToken, updateCallback);
         };
-
-        // Disable Send button
-        setButtonDisable(true);
 
         // Update status
         const changeStatus = (isOnline) => {

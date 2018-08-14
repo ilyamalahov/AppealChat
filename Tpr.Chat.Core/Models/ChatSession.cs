@@ -13,7 +13,7 @@ namespace Tpr.Chat.Core.Models
 
         public DateTime FinishTime { get; set; }
 
-        public int CurrentExpert { get; set; }
+        public int CurrentExpertKey { get; set; }
 
         // Appeal info
 

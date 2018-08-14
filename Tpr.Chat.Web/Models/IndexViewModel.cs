@@ -11,7 +11,7 @@ namespace Tpr.Chat.Web.Models
     {
         //public Guid AppealId { get; set; }
 
-        //public int ExpertKey { get; set; }
+        public int ExpertKey { get; set; }
 
         public ChatSession ChatSession { get; set; }
 

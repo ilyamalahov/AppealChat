@@ -12,7 +12,7 @@
 @section Scripts {
     <script>
         var appealId = "@Model.ChatSession.AppealId";
-        var expertKey = "@Model.ChatSession.CurrentExpert";
+        var expertKey = "@Model.ExpertKey";
     </script>
     <script type="text/javascript" src="~/js/luxon.min.js"></script>
     <script type="text/javascript" src="~/lib/signalr/signalr.js"></script>
@@ -34,7 +34,7 @@
 
             var isExpert = message.NickName.Contains("Член КК");
 
-            var isCurrent = isExpert && message.NickName.Contains(Model.ChatSession.CurrentExpert.ToString());
+            var isCurrent = isExpert && message.NickName.Contains(Model.ExpertKey.ToString());
 
             var nickname = isCurrent ? "Вы" : message.NickName;
 

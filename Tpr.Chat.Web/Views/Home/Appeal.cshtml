@@ -12,7 +12,7 @@
 @section Scripts {
     <script>
         var appealId = "@Model.ChatSession.AppealId";
-        var expertKey = "@Model.ChatSession.CurrentExpert";
+        var expertKey = "@Model.ExpertKey";
     </script>
     <script type="text/javascript" src="~/js/luxon.min.js"></script>
     <script type="text/javascript" src="~/lib/signalr/signalr.js"></script>
@@ -62,11 +62,14 @@
         <div class="sidebar">
             <div class="info">
                 <div style="border-bottom: 1px solid #ccc;">
-                    <div style="margin-bottom:15px; text-align: center; background:#fff; border: 2px solid #ff8d00; padding: 10px; overflow: hidden; border-radius: 5px;">
+                    <div style="margin-bottom:15px; text-align: center; background:#fff; border: 2px solid #ff8d00; padding: 10px; overflow: hidden; border-radius: 5px; position: relative;">
                         <div style="font-size: 14px; color: #757575">Вас консультирует</div>
                         <div style="font-size: 22px; font-weight: bold;">Член<br />конфликтной комиссии</div>
-                        <div style="font-size: 28px; font-weight: bold;">№ <span id="expertNumber">@Model.ChatSession.CurrentExpert</span></div>
+                        <div style="font-size: 28px; font-weight: bold;">№ <span id="expertNumber">@Model.ChatSession.CurrentExpertKey</span></div>
                         <div id="onlineStatus" style="text-align: right;">Онлайн-статус</div>
+                        <div class="spinner-place" style="position: absolute; top:0; right: 0; margin: 5px;">
+                            <div class="spinner"></div>
+                        </div>
                     </div>
                     <button id="switchExpertButton" class="custom-button" style="margin-bottom: 15px;">Сменить собеседника</button>
                     <button id="completeButton" class="custom-button complete-button" style="margin-bottom: 15px;">Завершить консультацию</button>

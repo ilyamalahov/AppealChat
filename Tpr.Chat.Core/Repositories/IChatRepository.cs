@@ -6,8 +6,11 @@ namespace Tpr.Chat.Core.Repositories
 {
     public interface IChatRepository
     {
+        // Session
         ChatSession GetChatSession(Guid appealId);
+        bool UpdateSession(ChatSession chatSession);
 
+        // Messages
         IList<ChatMessage> GetChatMessages(Guid appealId);
 
         long WriteMessage(Guid appealId, string nickName, string messageString);
@@ -15,7 +18,10 @@ namespace Tpr.Chat.Core.Repositories
         long WriteLeave(Guid appealId, string nickName);
 
         long WriteChatMessage(ChatMessage message);
-        
-        bool IsExists(int key, Guid appealId);
+
+        // Experts
+        IEnumerable<int> GetExperts(Guid appealId);
+
+        bool AddExpert(Guid appealId, int expertKey);
     }
 }

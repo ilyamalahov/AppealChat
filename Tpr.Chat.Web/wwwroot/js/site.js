@@ -109,4 +109,18 @@ const closeModal = () => {
     $('#modal').html('').fadeOut();
 };
 
+
+const changeExpert = (accessToken, expertKey, appealId, beforeSendCallback) => {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            method: "post",
+            url: "api/setexpert",
+            data: { appealId, expertKey },
+            headers: { "Authorization": "Bearer " + accessToken },
+            beforeSend: beforeSendCallback,
+            success: resolve,
+            error: reject
+        });
+    });
+};
 //});
