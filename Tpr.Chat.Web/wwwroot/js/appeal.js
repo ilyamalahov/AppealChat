@@ -1,5 +1,5 @@
 ﻿$(document).ready(function () {
-    getAccessToken().then(function (accessToken) {
+    getAccessToken().then((accessToken) => {
 
         // Initializing SignalR connection
         const chatConnection = new signalR.HubConnectionBuilder()
@@ -71,6 +71,20 @@
         // 
         $('#completeButton').on('click', () => showModal("ajax/complete"));
 
+        $('#completeOkButton').on('click', () => { alert(); closeModal(); });
+
+        const switchLoader = (isVisible) => {
+            if (isVisible) {
+                $('#changeOverlay').show();
+                $('#changeSpinner').show();
+            } else {
+                $('#changeOverlay').hide();
+                $('#changeSpinner').hide();
+            }
+
+            $('#switchExpertButton').prop('disabled', !isVisible);
+        };
+
         // 
         const createListItem = (htmlElement, isAppeal) => {
             var div = $('<div class="message ' + (isAppeal ? 'place-left' : 'place-right') + '"></div>').html(htmlElement);
@@ -127,5 +141,11 @@
         const interval = 10000;
 
         updateInfo(interval, accessToken, updateCallback);
+
+        $(this).on('click', '#changeOkButton', (e) => {
+            changeExpert(accessToken, () => switchLoader(true))
+                .then(expertKey => { console.log(expertKey); switchLoader(false); })
+                .catch((error) => { alert(error); switchLoader(false); });
+        });
     });
 });

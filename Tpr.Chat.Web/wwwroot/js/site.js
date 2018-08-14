@@ -110,12 +110,11 @@ const closeModal = () => {
 };
 
 
-const changeExpert = (accessToken, expertKey, appealId, beforeSendCallback) => {
+const changeExpert = (accessToken, beforeSendCallback) => {
     return new Promise((resolve, reject) => {
         $.ajax({
             method: "post",
-            url: "api/setexpert",
-            data: { appealId, expertKey },
+            url: "api/expert/change",
             headers: { "Authorization": "Bearer " + accessToken },
             beforeSend: beforeSendCallback,
             success: resolve,

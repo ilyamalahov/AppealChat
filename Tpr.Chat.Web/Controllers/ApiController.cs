@@ -27,6 +27,7 @@ namespace Tpr.Chat.Web.Controllers
             return Json("");
         }
 
+        [HttpPost("expert/change")]
         public JsonResult SetExpert(Guid appealId, int expertKey)
         {
             // 

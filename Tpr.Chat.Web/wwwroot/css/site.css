@@ -113,7 +113,77 @@ footer {
         background: inherit;
     }
 
+.center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: rgba(0, 0, 0, 0.72);
+}
+
+.modal-window {
+    display: flex;
+    flex-flow: column;
+    border-radius: 5px;
+    background: #fff;
+    color: #484848;
+    width: 500px;
+    min-height: 200px;
+}
+
+.modal-header {
+    flex: none;
+    border-bottom: 2px solid #d6dade;
+    font-size: 20px;
+    font-weight: bold;
+    overflow: hidden;
+}
+
+    .modal-header .title {
+        padding: 10px 15px;
+    }
+
+    .modal-header .close {
+        float: right;
+        font-size: 36px;
+        padding: 0 10px;
+        color: #ccc;
+    }
+
+        .modal-header .close:hover {
+            color: #565656;
+            cursor: pointer;
+        }
+
+.modal-content {
+    flex: auto;
+    padding: 10px;
+    font-size: 18px;
+}
+
+.modal-footer {
+    flex: none;
+    display: flex;
+    justify-content: space-between;
+}
+
+    .modal-footer .custom-button {
+        padding: 10px;
+        margin: 10px;
+        width: 100%;
+    }
 .spinner {
+    display: none;
     border: 5px solid #e9e9e9;
     border-radius: 50%;
     border-top: 5px solid #476cd4;

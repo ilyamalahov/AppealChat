@@ -6,7 +6,7 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" type="text/css" href="~/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/appeal.css" />
 }
 
 @section Scripts {
@@ -67,8 +67,8 @@
                         <div style="font-size: 22px; font-weight: bold;">Член<br />конфликтной комиссии</div>
                         <div style="font-size: 28px; font-weight: bold;">№ <span id="expertNumber">@Model.ChatSession.CurrentExpertKey</span></div>
                         <div id="onlineStatus" style="text-align: right;">Онлайн-статус</div>
-                        <div class="spinner-place" style="position: absolute; top:0; right: 0; margin: 5px;">
-                            <div class="spinner"></div>
+                        <div id="changeOverlay" class="loader-overlay center">
+                            <div id="changeSpinner" class="spinner"></div>
                         </div>
                     </div>
                     <button id="switchExpertButton" class="custom-button" style="margin-bottom: 15px;">Сменить собеседника</button>
@@ -105,10 +105,10 @@
                     <div>kk77@mcko.ru</div>
                 </div>
             </div>
-            <div class="footer">Московское время: <span id="moscowTime">9:32</span></div>
+            <div class="footer">Московское время: <span id="moscowTime">00:00</span></div>
             <partial name="_Footer" />
         </div>
     </div>
 </div>
 
-<div id="modal" style="display: none;" class="modal"></div>
+<div id="modal" style="display: none;" class="modal-overlay center"></div>
