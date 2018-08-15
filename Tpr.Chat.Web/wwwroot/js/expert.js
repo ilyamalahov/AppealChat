@@ -41,6 +41,19 @@
             $('#messageText').val('');
         });
 
+        $('#quickReplyButton').on('click', () => toggleQuickReplyBlock());
+
+        $('.list-item').on('click', function (e) {
+            insertAtCursor($('#messageText'), $(this).text());
+
+            toggleQuickReplyBlock();
+        });
+
+        const toggleQuickReplyBlock = () => {
+            $('#quickReplyBlock').toggle();
+            $('#quickReplyButton').toggleClass('send-button');
+        }
+
         // Update status
         const changeStatus = function (isOnline) {
             const statusText = isOnline ? 'Подключен к чату' : 'Отключен от чата';

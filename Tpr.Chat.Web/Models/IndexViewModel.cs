@@ -16,5 +16,7 @@ namespace Tpr.Chat.Web.Models
         public ChatSession ChatSession { get; set; }
 
         public ICollection<ChatMessage> Messages { get; set; }
+
+        public IEnumerable<QuickReply> QuickReplies { get; set; }
     }
 }

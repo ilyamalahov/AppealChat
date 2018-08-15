@@ -38,6 +38,7 @@ footer {
     width: 100%;
     padding: 6px;
     line-height: 1;
+    overflow-x: hidden;
 }
 
 .form-button {

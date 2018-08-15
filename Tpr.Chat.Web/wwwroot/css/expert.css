@@ -5,6 +5,7 @@
 
 .block {
     margin: 5px;
+    position: relative;
 }
 
 .appeal-info {
@@ -24,12 +25,6 @@
 
 .message-history {
     border: 1px solid #ccc;
-}
-
-.quick-reply {
-    display: flex;
-    min-height: 200px;
-    background: #ccc;
 }
 
 .message-text {
@@ -58,4 +53,24 @@
     .send-button {
         background: #476cd4;
         color: #fff;
+    }
+
+.quick-reply {
+    max-height: 200px;
+    background: #ccc;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    border: 1px solid #8c8c8c;
+    box-sizing: border-box;
+}
+    .quick-reply .list-item {
+        border: 1px solid #777;
+        margin: 10px;
+        padding: 5px;
+        background: #fff;
+    }
+    .quick-reply .list-item:hover {
+        background: #d3d3d3;
+        cursor: pointer;
     }

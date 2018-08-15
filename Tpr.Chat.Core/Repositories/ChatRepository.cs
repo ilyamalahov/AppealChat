@@ -113,29 +113,39 @@ namespace Tpr.Chat.Core.Repositories
         
         #endregion
 
-        #region Experts
+        #region Quick Reply
 
-        public IEnumerable<int> GetExperts(Guid appealId)
+        //public IEnumerable<int> GetExperts(Guid appealId)
+        //{
+        //    string sql = "SELECT ExpertKey FROM dbo.SessionExperts WHERE AppealId = @appealId";
+
+        //    using (var connection = new SqlConnection(_connectionString))
+        //    {
+        //        connection.Open();
+
+        //        return connection.Query<int>(sql, new { appealId });
+        //    }
+        //}
+
+        //public bool AddExpert(Guid appealId, int expertKey)
+        //{
+        //    string sql = "INSERT INTO dbo.SessionExperts (ExpertKey, AppealId) VALUES (@expertKey, @appealId)";
+
+        //    using (var connection = new SqlConnection(_connectionString))
+        //    {
+        //        connection.Open();
+
+        //        return connection.Execute(sql, new { expertKey, appealId }) > 0;
+        //    }
+        //}
+
+        public IEnumerable<QuickReply> GetQuickReplies()
         {
-            string sql = "SELECT ExpertKey FROM dbo.SessionExperts WHERE AppealId = @appealId";
-
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
-                return connection.Query<int>(sql, new { appealId });
-            }
-        }
-
-        public bool AddExpert(Guid appealId, int expertKey)
-        {
-            string sql = "INSERT INTO dbo.SessionExperts (ExpertKey, AppealId) VALUES (@expertKey, @appealId)";
-
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                return connection.Execute(sql, new { expertKey, appealId }) > 0;
+                return connection.GetAll<QuickReply>();
             }
         }
 

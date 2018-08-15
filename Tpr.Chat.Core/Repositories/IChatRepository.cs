@@ -21,8 +21,9 @@ namespace Tpr.Chat.Core.Repositories
         long WriteChatMessage(ChatMessage message);
 
         // Experts
-        IEnumerable<int> GetExperts(Guid appealId);
+        //IEnumerable<int> GetExperts(Guid appealId);
 
-        bool AddExpert(Guid appealId, int expertKey);
+        //bool AddExpert(Guid appealId, int expertKey);
+        IEnumerable<QuickReply> GetQuickReplies();
     }
 }

@@ -44,7 +44,9 @@
         $('#messageText').on('input', function (e) {
             var textarea = e.target;
 
-            textarea.rows = calculateExpandRows(textarea);
+            var rows = calculateExpandRows(textarea);
+
+            textarea.rows += rows;
 
             setButtonDisable($(this).val() === '');
         });
@@ -59,11 +61,7 @@
             }
         });
 
-        $('#emojiButton').on('click', () => {
-            $('#emojiGrid').toggle();
-            $(this).children('i').toggleClass("far fa-smile");
-            $(this).children('i').toggleClass("fas fa-chevron-circle-down");
-        });
+        $('#emojiButton').on('click', () => $('#emojiGrid').toggle());
 
         // 
         $('#switchExpertButton').on('click', () => showModal("ajax/changeexpert"));
@@ -110,12 +108,11 @@
 
             var minRows = textarea.dataset.minRows | 1;
 
-            //textarea.rows = minRows;
+            textarea.rows = minRows;
 
             var currentRowCount = Math.ceil((textarea.scrollHeight - textarea.clientHeight) / 16);
-            console.log(currentRowCount);
 
-            return Math.max(minRows, Math.min(currentRowCount, 4));
+            return Math.max(0, Math.min(currentRowCount, 4));
         };
 
         // Update information callback

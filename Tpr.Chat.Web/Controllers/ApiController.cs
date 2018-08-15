@@ -41,21 +41,22 @@ namespace Tpr.Chat.Web.Controllers
             }
             
             // 
-            var experts = chatRepository.GetExperts(appealId);
+            //var experts = chatRepository.GetExperts(appealId);
 
             // 
-            if (experts.Count() == 2)
-            {
-                var response = new { error = "Max count of experts attached to this session" };
+            //if (experts.Count() == 2)
+            //{
+            //    var response = new { error = "Max count of experts attached to this session" };
 
-                return Json(response);
-            }
+            //    return Json(response);
+            //}
 
             // 
             var expertKey = new Random().Next(1, 99999);
 
             //
-            var result = chatRepository.AddExpert(appealId, expertKey);
+            //var result = chatRepository.AddExpert(appealId, expertKey);
+            var result = true;
 
             if(!result)
             {

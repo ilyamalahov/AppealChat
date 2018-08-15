@@ -32,7 +32,7 @@ namespace Tpr.Chat.Web.Controllers
         }
 
         [HttpGet("/{appealId}")]
-        public async Task<IActionResult> Index(Guid appealId, int key = 0, string secretKey = null)
+        public IActionResult Index(Guid appealId, int key = 0, string secretKey = null)
         {
             // 
             var connectionType = key > 0 ? ContextType.Expert : ContextType.Appeal;
@@ -54,15 +54,15 @@ namespace Tpr.Chat.Web.Controllers
             }
 
             // 
-            if(connectionType == ContextType.Expert)
-            {
-                var experts = chatRepository.GetExperts(appealId);
+            //if(connectionType == ContextType.Expert)
+            //{
+            //    var experts = chatRepository.GetExperts(appealId);
 
-                if (!experts.Contains(key))
-                {
-                    return BadRequest(string.Format("Ключ эксперта ({0}) не прикреплен к сессии", key));
-                }
-            }
+            //    if (!experts.Contains(key))
+            //    {
+            //        return BadRequest(string.Format("Ключ эксперта ({0}) не прикреплен к сессии", key));
+            //    }
+            //}
 
             // 
             var model = new IndexViewModel
@@ -80,13 +80,15 @@ namespace Tpr.Chat.Web.Controllers
             // Expert checkings
             if (connectionType == ContextType.Expert)
             {
-                if (DateTime.Now < chatSession.FinishTime && key != chatSession.CurrentExpertKey)
-                {
-                    return BadRequest("Ключ эксперта не используется для данной сессии");
-                }
+                //if (DateTime.Now < chatSession.FinishTime && key != chatSession.CurrentExpertKey)
+                //{
+                //    return BadRequest("Ключ эксперта не используется для данной сессии");
+                //}
                 // Secret checkings, etc...
 
                 model.Messages = chatRepository.GetChatMessages(appealId);
+
+                model.QuickReplies = chatRepository.GetQuickReplies();
 
                 return View("Expert", model);
             }
