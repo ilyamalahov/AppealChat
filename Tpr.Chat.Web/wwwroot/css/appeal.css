@@ -75,6 +75,7 @@ footer {
         flex: auto;
         overflow-y: auto;
         padding: 15px;
+        color: #3c3c3c;
     }
 
     .sidebar .footer {

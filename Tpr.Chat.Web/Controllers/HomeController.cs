@@ -80,10 +80,10 @@ namespace Tpr.Chat.Web.Controllers
             // Expert checkings
             if (connectionType == ContextType.Expert)
             {
-                //if (key != chatSession.CurrentExpert)
-                //{
-                //    return BadRequest("");
-                //}
+                if (DateTime.Now < chatSession.FinishTime && key != chatSession.CurrentExpertKey)
+                {
+                    return BadRequest("Ключ эксперта не используется для данной сессии");
+                }
                 // Secret checkings, etc...
 
                 model.Messages = chatRepository.GetChatMessages(appealId);

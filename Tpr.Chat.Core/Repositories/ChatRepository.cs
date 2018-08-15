@@ -53,6 +53,18 @@ namespace Tpr.Chat.Core.Repositories
             }
         }
 
+        public IEnumerable<ChatMessage> GetExpertMessages(Guid appealId, string nickName, ChatMessageTypes messageType)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string sql = "SELECT * FROM dbo.ChatMessages WHERE AppealId = @appealId AND NickName = @nickName AND ChatMessageTypeId = @messageType";
+
+                return connection.Query<ChatMessage>(sql, new { appealId, nickName, messageType = (int)messageType });
+            }
+        }
+
         public long WriteMessage(Guid appealId, string nickName, string messageString)
         {
             return WriteChatMessage(appealId, nickName, messageString, ChatMessageTypes.Message);
@@ -117,13 +129,13 @@ namespace Tpr.Chat.Core.Repositories
 
         public bool AddExpert(Guid appealId, int expertKey)
         {
-            string sql = "INSERT INTO dbo.SessionExperts (ExpertKey, AppealId) VALUES (@key, @appealId)";
+            string sql = "INSERT INTO dbo.SessionExperts (ExpertKey, AppealId) VALUES (@expertKey, @appealId)";
 
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
-                return connection.Execute(sql) > 0;
+                return connection.Execute(sql, new { expertKey, appealId }) > 0;
             }
         }
 

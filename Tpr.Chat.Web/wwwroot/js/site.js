@@ -113,7 +113,7 @@ const closeModal = () => {
 const changeExpert = (accessToken, beforeSendCallback) => {
     return new Promise((resolve, reject) => {
         $.ajax({
-            method: "post",
+            method: "GET",
             url: "api/expert/change",
             headers: { "Authorization": "Bearer " + accessToken },
             beforeSend: beforeSendCallback,

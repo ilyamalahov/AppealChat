@@ -98,7 +98,7 @@ footer {
     margin-bottom: 5px;
     background: #fff;
     color: #000;
-    word-break: break-all;
+    word-break: break-word;
 }
 
     .message-bubble::before {
@@ -212,4 +212,9 @@ footer {
     100% {
         transform: rotate(360deg);
     }
+}
+
+.one-line {
+    display: inline-block;
+    vertical-align: middle;
 }

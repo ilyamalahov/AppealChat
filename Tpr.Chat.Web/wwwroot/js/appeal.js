@@ -42,9 +42,9 @@
 
         // Textarea auto rows count
         $('#messageText').on('input', function (e) {
-            var rows = calculateExpandRows(e.target);
-            
-            $(this).attr('rows', rows);
+            var textarea = e.target;
+
+            textarea.rows = calculateExpandRows(textarea);
 
             setButtonDisable($(this).val() === '');
         });
@@ -110,12 +110,13 @@
 
             var minRows = textarea.dataset.minRows | 1;
 
-            textarea.rows = minRows;
+            //textarea.rows = minRows;
 
             var currentRowCount = Math.ceil((textarea.scrollHeight - textarea.clientHeight) / 16);
+            console.log(currentRowCount);
 
-            return Math.max(minRows, Math.min(currentRowCount, 5));
-        }
+            return Math.max(minRows, Math.min(currentRowCount, 4));
+        };
 
         // Update information callback
         const updateCallback = (response) => {
@@ -143,9 +144,12 @@
         updateInfo(interval, accessToken, updateCallback);
 
         $(this).on('click', '#changeOkButton', (e) => {
-            changeExpert(accessToken, () => switchLoader(true))
-                .then(expertKey => { console.log(expertKey); switchLoader(false); })
-                .catch((error) => { alert(error); switchLoader(false); });
+            changeExpert(accessToken, () => { closeModal(); switchLoader(true); })
+                .then(response => {
+                    $('#expertNumber').val(response.expertKey);
+                    switchLoader(false);
+                })
+                .catch((error) => { alert(error.error); switchLoader(false); });
         });
     });
 });

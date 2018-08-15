@@ -1,66 +1,78 @@
 ﻿@model IndexViewModel
 @{
     ViewData["Title"] = "Система онлайн консультирования по вопросам";
+
+    var currentDate = DateTime.Now;
+
+    var chatSession = Model.ChatSession;
 }
 
 @section Styles{
     <link rel="stylesheet" type="text/css" href="~/css/early-complete.css" />
 }
 
-    <div class="container">
-        <partial name="_Header" />
+<div class="container">
+    <partial name="_Header" />
 
-        <div class="content">
-            <div class="header">
-                <div class="moscow-time">
-                    <div class="highlight">@DateTime.Now.ToLongDateString()</div>
-                    <div>Московское время: <span class="highlight">@DateTime.Now.ToString("t")</span></div>
-                </div>
-                <div class="complete-text">Консультация по апелляции завершена.</div>
+    <div class="content">
+        <div class="header">
+            <div class="moscow-time">
+                <div class="highlight">@currentDate.ToLongDateString()</div>
+                <div>Московское время: <span class="highlight">@currentDate.ToString("t")</span></div>
             </div>
-            <div class="main">
-                <div class="info-block">
-                    <div class="header">Сведения о заседании конфликтной комиссии</div>
-                    <ul>
-                        <li class="info-item">Заседание конфликтной комиссии, в рамках которого будет вынесено Решение по Вашей апелляции, состоится <strong>@DateTime.Now.AddDays(1).ToShortDateString()</strong></li>
-                        <li class="info-item">Запланированное время рассмотрения Вашей апелляции <strong>с <span>@Model.ChatSession.FinishTime.ToString("t")</span> до <span>@Model.ChatSession.FinishTime.AddMinutes(10).ToString("t")</span></strong></li>
-                        <li class="info-item">Онлайн-трансляцию заседания конфликтной комиссии Вы сможете посмотреть, перейдя по данной ссылке <a href="#">http://test.com</a></li>
-                        <li class="info-item">По итогам рассмотрения апелляции вам будет направлено Решение конфликтной комиссии, ознакомиться с которым Вы сможете в личном кабинете на портале.</li>
-                    </ul>
-                </div>
-                <div class="info-block">
-                    <div class="header">Сведения об аппеляции</div>
-                    <ul>
-                        <li class="info-item">Дата и время подачи заявления: <strong>@Model.ChatSession.ApplicationDate.ToString("g")</strong></li>
-                        <li class="info-item">Номер апелляции: <strong>@Model.ChatSession.AppealNumber</strong></li>
-                        <li class="info-item">Дата и время регистрации заявления: <strong>@Model.ChatSession.RegistrationDate.ToString("g")</strong></li>
-                        <li class="info-item">Предмет: <strong>@Model.ChatSession.Subject</strong></li>
-                        <li class="info-item">Дата экзамена: <strong>@Model.ChatSession.ExamDate.ToShortDateString()</strong></li>
-                        <li class="info-item">Дата и время начала онлайн консультации: <strong>@Model.ChatSession.StartTime.ToString("g")</strong></li>
-                        <li class="info-item">Дата и время окончания онлайн консультации: <strong>@Model.ChatSession.FinishTime.ToString("g")</strong></li>
-                    </ul>
-                </div>
-                <div class="info-block">
-                    <div class="header">Справочная информация</div>
-                    <div>
-                        <div style="margin-bottom: 10px;">
-                            <div style="display: inline-block; vertical-align: middle;">Инструкция по работе с системой онлайн трансляции заседания конфликтной комиссии  </div>
-                            <img style="display: inline-block; vertical-align: middle;" src="~/images/download.png" />
-                        </div>
-
-                        <div><strong>Справочная служба конфликтной комиссии г. Москвы</strong></div>
+            <div class="complete-text">Консультация по апелляции завершена.</div>
+        </div>
+        <div class="main">
+            <div class="info-block">
+                <div class="header">Сведения о заседании конфликтной комиссии</div>
+                <ul>
+                    <li class="info-item">Заседание конфликтной комиссии, в рамках которого будет вынесено Решение по Вашей апелляции, состоится <strong>@currentDate.AddDays(1).ToShortDateString()</strong></li>
+                    <li class="info-item">Запланированное время рассмотрения Вашей апелляции <strong>с <span>@chatSession.FinishTime.ToString("t")</span> до <span>@chatSession.FinishTime.AddMinutes(10).ToString("t")</span></strong></li>
+                    <li class="info-item">Онлайн-трансляцию заседания конфликтной комиссии Вы сможете посмотреть, перейдя по данной ссылке <a href="#">http://test.com</a></li>
+                    <li class="info-item">По итогам рассмотрения апелляции вам будет направлено Решение конфликтной комиссии, ознакомиться с которым Вы сможете в личном кабинете на портале.</li>
+                </ul>
+            </div>
+            <div class="info-block">
+                <div class="header">Сведения об аппеляции</div>
+                <ul>
+                    <li class="info-item">Дата и время подачи заявления: <strong>@chatSession.ApplicationDate.ToString("g")</strong></li>
+                    <li class="info-item">Номер апелляции: <strong>@chatSession.AppealNumber</strong></li>
+                    <li class="info-item">Дата и время регистрации заявления: <strong>@chatSession.RegistrationDate.ToString("g")</strong></li>
+                    <li class="info-item">Предмет: <strong>@chatSession.Subject</strong></li>
+                    <li class="info-item">Дата экзамена: <strong>@chatSession.ExamDate.ToShortDateString()</strong></li>
+                    <li class="info-item" style="color: #bcb7b7;">Дата и время начала онлайн консультации: <strong>@chatSession.StartTime.ToString("g")</strong></li>
+                    <li class="info-item" style="color: #bcb7b7;">Дата и время окончания онлайн консультации: <strong>@chatSession.FinishTime.ToString("g")</strong></li>
+                </ul>
+            </div>
+            <div class="info-block">
+                <div class="header">Справочная информация</div>
+                <div>
+                    <div style="margin-bottom: 10px;">
+                        <div class="one-line">Инструкция по работе с системой онлайн трансляции заседания конфликтной комиссии  </div>
+                        <img class="one-line" src="~/images/download.png" />
+                    </div>
+                    <div><strong>Справочная служба конфликтной комиссии г. Москвы</strong></div>
+                    <div style="margin-bottom: 10px;">
                         <div>Горячая линия по работе конфликтной комиссии при проведении государственной итоговой аттестации по образовательным программам среднего общего образования:</div>
-                        <img style="display: inline-block; vertical-align: middle;" src="~/images/phone-call.png" />
-                        <div style="display: inline-block; vertical-align: middle;">+7 (495) 366-06-92</div>
+                        <img class="one-line" src="~/images/phone-call.png" />
+                        <div class="one-line"><a href="tel:+74953660692">+7 (495) 366-06-92</a></div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
                         <div>Официальный электронный адрес конфликтной комиссии при проведении государственной итоговой аттестации по образовательным программам среднего общего образования:</div>
-                        <img style="display: inline-block; vertical-align: middle;" src="~/images/EMail.png" />
-                        <div style="display: inline-block; vertical-align: middle;">kk77@mcko.ru</div>
+                        <img class="one-line" src="~/images/EMail.png" />
+                        <div class="one-line"><a href="mailto:kk77@mcko.ru">kk77@mcko.ru</a></div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
                         <div>Официальный электронный адрес конфликтной комиссии при проведении государственной итоговой аттестации по образовательным программам основного общего образования:</div>
-                        <img style="display: inline-block; vertical-align: middle;" src="~/images/EMail.png" />
-                        <div style="display: inline-block; vertical-align: middle;">kkgia9@mcko.ru</div>
+                        <img class="one-line" src="~/images/EMail.png" />
+                        <div class="one-line"><a href="mailto:kkgia9@mcko.ru">kkgia9@mcko.ru</a></div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
                         <div>Информационно-консультационный центр регионального центра обработки информации города Москвы:</div>
-                        <img style="display: inline-block; vertical-align: middle;" src="~/images/phone-call.png" />
-                        <div style="display: inline-block; vertical-align: middle;">+7 (495) 366-06-92</div>
+                        <img class="one-line" src="~/images/phone-call.png" />
+                        <div class="one-line"><a href="tel:+74953660692">+7 (495) 366-06-92</a></div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
                         <div><strong>Общественная приемная регионального центра обработки информации города Москвы</strong></div>
                         <div>Адрес: город Москва, Семеновская пл. д.4.</div>
                         <div>График работы: понедельник - пятница с 9:00 до 18:00, в дни проведения экзаменов – с 7:30 до 18:00</div>
@@ -68,5 +80,6 @@
                 </div>
             </div>
         </div>
-        <partial name="_Footer" />
     </div>
+    <partial name="_Footer" />
+</div>

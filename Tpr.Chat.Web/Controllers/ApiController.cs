@@ -12,7 +12,7 @@ namespace Tpr.Chat.Web.Controllers
 {
     [Authorize]
     [Produces("application/json")]
-    [Route("api/[controller]")]
+    [Route("api")]
     public class ApiController : Controller
     {
         private readonly IChatRepository chatRepository;
@@ -27,9 +27,19 @@ namespace Tpr.Chat.Web.Controllers
             return Json("");
         }
 
-        [HttpPost("expert/change")]
-        public JsonResult SetExpert(Guid appealId, int expertKey)
+        [HttpGet("expert/change")]
+        public JsonResult SetExpert()
         {
+            Guid appealId;
+
+            // Parse appeal ID from JWT token
+            if (!Guid.TryParse(HttpContext.User.Identity.Name, out appealId))
+            {
+                var response = new { error = "Parse appeal ID error" };
+
+                return Json(response);
+            }
+            
             // 
             var experts = chatRepository.GetExperts(appealId);
 
@@ -40,6 +50,9 @@ namespace Tpr.Chat.Web.Controllers
 
                 return Json(response);
             }
+
+            // 
+            var expertKey = new Random().Next(1, 99999);
 
             //
             var result = chatRepository.AddExpert(appealId, expertKey);

@@ -48,7 +48,7 @@ namespace Tpr.Chat.Web
             {
                 builder.AllowAnyMethod()
                     .AllowAnyHeader()
-                    .WithOrigins("https://localhost:44370")
+                    .WithOrigins(Configuration["AllowOrigins"])
                     .AllowCredentials();
             })
             );
