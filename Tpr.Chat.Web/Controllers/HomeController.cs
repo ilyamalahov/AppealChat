@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Xml;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -160,11 +161,11 @@ namespace Tpr.Chat.Web.Controllers
 
         [Authorize]
         [Produces("application/json")]
-        [HttpPost("/update")]
+        [HttpPost("update")]
         public IActionResult Update()
         {
             // Current Time
-            var moscowDate = DateTimeOffset.Now;
+            var currentDate = DateTimeOffset.Now;
 
             // Begin Time
             long beginTimestamp;
@@ -176,7 +177,7 @@ namespace Tpr.Chat.Web.Controllers
 
             var beginDate = DateTimeOffset.FromUnixTimeSeconds(beginTimestamp);
 
-            var beginTime = beginDate.Subtract(moscowDate).TotalMilliseconds;
+            var beginTime = beginDate.Subtract(currentDate);
 
             // Remaining Time
             long finishTimestamp;
@@ -188,14 +189,18 @@ namespace Tpr.Chat.Web.Controllers
 
             var finishDate = DateTimeOffset.FromUnixTimeSeconds(finishTimestamp);
 
-            var remainingTime = finishDate.Subtract(moscowDate).TotalMilliseconds;
+            var remainingTime = finishDate.Subtract(currentDate);
+
+            // 
+            var isAlarm = remainingTime.TotalMinutes < 5;
 
             // JSON Response
             var response = new
             {
-                moscowDate = moscowDate.ToUnixTimeMilliseconds(),
-                beginTime,
-                remainingTime
+                moscowDate = currentDate.ToUnixTimeMilliseconds(),
+                beginTime = beginTime.TotalMilliseconds,
+                remainingTime = remainingTime.TotalMilliseconds,
+                isAlarm
             };
 
             return Ok(response);

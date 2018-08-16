@@ -4,15 +4,42 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Tpr.Chat.Core.Repositories;
 
 namespace Tpr.Chat.Web.Hubs
 {
-    [Authorize(AuthenticationSchemes = "Bearer")]
     public class InfoHub : Hub
     {
-        public override async Task OnConnectedAsync()
+        private readonly IChatRepository chatRepository;
+
+        public InfoHub(IChatRepository chatRepository)
         {
-            await Clients.User(Context.UserIdentifier).SendAsync("Connect");
+            this.chatRepository = chatRepository;
+        }
+
+        //public override async Task OnConnectedAsync()
+        //{
+        //    await MainUpdate();
+        //}
+
+        //[Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task MainUpdate(Guid appealId)
+        {
+            // Current Time
+            var currentDate = DateTime.Now;
+
+            // Remaining Time
+            var chatSession = chatRepository.GetChatSession(appealId);
+
+            var remainingTimespan = chatSession.FinishTime.Subtract(currentDate);
+
+            var remainingTime = remainingTimespan.TotalMilliseconds;
+
+            // Is alarm
+            var isAlarm = remainingTimespan.TotalMinutes < 5;
+
+            // Send
+            await Clients.All.SendAsync("ReceiveInfo", currentDate, remainingTime, isAlarm);
         }
 
         public async Task UpdateInfo()

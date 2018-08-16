@@ -1,14 +1,43 @@
 ﻿$(document).ready(function () {
     getAccessToken().then((accessToken) => {
 
+        //const infoConnection = new signalR.HubConnectionBuilder()
+        //    .withUrl("/info")
+        //    .configureLogging(signalR.LogLevel.Trace)
+        //    .build();
+
+        // Starting SignalR connection
+        //infoConnection.start().then(() => { infoConnection.invoke('MainUpdate', appealId); }).catch(console.log("Error connection"));
+
+        // Receiving message from user
+        //infoConnection.on("ReceiveInfo", (currentDate, remainingTime, isAlarm) => {
+        //    console.log(currentDate, remainingTime, isAlarm);
+        //    var moscowDate = luxon.DateTime.fromISO(currentDate, { zone: 'utc+3' });
+            
+        //    $('#moscowTime').text(moscowDate.toFormat('t'));
+
+        //    var remainingDuration = luxon.Duration.fromMillis(remainingTime);
+
+        //    var remainingMinutes = remainingDuration.toFormat("m");
+
+        //    $('#remainingTime').text(remainingMinutes);
+
+        //    if (isAlarm) {
+        //        var alarmText = 'До окончания консультации осталось ' + remainingMinutes + ' минут(-ы)';
+
+        //        $('#alarm').text(alarmText).show();
+        //    }
+        //});
+
+
         // Initializing SignalR connection
         const chatConnection = new signalR.HubConnectionBuilder()
             .withUrl("/chat?token=" + accessToken)
-            .configureLogging(signalR.LogLevel.Trace)
+            //.configureLogging(signalR.LogLevel.Trace)
             .build();
 
         // Starting SignalR connection
-        chatConnection.start().catch(error => console.error(error));
+        chatConnection.start();
 
         // Receiving message from user
         chatConnection.on("Receive", (message, sender) => {
@@ -33,6 +62,10 @@
             $("#messagesList").append(li).scrollTo(li);
 
             changeStatus(false);
+        });
+
+        $('#moscowTime').on('click', function (e) {
+            infoConnection.invoke('MainUpdate');
         });
 
         // Sending message
@@ -119,11 +152,19 @@
         const updateCallback = (response) => {
             var moscowDate = luxon.DateTime.fromMillis(response.moscowDate, { zone: 'utc+3' });
 
+            $('#moscowTime').text(moscowDate.toFormat('t'));
+
             var remainingDuration = luxon.Duration.fromMillis(response.remainingTime);
 
-            $('#remainingTime').text(remainingDuration.toFormat("mm 'минут'"));
+            var remainingMinutes = remainingDuration.toFormat("m");
 
-            $('#moscowTime').text(moscowDate.toFormat('t'));
+            $('#remainingTime').text(remainingMinutes);
+
+            if (response.isAlarm) {
+                var alarmText = 'До окончания консультации осталось ' + remainingMinutes + ' минут(-ы)';
+
+                $('#alarm').text(alarmText).show();
+            }
 
             setTimeout(updateInfo, interval, interval, accessToken, updateCallback);
         };

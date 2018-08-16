@@ -142,6 +142,7 @@ namespace Tpr.Chat.Web
             app.UseSignalR(routes =>
             {
                 routes.MapHub<ChatHub>("/chat");
+                routes.MapHub<InfoHub>("/info");
             });
 
             // Authentication

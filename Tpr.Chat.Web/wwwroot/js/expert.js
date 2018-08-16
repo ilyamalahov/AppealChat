@@ -44,13 +44,19 @@
         $('#quickReplyButton').on('click', () => toggleQuickReplyBlock());
 
         $('.list-item').on('click', function (e) {
-            insertAtCursor($('#messageText'), $(this).text());
-
             toggleQuickReplyBlock();
+
+            insertAtCursor($('#messageText'), $(this).text());
+        });
+
+        $('#filterText').on('input', function (e) {
+            var value = $(this).val();
+            
+            $('.list-item').filter(':contains("' + value + '")').css('color','#ccc');
         });
 
         const toggleQuickReplyBlock = () => {
-            $('#quickReplyBlock').toggle();
+            $('#quickReplyBlock').slideToggle();
             $('#quickReplyButton').toggleClass('send-button');
         }
 
@@ -64,7 +70,15 @@
         const updateCallback = function (response) {
             var remainingDuration = luxon.Duration.fromMillis(response.remainingTime);
 
-            $('#remainingTime').text(remainingDuration.toFormat("mm 'минут'"));
+            var remainingMinutes = remainingDuration.toFormat('m');
+
+            $('#remainingTime').text(remainingMinutes);
+
+            if (response.isAlarm) {
+                var alarmText = 'До окончания консультации осталось ' + remainingMinutes + ' минут(-ы)';
+
+                $('#alarm').text(alarmText).show();
+            }
 
             setTimeout(updateInfo, interval, interval, accessToken, updateCallback);
         };
