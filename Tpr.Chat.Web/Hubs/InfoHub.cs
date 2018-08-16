@@ -17,11 +17,6 @@ namespace Tpr.Chat.Web.Hubs
             this.chatRepository = chatRepository;
         }
 
-        //public override async Task OnConnectedAsync()
-        //{
-        //    await MainUpdate();
-        //}
-
         //[Authorize(AuthenticationSchemes = "Bearer")]
         public async Task MainUpdate(Guid appealId)
         {

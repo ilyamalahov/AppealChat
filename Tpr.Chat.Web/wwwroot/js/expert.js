@@ -41,23 +41,38 @@
             $('#messageText').val('');
         });
 
-        $('#quickReplyButton').on('click', () => toggleQuickReplyBlock());
+        // 
+        var isQuickReplyVisible = false;
+
+        $('#quickReplyButton').on('click', () => {
+            isQuickReplyVisible = !isQuickReplyVisible;
+
+            toggleQuickReplyBlock(isQuickReplyVisible);
+        });
 
         $('.list-item').on('click', function (e) {
-            toggleQuickReplyBlock();
+            toggleQuickReplyBlock(false);
 
             insertAtCursor($('#messageText'), $(this).text());
         });
 
         $('#filterText').on('input', function (e) {
             var value = $(this).val();
-            
-            $('.list-item').filter(':contains("' + value + '")').css('color','#ccc');
+
+            $(".list-item").each(function () {
+                const isContains = $(this).is(":icontains('" + value + "')");
+
+                $(this).toggle(isContains);
+            });
         });
 
-        const toggleQuickReplyBlock = () => {
-            $('#quickReplyBlock').slideToggle();
-            $('#quickReplyButton').toggleClass('send-button');
+        const toggleQuickReplyBlock = (isVisible) => {
+            $('#quickReplyBlock').slideToggle(isVisible);
+            $('#quickReplyButton').toggleClass('send-button', isVisible);
+
+            if (isVisible) {
+                $('#filterText').focus();
+            }
         }
 
         // Update status

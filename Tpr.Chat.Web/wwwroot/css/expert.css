@@ -56,7 +56,6 @@
     }
 
 .quick-reply {
-    max-height: 200px;
     background: #ccc;
     position: absolute;
     bottom: 0;

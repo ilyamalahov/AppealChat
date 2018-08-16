@@ -26,9 +26,9 @@
             <div class="info-block">
                 <div class="header">Сведения о заседании конфликтной комиссии</div>
                 <ul>
-                    <li class="info-item">Заседание конфликтной комиссии, в рамках которого будет вынесено Решение по Вашей апелляции, состоится <strong>@currentDate.AddDays(1).ToShortDateString()</strong></li>
-                    <li class="info-item">Запланированное время рассмотрения Вашей апелляции <strong>с <span>@chatSession.FinishTime.ToString("t")</span> до <span>@chatSession.FinishTime.AddMinutes(10).ToString("t")</span></strong></li>
-                    <li class="info-item">Онлайн-трансляцию заседания конфликтной комиссии Вы сможете посмотреть, перейдя по данной ссылке <a href="#">http://test.com</a></li>
+                    <li class="info-item">Заседание конфликтной комиссии, в рамках которого будет вынесено Решение по Вашей апелляции, состоится <strong>@chatSession.MeetingDate.ToShortDateString()</strong></li>
+                    <li class="info-item">Запланированное время рассмотрения Вашей апелляции <strong>с <span>@chatSession.AppealStartDate.ToString("hh\\:mm")</span> до <span>@chatSession.AppealFinishTime.ToString("hh\\:mm")</span></strong></li>
+                    <li class="info-item">Онлайн-трансляцию заседания конфликтной комиссии Вы сможете посмотреть, перейдя по данной ссылке <a href="#">@chatSession.OnlineStreamLink</a></li>
                     <li class="info-item">По итогам рассмотрения апелляции вам будет направлено Решение конфликтной комиссии, ознакомиться с которым Вы сможете в личном кабинете на портале.</li>
                 </ul>
             </div>

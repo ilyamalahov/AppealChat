@@ -41,6 +41,8 @@ const insertAtCursor = function (element, value) {
     } else {
         element.val(element.val() + value);
     }
+
+    element.focus();
 };
 
 // Return new "Receive" message
@@ -91,6 +93,10 @@ jQuery.fn.scrollTo = function (element) {
 
     return this;
 };
+
+jQuery.expr.filters.icontains = function (elem, i, m) {
+    return (elem.innerText || elem.textContent || "").toLowerCase().indexOf(m[3].toLowerCase()) > -1;
+}
 
 // Show modal window
 const showModal = (url, data) => {

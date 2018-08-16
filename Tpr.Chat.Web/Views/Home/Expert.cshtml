@@ -13,68 +13,74 @@
     <script>
         var appealId = "@Model.ChatSession.AppealId";
         var expertKey = "@Model.ExpertKey";
+        var isFinished = "@Model.IsFinished";
     </script>
     <script type="text/javascript" src="~/js/luxon.min.js"></script>
     <script type="text/javascript" src="~/lib/signalr/signalr.js"></script>
     <script type="text/javascript" src="~/js/expert.js"></script>
 }
 
-<div class="container">
-    <div id="alarm" class="block alarm"></div>
-    <div class="block appeal-info">
-        <button class="close-button">Close</button>
-        <div>Участник по аппеляции</div>
-        <div style="font-weight:bold;">№ <span>@Model.ChatSession.AppealNumber</span></div>
-        <div id="onlineStatus" style="font-weight:bold; color: #009966;">Онлайн-статус</div>
-    </div>
-
-    <ul id="messagesList" class="block message-history">
-        @foreach (var message in Model.Messages)
-        {
-            var messageDate = message.CreateDate.ToString("G");
-
-            var isExpert = message.NickName.Contains("Член КК");
-
-            var isCurrent = isExpert && message.NickName.Contains(Model.ExpertKey.ToString());
-
-            var nickname = isCurrent ? "Вы" : message.NickName;
-
-            <li>
-                <div class="message @(isExpert ? "place-left" : "place-right")">
-                    @switch (message.ChatMessageTypeId)
-                    {
-                        case ChatMessageTypes.Joined:
-                            @nickname @(isCurrent ? " подключились" : " подключился") @:к консультации <b>(@messageDate) </b>
-                            break;
-                        case ChatMessageTypes.Message:
-                            <div class="message-bubble">@Html.Raw(message.MessageString)</div>@nickname <b>(@messageDate)</b>
-                            break;
-                        case ChatMessageTypes.Leave:
-                            @nickname @(isCurrent ? " покинули" : " покинул") @:консультацию <b>(@messageDate)</b>
-                            break;
-                    }
-                </div>
-            </li>
-        }
-    </ul>
-
-    <div class="block" style="text-align: right;">До конца консультации осталось: <b><span id="remainingTime">00</span> минут(-ы)</b></div>
-
-    <div class="block" style="flex: none;">
-        <div id="quickReplyBlock" class="quick-reply" style="display: none;">
-            <div style="border-bottom: 1px solid #000; padding: 10px;">
-                <input id="filterText" style="width: 100%; padding: 10px; border-radius: 10px; border: none;" type="text" placeholder="Введите текст" />
-            </div>
-            @foreach (var reply in Model.QuickReplies)
-            {
-                <div class="list-item">@reply.MessageText</div>
-            }
+    <div class="container">
+        <div id="alarm" class="block alarm"></div>
+        <div class="block appeal-info">
+            <button class="close-button">Close</button>
+            <div>Участник по аппеляции</div>
+            <div style="font-weight:bold;">№ <span>@Model.ChatSession.AppealNumber</span></div>
+            <div id="onlineStatus" style="font-weight:bold; color: #009966;">Онлайн-статус</div>
         </div>
 
-        <textarea id="messageText" class="message-text" rows="5" autocomplete="off" placeholder="Введите сообщение..."></textarea>
+        <ul id="messagesList" class="block message-history">
+            @foreach (var message in Model.Messages)
+            {
+                var messageDate = message.CreateDate.ToString("G");
+
+                var isExpert = message.NickName.Contains("Член КК");
+
+                var isCurrent = isExpert && message.NickName.Contains(Model.ExpertKey.ToString());
+
+                var nickname = isCurrent ? "Вы" : message.NickName;
+
+                <li>
+                    <div class="message @(isExpert ? "place-left" : "place-right")">
+                        @switch (message.ChatMessageTypeId)
+                        {
+                            case ChatMessageTypes.Joined:
+                                @nickname @(isCurrent ? " подключились" : " подключился") @:к консультации <b>(@messageDate) </b>
+                                break;
+                            case ChatMessageTypes.Message:
+                                <div class="message-bubble">@Html.Raw(message.MessageString)</div>@nickname <b>(@messageDate)</b>
+                                break;
+                            case ChatMessageTypes.Leave:
+                                @nickname @(isCurrent ? " покинули" : " покинул") @:консультацию <b>(@messageDate)</b>
+                                break;
+                        }
+                    </div>
+                </li>
+            }
+        </ul>
+
+        @if (!Model.IsFinished)
+        {
+            <div class="block" style="text-align: right;">До конца консультации осталось: <b><span id="remainingTime">00</span> минут(-ы)</b></div>
+
+            <div class="block" style="flex: none;">
+                <div id="quickReplyBlock" class="quick-reply" style="display: none;">
+                    <div style="border-bottom: 1px solid #000; padding: 10px;">
+                        <input id="filterText" style="width: 100%; padding: 8px 16px; border-radius: 16px; border: none;" type="text" placeholder="Введите текст" />
+                    </div>
+                    <div style="overflow-y: auto; max-height: 200px;">
+                        @foreach (var reply in Model.QuickReplies)
+                        {
+                            <div class="list-item">@reply.MessageText</div>
+                        }
+                    </div>
+                </div>
+
+                <textarea id="messageText" class="message-text" rows="5" autocomplete="off" placeholder="Введите сообщение..."></textarea>
+            </div>
+            <div class="block buttons">
+                <button id="quickReplyButton" class="form-button">Quick reply</button>
+                <button id="sendButton" class="form-button send-button">Send message</button>
+            </div>
+        }
     </div>
-    <div class="block buttons">
-        <button id="quickReplyButton" class="form-button">Quick reply</button>
-        <button id="sendButton" class="form-button send-button">Send message</button>
-    </div>
-</div>

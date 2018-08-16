@@ -65,11 +65,14 @@ namespace Tpr.Chat.Web.Controllers
             //    }
             //}
 
+            bool isFinished = DateTime.Now > chatSession.FinishTime;
+
             // 
             var model = new IndexViewModel
             {
                 ExpertKey = key,
-                ChatSession = chatSession
+                ChatSession = chatSession,
+                IsFinished = isFinished
             };
 
             // Check if current date less than chat start time
@@ -95,7 +98,7 @@ namespace Tpr.Chat.Web.Controllers
             }
 
             // Check if current date more than chat finish time
-            if (DateTime.Now > chatSession.FinishTime)
+            if (isFinished)
             {
                 return View("Complete", model);
             }
