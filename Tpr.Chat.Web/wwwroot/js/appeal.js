@@ -96,6 +96,7 @@
             }
         });
 
+        // 
         $('#emojiButton').on('click', () => $('#emojiGrid').toggle());
 
         // 
@@ -147,7 +148,7 @@
 
         // Update information callback
         const updateCallback = (response) => {
-            var moscowDate = luxon.DateTime.fromMillis(response.moscowDate, { zone: 'utc+3' });
+            var moscowDate = luxon.DateTime.fromISO(response.moscowDate, { zone: 'utc+3' });
 
             $('#moscowTime').text(moscowDate.toFormat('t'));
 
@@ -163,7 +164,7 @@
                 $('#alarm').text(alarmText).show();
             }
 
-            setTimeout(updateInfo, interval, interval, accessToken, updateCallback);
+            setTimeout(updateInfo, interval, interval, appealId, updateCallback);
         };
 
         // Update status
@@ -176,7 +177,7 @@
         // Update time information
         const interval = 10000;
 
-        updateInfo(interval, accessToken, updateCallback);
+        updateInfo(interval, appealId, updateCallback);
 
         $(this).on('click', '#changeOkButton', (e) => {
             changeExpert(accessToken, () => { closeModal(); switchLoader(true); })

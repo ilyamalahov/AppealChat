@@ -1,8 +1,8 @@
 ﻿$(document).ready(function () {
-    getAccessToken().then(function (accessToken) {
+    getAccessToken().then(function (appealId) {
         // Initializing SignalR connection
         const chatConnection = new signalR.HubConnectionBuilder()
-            .withUrl("/chat?token=" + accessToken)
+            .withUrl("/chat?token=" + appealId)
             .configureLogging(signalR.LogLevel.Trace)
             .build();
 
@@ -100,13 +100,13 @@
                 $('#alarm').text(alarmText).show();
             }
 
-            setTimeout(updateInfo, interval, interval, accessToken, updateCallback);
+            setTimeout(updateInfo, interval, interval, appealId, updateCallback);
         };
 
         // Update time information
         const interval = 10000;
 
-        updateInfo(interval, accessToken, updateCallback);
+        updateInfo(interval, appealId, updateCallback);
 
     }).catch((error) => alert(error));
 });

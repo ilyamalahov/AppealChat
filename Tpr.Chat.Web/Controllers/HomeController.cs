@@ -162,37 +162,44 @@ namespace Tpr.Chat.Web.Controllers
             return Ok(response);
         }
 
-        [Authorize]
+        //[Authorize]
         [Produces("application/json")]
         [HttpPost("update")]
-        public IActionResult Update()
+        public IActionResult Update(Guid appealId)
         {
             // Current Time
-            var currentDate = DateTimeOffset.Now;
+            var currentDate = DateTime.Now;
+
+            var chatSession = chatRepository.GetChatSession(appealId);
+
+            if(chatSession == null)
+            {
+                return BadRequest("Error");
+            }
 
             // Begin Time
-            long beginTimestamp;
+            //long beginTimestamp;
 
-            if(!long.TryParse(HttpContext.User.FindFirstValue("nbf"), out beginTimestamp))
-            {
-                return BadRequest(beginTimestamp);
-            }
+            //if(!long.TryParse(HttpContext.User.FindFirstValue("nbf"), out beginTimestamp))
+            //{
+            //    return BadRequest(beginTimestamp);
+            //}
 
-            var beginDate = DateTimeOffset.FromUnixTimeSeconds(beginTimestamp);
+            //var beginDate = DateTimeOffset.FromUnixTimeSeconds(beginTimestamp);
 
-            var beginTime = beginDate.Subtract(currentDate);
+            var beginTime = chatSession.StartTime.Subtract(currentDate);
 
             // Remaining Time
-            long finishTimestamp;
+            //long finishTimestamp;
 
-            if (!long.TryParse(HttpContext.User.FindFirstValue("exp"), out finishTimestamp))
-            {
-                return BadRequest(beginTimestamp);
-            }
+            //if (!long.TryParse(HttpContext.User.FindFirstValue("exp"), out finishTimestamp))
+            //{
+            //    return BadRequest(beginTimestamp);
+            //}
 
-            var finishDate = DateTimeOffset.FromUnixTimeSeconds(finishTimestamp);
+            //var finishDate = DateTimeOffset.FromUnixTimeSeconds(finishTimestamp);
 
-            var remainingTime = finishDate.Subtract(currentDate);
+            var remainingTime = chatSession.FinishTime.Subtract(currentDate);
 
             // 
             var isAlarm = remainingTime.TotalMinutes < 5;
@@ -200,7 +207,7 @@ namespace Tpr.Chat.Web.Controllers
             // JSON Response
             var response = new
             {
-                moscowDate = currentDate.ToUnixTimeMilliseconds(),
+                moscowDate = currentDate,
                 beginTime = beginTime.TotalMilliseconds,
                 remainingTime = remainingTime.TotalMilliseconds,
                 isAlarm

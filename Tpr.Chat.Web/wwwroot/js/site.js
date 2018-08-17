@@ -1,12 +1,14 @@
 ﻿//$(document).ready(function () {
 
 // Update info in interval
-const updateInfo = function (interval, accessToken, callback) {
-    $.ajax({
-        method: "POST",
-        url: "update",
-        headers: { "Authorization": "Bearer " + accessToken }
-    }).done(callback);
+const updateInfo = function (interval, appealId, callback) {
+    $.post("update", { appealId }).done(callback);
+
+    //{
+    //method: "POST",
+    //    url: "update",
+    //    //headers: { "Authorization": "Bearer " + accessToken }
+    //}
 };
 
 // Get JWT access token

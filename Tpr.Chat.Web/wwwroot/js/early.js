@@ -1,20 +1,18 @@
 ﻿$(document).ready(function () {
-    var accessToken = sessionStorage.getItem('access_token');
+    // Update information callback
+    const updateCallback = (response) => {
+        var remainingDuration = luxon.Duration.fromMillis(response.beginTime);
 
-    if (!accessToken) {
-        $.post({
-            method: "POST",
-            url: "token",
-            data: { appealId: appealId, key: expertKey },
-            success: function (response) {
-                sessionStorage.setItem("access_token", response.accessToken);
+        var remainingTime = remainingDuration.shiftTo('hours', 'minutes').toObject();
 
-                updateInfo
-            },
-            error: function (xhr, status, error) {
-                window.location.href = "/error";
-            },
-            async: false
-        })
-    }
+        $('#remainingHours').text(remainingTime.hours);
+        $('#remainingMinutes').text(Math.round(remainingTime.minutes));
+
+        setTimeout(updateInfo, interval, interval, appealId, updateCallback);
+    };
+
+    // Update time information
+    const interval = 10000;
+
+    updateInfo(interval, appealId, updateCallback);
 });

@@ -26,18 +26,35 @@ namespace Tpr.Chat.Web.Hubs
 
         public override Task OnConnectedAsync()
         {
-            queue.QueueBackgroundWorkItem(token => {
-                var timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
-
-                return Task.CompletedTask;
-            });
+            queue.QueueBackgroundWorkItem(Update);
 
             return base.OnConnectedAsync();
         }
 
-        private void DoWork(object state)
+        public override Task OnDisconnectedAsync(Exception exception)
         {
-            logger.LogInformation("Executing timer");
+            return base.OnDisconnectedAsync(exception);
+        }
+
+        private async Task Update(CancellationToken token)
+        {
+            var taskId = Guid.NewGuid();
+
+            logger.LogInformation("Task: {0} is started", taskId);
+
+            while (!token.IsCancellationRequested)
+            {
+                logger.LogDebug("Task: {0}, Current date: {1}", taskId, DateTime.Now);
+
+                await Task.Delay(TimeSpan.FromMinutes(1), token);
+            }
+
+            logger.LogInformation("Task: {0} is completed", taskId);
+        }
+
+        private void UpdateInfo(object state)
+        {
+            logger.LogDebug("Current date: {0}", DateTime.Now);
         }
 
         //[Authorize(AuthenticationSchemes = "Bearer")]
