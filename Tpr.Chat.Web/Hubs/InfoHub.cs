@@ -1,20 +1,43 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Tpr.Chat.Core.Repositories;
+using Tpr.Chat.Web.Service;
 
 namespace Tpr.Chat.Web.Hubs
 {
     public class InfoHub : Hub
     {
         private readonly IChatRepository chatRepository;
+        private readonly IBackgroundTaskQueue queue;
+        private readonly ILogger logger;
 
-        public InfoHub(IChatRepository chatRepository)
+        public InfoHub(IChatRepository chatRepository, IBackgroundTaskQueue queue, ILoggerFactory loggerFactory)
         {
             this.chatRepository = chatRepository;
+            this.queue = queue;
+            logger = loggerFactory.CreateLogger<InfoHub>();
+        }
+
+        public override Task OnConnectedAsync()
+        {
+            queue.QueueBackgroundWorkItem(token => {
+                var timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
+
+                return Task.CompletedTask;
+            });
+
+            return base.OnConnectedAsync();
+        }
+
+        private void DoWork(object state)
+        {
+            logger.LogInformation("Executing timer");
         }
 
         //[Authorize(AuthenticationSchemes = "Bearer")]

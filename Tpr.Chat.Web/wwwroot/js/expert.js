@@ -78,7 +78,7 @@
             if (isVisible) {
                 $('#filterText').focus();
             }
-        }
+        };
 
         // Update status
         const changeStatus = function (isOnline) {

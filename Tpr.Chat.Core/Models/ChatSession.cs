@@ -23,18 +23,16 @@ namespace Tpr.Chat.Core.Models
 
         public DateTime RegistrationDate { get; set; }
 
-        public string Subject { get; set; }
+        public string SubjectName { get; set; }
 
         public DateTime ExamDate { get; set; }
 
-        // Meeting info
+        // Commission info
 
-        public DateTime MeetingDate { get; set; }
+        public DateTime CommissionStartTime { get; set; }
 
-        public TimeSpan AppealStartDate { get; set; }
+        public DateTime CommissionFinishTime { get; set; }
 
-        public TimeSpan AppealFinishTime { get; set; }
-
-        public string OnlineStreamLink { get; set; }
+        public string CommissionLink { get; set; }
     }
 }

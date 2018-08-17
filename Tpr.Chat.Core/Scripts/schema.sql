@@ -1,7 +1,7 @@
 ﻿--
 -- Скрипт сгенерирован Devart dbForge Studio for SQL Server, Версия 5.5.369.0
 -- Домашняя страница продукта: http://www.devart.com/ru/dbforge/sql/studio
--- Дата скрипта: 8/17/2018 11:43:10 AM
+-- Дата скрипта: 8/17/2018 12:33:39 PM
 -- Версия сервера: 10.50.4042
 --
 
@@ -33,12 +33,11 @@ CREATE TABLE dbo.ChatSessions (
   CurrentExpertKey int NULL,
   ApplicationDate datetime NOT NULL,
   RegistrationDate datetime NOT NULL,
-  Subject nvarchar(100) NOT NULL,
+  SubjectName nvarchar(100) NOT NULL,
   ExamDate datetime NOT NULL,
-  MeetingDate datetime NOT NULL,
-  AppealStartTime time NOT NULL,
-  AppealFinishTime time NOT NULL,
-  OnlineStreamLink varchar(max) NOT NULL
+  CommissionStartTime datetime NOT NULL,
+  CommissionFinishTime datetime NOT NULL,
+  CommissionLink varchar(max) NOT NULL
 )
 ON [PRIMARY]
 TEXTIMAGE_ON [PRIMARY]

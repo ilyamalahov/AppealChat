@@ -26,9 +26,9 @@
             <div class="info-block">
                 <div class="header">Сведения о заседании конфликтной комиссии</div>
                 <ul>
-                    <li class="info-item">Заседание конфликтной комиссии, в рамках которого будет вынесено Решение по Вашей апелляции, состоится <strong>@chatSession.MeetingDate.ToShortDateString()</strong></li>
-                    <li class="info-item">Запланированное время рассмотрения Вашей апелляции <strong>с <span>@chatSession.AppealStartDate.ToString("hh\\:mm")</span> до <span>@chatSession.AppealFinishTime.ToString("hh\\:mm")</span></strong></li>
-                    <li class="info-item">Онлайн-трансляцию заседания конфликтной комиссии Вы сможете посмотреть, перейдя по данной ссылке <a href="#">@chatSession.OnlineStreamLink</a></li>
+                    <li class="info-item">Заседание конфликтной комиссии, в рамках которого будет вынесено Решение по Вашей апелляции, состоится <strong>@chatSession.CommissionStartTime.ToShortDateString()</strong></li>
+                    <li class="info-item">Запланированное время рассмотрения Вашей апелляции <strong>с <span>@chatSession.CommissionStartTime.ToShortTimeString()</span> до <span>@chatSession.CommissionFinishTime.ToShortTimeString()</span></strong></li>
+                    <li class="info-item">Онлайн-трансляцию заседания конфликтной комиссии Вы сможете посмотреть, перейдя по данной ссылке <a href="#">@chatSession.CommissionLink</a></li>
                     <li class="info-item">По итогам рассмотрения апелляции вам будет направлено Решение конфликтной комиссии, ознакомиться с которым Вы сможете в личном кабинете на портале.</li>
                 </ul>
             </div>
@@ -38,7 +38,7 @@
                     <li class="info-item">Дата и время подачи заявления: <strong>@chatSession.ApplicationDate.ToString("g")</strong></li>
                     <li class="info-item">Номер апелляции: <strong>@chatSession.AppealNumber</strong></li>
                     <li class="info-item">Дата и время регистрации заявления: <strong>@chatSession.RegistrationDate.ToString("g")</strong></li>
-                    <li class="info-item">Предмет: <strong>@chatSession.Subject</strong></li>
+                    <li class="info-item">Предмет: <strong>@chatSession.SubjectName</strong></li>
                     <li class="info-item">Дата экзамена: <strong>@chatSession.ExamDate.ToShortDateString()</strong></li>
                     <li class="info-item" style="color: #bcb7b7;">Дата и время начала онлайн консультации: <strong>@chatSession.StartTime.ToString("g")</strong></li>
                     <li class="info-item" style="color: #bcb7b7;">Дата и время окончания онлайн консультации: <strong>@chatSession.FinishTime.ToString("g")</strong></li>
