@@ -70,6 +70,11 @@
             $('#quickReplyBlock').slideToggle(isVisible);
             $('#quickReplyButton').toggleClass('send-button', isVisible);
 
+            // 
+            const replyText = isVisible ? 'Убрать' : 'Быстрый ответ';
+
+            $('#quickReplyButton').text(replyText);
+
             if (isVisible) {
                 $('#filterText').focus();
             }

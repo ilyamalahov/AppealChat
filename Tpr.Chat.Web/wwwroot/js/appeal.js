@@ -1,38 +1,40 @@
 ﻿$(document).ready(function () {
     getAccessToken().then((accessToken) => {
 
-        const infoConnection = new signalR.HubConnectionBuilder()
-            .withUrl("/info")
-            .configureLogging(signalR.LogLevel.Trace)
-            .build();
+        //const infoConnection = new signalR.HubConnectionBuilder()
+        //    .withUrl("/info")
+        //    .configureLogging(signalR.LogLevel.Trace)
+        //    .build();
 
-        // Starting SignalR connection
-        infoConnection.start().then(() => { infoConnection.invoke('MainUpdate', appealId); }).catch(console.log("Error connection"));
+        //// Starting SignalR connection
+        //infoConnection.start()
+        //    .then(() => infoConnection.send('MainUpdate', appealId))
+        //    .catch(console.log("Error connection"));
 
-        // Receiving message from user
-        infoConnection.on("ReceiveInfo", (currentDate, remainingTime, isAlarm) => {
-            console.log(currentDate, remainingTime, isAlarm);
-            var moscowDate = luxon.DateTime.fromISO(currentDate, { zone: 'utc+3' });
+        //// Receiving message from user
+        //infoConnection.on("ReceiveInfo", (currentDate, remainingTime, isAlarm) => {
+        //    console.log(currentDate, remainingTime, isAlarm);
+        //    var moscowDate = luxon.DateTime.fromISO(currentDate, { zone: 'utc+3' });
             
-            $('#moscowTime').text(moscowDate.toFormat('t'));
+        //    $('#moscowTime').text(moscowDate.toFormat('t'));
 
-            var remainingDuration = luxon.Duration.fromMillis(remainingTime);
+        //    var remainingDuration = luxon.Duration.fromMillis(remainingTime);
 
-            var remainingMinutes = remainingDuration.toFormat("m");
+        //    var remainingMinutes = remainingDuration.toFormat("m");
 
-            $('#remainingTime').text(remainingMinutes);
+        //    $('#remainingTime').text(remainingMinutes);
 
-            if (isAlarm) {
-                var alarmText = 'До окончания консультации осталось ' + remainingMinutes + ' минут(-ы)';
+        //    if (isAlarm) {
+        //        var alarmText = 'До окончания консультации осталось ' + remainingMinutes + ' минут(-ы)';
 
-                $('#alarm').text(alarmText).show();
-            }
-        });
+        //        $('#alarm').text(alarmText).show();
+        //    }
+        //});
 
 
         // Initializing SignalR connection
         const chatConnection = new signalR.HubConnectionBuilder()
-            .withUrl("/chat?token=" + accessToken)
+            .withUrl("/chat", { accessTokenFactory: () => accessToken })
             //.configureLogging(signalR.LogLevel.Trace)
             .build();
 
@@ -174,7 +176,7 @@
         // Update time information
         const interval = 10000;
 
-        //updateInfo(interval, accessToken, updateCallback);
+        updateInfo(interval, accessToken, updateCallback);
 
         $(this).on('click', '#changeOkButton', (e) => {
             changeExpert(accessToken, () => { closeModal(); switchLoader(true); })

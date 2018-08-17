@@ -36,7 +36,10 @@ namespace Tpr.Chat.Web
 
             // Chat repository
             services.AddTransient<IChatRepository, ChatRepository>(repository => new ChatRepository(connectionString));
-            
+
+            services.AddHostedService<QueuedHostedService>();
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+
             // Common service
             services.AddTransient<ICommonService, CommonService>();
 
@@ -90,10 +93,13 @@ namespace Tpr.Chat.Web
                     {
                         OnMessageReceived = context =>
                         {
-                            var accessToken = context.Request.Query["token"];
+                            var accessToken = context.Request.Query["access_token"];
 
+                            var isContainsChatPath = context.HttpContext.Request.Path.StartsWithSegments("/chat");
+                            var isContainsInfoPath = context.HttpContext.Request.Path.StartsWithSegments("/info");
+                            
                             // If the request is for our hub...
-                            if (!string.IsNullOrEmpty(accessToken) && (context.HttpContext.Request.Path.StartsWithSegments("/chat")))
+                            if (!string.IsNullOrEmpty(accessToken) && (isContainsChatPath || isContainsInfoPath))
                             {
                                 // Read the token out of the query string
                                 context.Token = accessToken;
