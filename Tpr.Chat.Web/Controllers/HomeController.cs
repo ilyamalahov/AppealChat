@@ -35,44 +35,19 @@ namespace Tpr.Chat.Web.Controllers
         [HttpGet("/{appealId}")]
         public IActionResult Index(Guid appealId, int key = 0, string secretKey = null)
         {
-            // 
-            var connectionType = key > 0 ? ContextType.Expert : ContextType.Appeal;
-
-            // 
-            var connectionId = connectionService.GetConnectionId(appealId, connectionType);
-
-            if(!string.IsNullOrEmpty(connectionId))
-            {
-                return BadRequest("Сессия все еще запущена на другом устройстве");
-            }
-
             // Check if chat session is exists
             var chatSession = chatRepository.GetChatSession(appealId);
 
             if (chatSession == null)
             {
-                return BadRequest("Сессии по данному ID не существует");
+                return BadRequest("Сессии по данному ID аппелянта не существует");
             }
-
-            // 
-            //if(connectionType == ContextType.Expert)
-            //{
-            //    var experts = chatRepository.GetExperts(appealId);
-
-            //    if (!experts.Contains(key))
-            //    {
-            //        return BadRequest(string.Format("Ключ эксперта ({0}) не прикреплен к сессии", key));
-            //    }
-            //}
-
-            bool isFinished = DateTime.Now > chatSession.FinishTime;
-
+            
             // 
             var model = new IndexViewModel
             {
                 ExpertKey = key,
-                ChatSession = chatSession,
-                IsFinished = isFinished
+                ChatSession = chatSession
             };
 
             // Check if current date less than chat start time
@@ -80,15 +55,14 @@ namespace Tpr.Chat.Web.Controllers
             {
                 return View("Early", model);
             }
-            
+
+            // 
+            var connectionType = key > 0 ? ContextType.Expert : ContextType.Appeal;
+
             // Expert checkings
             if (connectionType == ContextType.Expert)
             {
-                //if (DateTime.Now < chatSession.FinishTime && key != chatSession.CurrentExpertKey)
-                //{
-                //    return BadRequest("Ключ эксперта не используется для данной сессии");
-                //}
-                // Secret checkings, etc...
+                model.IsFinished = DateTime.Now > chatSession.FinishTime;
 
                 model.Messages = chatRepository.GetChatMessages(appealId);
 
@@ -96,25 +70,32 @@ namespace Tpr.Chat.Web.Controllers
 
                 return View("Expert", model);
             }
-
-            // Check if current date more than chat finish time
-            if (isFinished)
+            else if(connectionType == ContextType.Appeal)
             {
-                return View("Complete", model);
+                // Check if current date more than chat finish time
+                if (DateTime.Now > chatSession.FinishTime)
+                {
+                    return View("Complete", model);
+                }
+
+                // 
+                var connectionId = connectionService.GetConnectionId(appealId, connectionType);
+
+                if (!string.IsNullOrEmpty(connectionId))
+                {
+                    return BadRequest("Сессия все еще запущена на другом устройстве");
+                }
+
+                model.Messages = chatRepository.GetChatMessages(appealId);
+
+                return View("Appeal", model);
             }
 
-            //if (currentExpert == null)
-            //{
-            //    return BadRequest("Вы не можете зайти в консультацию, пока к ней не привязан консультант");
-            //}
-
-            model.Messages = chatRepository.GetChatMessages(appealId);
-
-            return View("Appeal", model);
+            return BadRequest();
         }
 
         [Produces("application/json")]
-        [HttpPost("/token")]
+        [HttpPost("token")]
         public IActionResult Token(Guid appealId, int key = 0, string secretKey = null)
         {
             var chatSession = chatRepository.GetChatSession(appealId);
@@ -143,16 +124,6 @@ namespace Tpr.Chat.Web.Controllers
             {
                 return Error();
             }
-
-            //var connection = connectionService.Get(appealId);
-
-            //if(connection != null)
-            //{
-            //    // Send "Change status" to client-caller
-            //    var connectionId = key > 0 ? connection.AppealConnectionId : connection.ExpertConnectionId;
-
-            //    await hubContext.Clients.Clients(connectionId).ChangeStatus(true);
-            //}
 
             var accessToken = commonService.CreateToken(identity, chatSession.StartTime, chatSession.FinishTime);
 

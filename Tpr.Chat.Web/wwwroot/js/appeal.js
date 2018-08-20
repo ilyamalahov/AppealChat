@@ -77,9 +77,9 @@
 
         // Textarea auto rows count
         $('#messageText').on('input', function (e) {
-            var textarea = e.target;
+            const textarea = e.target;
 
-            var rows = calculateExpandRows(textarea);
+            const rows = calculateExpandRows(textarea);
 
             textarea.rows += rows;
 
@@ -116,9 +116,9 @@
 
         // 
         const createListItem = (htmlElement, isAppeal) => {
-            var div = $('<div class="message ' + (isAppeal ? 'place-left' : 'place-right') + '"></div>').html(htmlElement);
+            const div = $('<div class="message ' + (isAppeal ? 'place-left' : 'place-right') + '"></div>').html(htmlElement);
 
-            var li = $('<li></li>').html(div);
+            const li = $('<li></li>').html(div);
 
             $("#messagesList").append(li).scrollTo(li);
         };
@@ -135,35 +135,43 @@
         };
 
         const calculateExpandRows = (textarea) => {
-            //var maxRows = $(this).data('max-rows') | 1;
-
-            var minRows = textarea.dataset.minRows | 1;
+            const minRows = textarea.dataset.minRows | 1;
 
             textarea.rows = minRows;
 
-            var currentRowCount = Math.ceil((textarea.scrollHeight - textarea.clientHeight) / 16);
+            const currentRowCount = Math.ceil((textarea.scrollHeight - textarea.clientHeight) / 16);
 
             return Math.max(0, Math.min(currentRowCount, 4));
         };
 
         // Update information callback
         const updateCallback = (response) => {
+            // Remaining duration
+            var remainingDuration = luxon.Duration.fromMillis(response.remainingTime);
+            
+            // Redirect
+            const checkRemainingTime = remainingDuration.as("milliseconds");
+
+            if (checkRemainingTime <= 0) { window.location = '/' + appealId; }
+
+            // Moscow date
             var moscowDate = luxon.DateTime.fromISO(response.moscowDate, { zone: 'utc+3' });
 
             $('#moscowTime').text(moscowDate.toFormat('t'));
 
-            var remainingDuration = luxon.Duration.fromMillis(response.remainingTime);
-
+            // Remaining format minutes
             var remainingMinutes = remainingDuration.toFormat("m");
 
             $('#remainingTime').text(remainingMinutes);
 
+            // Alarm after minutes (5 minutes default)
             if (response.isAlarm) {
                 var alarmText = 'До окончания консультации осталось ' + remainingMinutes + ' минут(-ы)';
 
                 $('#alarm').text(alarmText).show();
             }
 
+            // Recursively update info
             setTimeout(updateInfo, interval, interval, appealId, updateCallback);
         };
 
@@ -177,8 +185,10 @@
         // Update time information
         const interval = 10000;
 
+        // Start update time information
         updateInfo(interval, appealId, updateCallback);
 
+        // Modal change button click
         $(this).on('click', '#changeOkButton', (e) => {
             changeExpert(accessToken, () => { closeModal(); switchLoader(true); })
                 .then(response => {
