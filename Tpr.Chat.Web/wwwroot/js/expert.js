@@ -1,9 +1,8 @@
 ﻿$(document).ready(function () {
-    getAccessToken().then(function (appealId) {
+    getAccessToken().then(function (accessToken) {
         // Initializing SignalR connection
         const chatConnection = new signalR.HubConnectionBuilder()
-            .withUrl("/chat?token=" + appealId)
-            .configureLogging(signalR.LogLevel.Trace)
+            .withUrl("/chat", { accessTokenFactory: () => accessToken })
             .build();
 
         // Starting SignalR connection
@@ -91,6 +90,8 @@
             var remainingDuration = luxon.Duration.fromMillis(response.remainingTime);
 
             var remainingMinutes = remainingDuration.toFormat('m');
+
+            if (remainingMinutes <= 0)
 
             $('#remainingTime').text(remainingMinutes);
 
