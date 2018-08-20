@@ -1,16 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Tpr.Chat.Web.Service
 {
     public class ChatConnection
     {
-        public string AppealConnectionId { get; set; }
-        public string ExpertConnectionId { get; set; }
-
-        public string GetConnectionId(ContextType connectionType)
+        public ChatConnection()
         {
-            return connectionType == ContextType.Appeal ? AppealConnectionId : ExpertConnectionId;
+            ExpertConnections = new Dictionary<string, string>();
         }
+        public string AppealConnectionId { get; set; }
+        public Dictionary<string, string> ExpertConnections { get; set; }
     }
 
     public enum ContextType

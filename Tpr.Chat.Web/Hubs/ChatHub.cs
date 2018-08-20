@@ -85,7 +85,7 @@ namespace Tpr.Chat.Web.Hubs
                 var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
 
                 // Add connection ID to collection
-                connectionService.AddConnectionId(appealId, Context.ConnectionId, senderType);
+                connectionService.AddConnectionId(appealId, Context.ConnectionId, senderType, expertKey);
 
                 // Nick name
                 var nickName = senderType == ContextType.Appeal ? "Аппелянт" : "Член КК №" + expertKey;
@@ -106,7 +106,8 @@ namespace Tpr.Chat.Web.Hubs
                 var isAppealOnline = connectionService.isOnline(appealId, ContextType.Appeal);
 
                 // Check if expert is online
-                var isExpertOnline = connectionService.isOnline(appealId, ContextType.Expert);
+                var isExpertOnline = false;
+                //var isExpertOnline = connectionService.isOnline(appealId, ContextType.Expert, expertKey);
 
                 // Sender
                 string sender = senderType == ContextType.Appeal ? "appeal" : "expert";
@@ -173,7 +174,7 @@ namespace Tpr.Chat.Web.Hubs
                 var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
 
                 // Remove caller's connection ID
-                connectionService.RemoveConnectionId(appealId, senderType);
+                connectionService.RemoveConnectionId(appealId, senderType, expertKey);
 
                 // Nick name
                 var nickName = senderType == ContextType.Appeal ? "Аппелянт" : "Член КК №" + expertKey;

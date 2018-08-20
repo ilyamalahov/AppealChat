@@ -79,12 +79,14 @@ namespace Tpr.Chat.Web.Controllers
                 }
 
                 // 
-                var connectionId = connectionService.GetConnectionId(appealId, connectionType);
+                var connectionId = connectionService.GetConnectionId(appealId);
 
                 if (!string.IsNullOrEmpty(connectionId))
                 {
                     return BadRequest("Сессия все еще запущена на другом устройстве");
                 }
+
+                model.OnlineExpertKeys = connectionService.GetExpertKeys(appealId);
 
                 model.Messages = chatRepository.GetChatMessages(appealId);
 

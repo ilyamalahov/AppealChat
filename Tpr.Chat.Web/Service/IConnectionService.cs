@@ -7,10 +7,12 @@ namespace Tpr.Chat.Web.Service
 {
     public interface IConnectionService
     {
-        string GetConnectionId(Guid appealId, ContextType connectionType);
-        void AddConnectionId(Guid appealId, string connectionId, ContextType connectionType);
-        void RemoveConnectionId(Guid appealId, ContextType senderType);
+        string GetConnectionId(Guid appealId, ContextType connectionType = ContextType.Appeal, string expertKey = null);
+        void AddConnectionId(Guid appealId, string connectionId, ContextType connectionType = ContextType.Appeal, string expertKey = null);
+        void RemoveConnectionId(Guid appealId, ContextType connectionType = ContextType.Appeal, string expertKey = null);
 
-        bool isOnline(Guid appealId, ContextType connectionType);
+        bool isOnline(Guid appealId, ContextType connectionType = ContextType.Appeal, string expertKey = null);
+
+        IEnumerable<string> GetExpertKeys(Guid appealId);
     }
 }

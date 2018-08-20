@@ -23,7 +23,6 @@
     <div class="container">
         <div id="alarm" class="block alarm"></div>
         <div class="block appeal-info">
-            <button class="close-button">Close</button>
             <div>Участник по аппеляции</div>
             <div style="font-weight:bold;">№ <span>@Model.ChatSession.AppealNumber</span></div>
             <div id="onlineStatus" style="font-weight:bold; color: #009966;">Онлайн-статус</div>
@@ -61,7 +60,7 @@
 
         @if (!Model.IsFinished)
         {
-            <div class="block" style="text-align: right;">До конца консультации осталось: <b><span id="remainingTime">00</span> минут(-ы)</b></div>
+            <div class="block" style="text-align: right;">До конца консультации осталось: <b id="remainingTime">00</b></div>
 
             <div class="block" style="flex: none;">
                 <div id="quickReplyBlock" class="quick-reply" style="display: none;">

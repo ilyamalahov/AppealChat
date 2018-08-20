@@ -33,12 +33,7 @@
             changeStatus(false);
         });
 
-        $('#sendButton').on('click', (e) => {
-            chatConnection.invoke('SendMessage', $('#messageText').val())
-                .catch(error => console.error(error));
-
-            $('#messageText').val('');
-        });
+        $('#sendButton').on('click', () => sendMessage($("#messageText").val()));
 
         // 
         var isQuickReplyVisible = false;
@@ -65,6 +60,14 @@
             });
         });
 
+        $('#messageText').on('keyup', messageTextKeyup);
+
+        $('#messageText').on('input', function (e) {
+            const isDisabled = $(this).val() === '';
+
+            $('#sendButton').prop('disabled', isDisabled);
+        });
+
         const toggleQuickReplyBlock = (isVisible) => {
             $('#quickReplyBlock').slideToggle(isVisible);
             $('#quickReplyButton').toggleClass('send-button', isVisible);
@@ -79,6 +82,13 @@
             }
         };
 
+        const sendMessage = (message) => {
+            chatConnection.invoke('SendMessage', message)
+                .catch(error => console.error(error));
+
+            $('#messageText').val('').trigger('input');
+        };
+
         // Update status
         const changeStatus = function (isOnline) {
             const statusText = isOnline ? 'Подключен к чату' : 'Отключен от чата';
@@ -89,14 +99,18 @@
         const updateCallback = function (response) {
             var remainingDuration = luxon.Duration.fromMillis(response.remainingTime);
 
-            var remainingMinutes = remainingDuration.toFormat('m');
+            var remainingCheckTime = remainingDuration.as('minutes');
 
-            if (remainingMinutes <= 0)
+            if (remainingCheckTime <= 0) {
+                var remainingMinutes = 'меньше минуты';
+            } else {
+                var remainingMinutes = remainingDuration.toFormat('m минут(-ы)');
+            }
 
             $('#remainingTime').text(remainingMinutes);
 
             if (response.isAlarm) {
-                var alarmText = 'До окончания консультации осталось ' + remainingMinutes + ' минут(-ы)';
+                var alarmText = 'До окончания консультации осталось ' + remainingMinutes;
 
                 $('#alarm').text(alarmText).show();
             }

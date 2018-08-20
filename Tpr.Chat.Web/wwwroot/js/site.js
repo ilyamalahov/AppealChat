@@ -47,6 +47,17 @@ const insertAtCursor = function (element, value) {
     element.focus();
 };
 
+// Keyup on message textarea
+const messageTextKeyup = function (e) {
+    if (e.keyCode === 13 && !e.shiftKey) {
+        e.preventDefault();
+
+        if ($(this).val() !== '') {
+            sendMessage($(this).val());
+        }
+    }
+};
+
 // Return new "Receive" message
 const receiveMessage = (message, isSender) => {
     const messageDate = luxon.DateTime.fromISO(message.createDate);

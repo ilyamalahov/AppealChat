@@ -71,9 +71,7 @@
         });
 
         // Sending message
-        $('#sendButton').on('click', () => {
-            sendMessage($('#messageText').val());
-        });
+        $('#sendButton').on('click', () => sendMessage($('#messageText').val()));
 
         // Textarea auto rows count
         $('#messageText').on('input', function (e) {
@@ -86,15 +84,7 @@
             setButtonDisable($(this).val() === '');
         });
 
-        $('#messageText').on('keyup', function (e) {
-            if (e.keyCode === 13 && !e.shiftKey) {
-                e.preventDefault();
-
-                if ($(this).val() !== '') {
-                    sendMessage($(this).val());
-                }
-            }
-        });
+        $('#messageText').on('keyup', messageTextKeyup);
 
         // 
         $('#emojiButton').on('click', () => $('#emojiGrid').toggle());
@@ -154,19 +144,25 @@
 
             if (checkRemainingTime <= 0) { window.location = '/' + appealId; }
 
+            // Remaining format minutes
+            var remainingMinutes = remainingDuration.as("minutes");
+
+            if (remainingMinutes <= 0) {
+                var remainingMinutes = 'меньше минуты';
+            } else {
+                var remainingMinutes = remainingDuration.toFormat('m минут(-ы)');
+            }
+
+            $('#remainingTime').text(remainingMinutes);
+
             // Moscow date
             var moscowDate = luxon.DateTime.fromISO(response.moscowDate, { zone: 'utc+3' });
 
             $('#moscowTime').text(moscowDate.toFormat('t'));
 
-            // Remaining format minutes
-            var remainingMinutes = remainingDuration.toFormat("m");
-
-            $('#remainingTime').text(remainingMinutes);
-
             // Alarm after minutes (5 minutes default)
             if (response.isAlarm) {
-                var alarmText = 'До окончания консультации осталось ' + remainingMinutes + ' минут(-ы)';
+                var alarmText = 'До окончания консультации осталось ' + remainingMinutes;
 
                 $('#alarm').text(alarmText).show();
             }

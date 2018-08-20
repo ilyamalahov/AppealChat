@@ -20,5 +20,7 @@ namespace Tpr.Chat.Web.Models
         public ICollection<ChatMessage> Messages { get; set; }
 
         public IEnumerable<QuickReply> QuickReplies { get; set; }
+
+        public IEnumerable<string> OnlineExpertKeys { get; set; }
     }
 }
