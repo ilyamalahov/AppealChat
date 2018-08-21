@@ -139,7 +139,7 @@
             $('#filterText').val('').trigger('input');
 
             // 
-            if (isVisibled) { $('#filterText').focusin(); }
+            if (isVisibled) { $('#filterText').focus(); }
         };
 
         // Send message
