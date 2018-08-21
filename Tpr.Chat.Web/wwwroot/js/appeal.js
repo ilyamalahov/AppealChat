@@ -1,45 +1,51 @@
 ﻿$(document).ready(function () {
     getAccessToken().then((accessToken) => {
+        // Update intreval
+        const interval = 10000;
 
-        //const infoConnection = new signalR.HubConnectionBuilder()
-        //    .withUrl("/info")
-        //    .configureLogging(signalR.LogLevel.Trace)
-        //    .build();
-
-        //// Starting SignalR connection
-        //infoConnection.start()
-        //    .then(() => infoConnection.send('MainUpdate', appealId))
-        //    .catch(console.log("Error connection"));
-
-        //// Receiving message from user
-        //infoConnection.on("ReceiveInfo", (currentDate, remainingTime, isAlarm) => {
-        //    console.log(currentDate, remainingTime, isAlarm);
-        //    var moscowDate = luxon.DateTime.fromISO(currentDate, { zone: 'utc+3' });
-            
-        //    $('#moscowTime').text(moscowDate.toFormat('t'));
-
-        //    var remainingDuration = luxon.Duration.fromMillis(remainingTime);
-
-        //    var remainingMinutes = remainingDuration.toFormat("m");
-
-        //    $('#remainingTime').text(remainingMinutes);
-
-        //    if (isAlarm) {
-        //        var alarmText = 'До окончания консультации осталось ' + remainingMinutes + ' минут(-ы)';
-
-        //        $('#alarm').text(alarmText).show();
-        //    }
-        //});
-
-
-        // Initializing SignalR connection
-        const chatConnection = new signalR.HubConnectionBuilder()
-            .withUrl("/chat", { accessTokenFactory: () => accessToken })
-            //.configureLogging(signalR.LogLevel.Trace)
+        // Update info hub connection
+        const infoConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/info")
             .build();
 
-        // Starting SignalR connection
-        chatConnection.start();
+        // Receive information response event
+        infoConnection.on("ReceiveInfo", (currentDate, remainingTime, isAlarm, isFinished) => {
+            // Redirect on consultation end
+            if (isFinished) location.reload();
+
+            // Remaining duration
+            var remainingDuration = luxon.Duration.fromMillis(remainingTime);
+
+            // Remaining format minutes
+            var remainingMinutes = remainingDuration.as("minutes");
+
+            if (remainingMinutes < 1) {
+                var remainingText = 'меньше минуты';
+            } else {
+                var remainingText = remainingDuration.toFormat('m минут(-ы)');
+            }
+
+            $('#remainingTime').text(remainingText);
+
+            // Moscow date
+            var moscowDate = luxon.DateTime.fromISO(currentDate, { zone: 'utc+3' });
+
+            $('#moscowTime').text(moscowDate.toFormat('t'));
+
+            // Alarm after minutes (5 minutes default)
+            if (isAlarm) {
+                var alarmText = 'До окончания консультации осталось ' + remainingText;
+
+                $('#alarm').text(alarmText).show();
+            }
+
+            setTimeout(updateInfo, interval);
+        });
+
+        // Chat hub connection
+        const chatConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/chat", { accessTokenFactory: () => accessToken })
+            .build();
 
         // Receiving message from user
         chatConnection.on("Receive", (message, sender) => {
@@ -49,25 +55,21 @@
         });
 
         // Joining user to chat
-        chatConnection.on("Join", (message, sender, isAppealOnline, isExpertOnline) => {
-            const li = joinUser(message, sender === "appeal", isAppealOnline, isExpertOnline);
+        chatConnection.on("Join", (message, sender, isAppealOnline, expertKey) => {
+            const li = joinMessage(message, sender === "appeal");
 
             $("#messagesList").append(li).scrollTo(li);
 
-            changeStatus(isExpertOnline);
+            if (sender === 'expert') joinExpert(expertKey);
         });
 
         // Leave user from chat
-        chatConnection.on("Leave", (message, sender) => {
-            const li = leaveUser(message, sender === "appeal");
+        chatConnection.on("Leave", (message, sender, expertKey) => {
+            const li = leaveMessage(message, sender === "appeal");
 
             $("#messagesList").append(li).scrollTo(li);
 
-            changeStatus(false);
-        });
-
-        $('#moscowTime').on('click', function (e) {
-            infoConnection.invoke('MainUpdate');
+            if (sender === 'expert') leaveExpert(expertKey);
         });
 
         // Sending message
@@ -81,10 +83,20 @@
 
             textarea.rows += rows;
 
-            setButtonDisable($(this).val() === '');
+            // 
+            const isButtonEnabled = $(this).val().length > 0;
+
+            $('#sendButton').prop('disabled', !isButtonEnabled);
         });
 
-        $('#messageText').on('keyup', messageTextKeyup);
+        // Message textarea keyup event
+        $('#messageText').on('keyup', function (e) {
+            if (e.keyCode === 13 && !e.shiftKey) {
+                e.preventDefault();
+
+                if ($(this).val().length > 0) sendMessage($(this).val());
+            }
+        });
 
         // 
         $('#emojiButton').on('click', () => $('#emojiGrid').toggle());
@@ -95,103 +107,62 @@
         // 
         $('#completeButton').on('click', () => showModal("ajax/complete"));
 
-        $('#completeOkButton').on('click', () => { alert(); closeModal(); });
-
-        const switchLoader = (isVisible) => {
-            $('#changeOverlay').toggle(isVisible);
-            $('#changeSpinner').toggle(isVisible);
-
-            $('#switchExpertButton').prop('disabled', !isVisible);
-        };
-
         // 
-        const createListItem = (htmlElement, isAppeal) => {
-            const div = $('<div class="message ' + (isAppeal ? 'place-left' : 'place-right') + '"></div>').html(htmlElement);
+        const switchLoader = (isVisibled) => {
+            $('#changeOverlay').toggle(isVisibled);
+            $('#changeSpinner').toggle(isVisibled);
 
-            const li = $('<li></li>').html(div);
-
-            $("#messagesList").append(li).scrollTo(li);
+            $('#switchExpertButton').prop('disabled', !isVisibled);
         };
 
+        // Send message
         const sendMessage = (message) => {
             chatConnection.invoke('SendMessage', message)
-                .catch(error => console.error(error));
+                .catch(error => console.error(error.error));
 
+            // 
             $('#messageText').val('').trigger('input');
         };
 
-        const setButtonDisable = (isDisabled) => {
-            $('#sendButton').prop('disabled', isDisabled);
+        // Join expert to chat
+        const joinExpert = (expertKey) => {
+            const addedSpan = $('<span></span>').text(expertKey);
+
+            $('#expertNumbers').append(addedSpan);
         };
 
-        const calculateExpandRows = (textarea) => {
-            const minRows = textarea.dataset.minRows | 1;
-
-            textarea.rows = minRows;
-
-            const currentRowCount = Math.ceil((textarea.scrollHeight - textarea.clientHeight) / 16);
-
-            return Math.max(0, Math.min(currentRowCount, 4));
+        // Leave expert from chat
+        const leaveExpert = (expertKey) => {
+            $('span[data-key="' + expertKey + '"]').remove();
         };
 
-        // Update information callback
-        const updateCallback = (response) => {
-            // Remaining duration
-            var remainingDuration = luxon.Duration.fromMillis(response.remainingTime);
-            
-            // Redirect
-            const checkRemainingTime = remainingDuration.as("milliseconds");
-
-            if (checkRemainingTime <= 0) { window.location = '/' + appealId; }
-
-            // Remaining format minutes
-            var remainingMinutes = remainingDuration.as("minutes");
-
-            if (remainingMinutes <= 0) {
-                var remainingMinutes = 'меньше минуты';
-            } else {
-                var remainingMinutes = remainingDuration.toFormat('m минут(-ы)');
-            }
-
-            $('#remainingTime').text(remainingMinutes);
-
-            // Moscow date
-            var moscowDate = luxon.DateTime.fromISO(response.moscowDate, { zone: 'utc+3' });
-
-            $('#moscowTime').text(moscowDate.toFormat('t'));
-
-            // Alarm after minutes (5 minutes default)
-            if (response.isAlarm) {
-                var alarmText = 'До окончания консультации осталось ' + remainingMinutes;
-
-                $('#alarm').text(alarmText).show();
-            }
-
-            // Recursively update info
-            setTimeout(updateInfo, interval, interval, appealId, updateCallback);
-        };
-
-        // Update status
+        // Update online status
         const changeStatus = (isOnline) => {
             const statusText = isOnline ? 'В сети' : 'Не в сети';
 
             $('#onlineStatus').text(statusText);
         };
 
-        // Update time information
-        const interval = 10000;
+        // 
+        const updateInfo = () => infoConnection.invoke("MainUpdate", appealId);
 
-        // Start update time information
-        updateInfo(interval, appealId, updateCallback);
+        // Start Chat connection
+        chatConnection.start()
+            .catch((error) => console.error(error.toString()));
+
+        // Start Info connection
+        infoConnection.start()
+            .then(updateInfo)
+            .catch((error) => console.error(error.toString()));
 
         // Modal change button click
-        $(this).on('click', '#changeOkButton', (e) => {
-            changeExpert(accessToken, () => { closeModal(); switchLoader(true); })
-                .then(response => {
-                    $('#expertNumber').val(response.expertKey);
-                    switchLoader(false);
-                })
-                .catch((error) => { alert(error.error); switchLoader(false); });
-        });
+        //$(this).on('click', '#changeOkButton', (e) => {
+        //    changeExpert(accessToken, () => { closeModal(); switchLoader(true); })
+        //        .then(response => {
+        //            $('#expertNumber').val(response.expertKey);
+        //            switchLoader(false);
+        //        })
+        //        .catch((error) => { alert(error.error); switchLoader(false); });
+        //});
     });
 });

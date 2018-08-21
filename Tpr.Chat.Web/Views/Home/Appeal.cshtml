@@ -71,10 +71,12 @@
                                 <div style="font-size: 22px; font-weight: bold;">Член<br />конфликтной комиссии</div>
                                 <div style="font-size: 28px; font-weight: bold;">
                                     №
-                                    @foreach (var expertKey in Model.OnlineExpertKeys)
-                                    {
-                                        <span id="expertNumber_@expertKey">@expertKey</span>
-                                    }
+                                    <span id="expertNumbers">
+                                        @foreach (var expertKey in Model.OnlineExpertKeys)
+                                        {
+                                            <span class="expert-key" data-key="@expertKey">@expertKey</span>
+                                        }
+                                    </span>
                                 </div>
                                 <div id="changeOverlay" class="loader-overlay center">
                                     <div id="changeSpinner" class="spinner"></div>

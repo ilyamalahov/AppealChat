@@ -1,28 +1,46 @@
 ﻿$(document).ready(() => {
-    // Update information callback
-    const updateCallback = (response) => {
-        // Remaining duration
-        var remainingDuration = luxon.Duration.fromMillis(response.beginTime);
+    // Update info hub connection
+    const infoConnection = new signalR.HubConnectionBuilder()
+        .withUrl("/info")
+        .build();
 
-        // Readirect
-        var checkRemainingTime = remainingDuration.as('milliseconds');
+    // Receive information response event
+    infoConnection.on("ReceiveInfo", (currentDate, remainingTime, isStarted) => {
+        // Redirect on consultation end
+        if (isStarted) location.reload();
 
-        if (checkRemainingTime <= 0) { window.location = '/' + appealId; }
+        // Moscow date
+        var moscowDate = luxon.DateTime.fromISO(currentDate, { zone: 'utc+3' });
 
+        $('#moscowTime').text(moscowDate.toFormat('t'));
+
+        // Luxon remaining duration
+        var remainingDuration = luxon.Duration.fromMillis(remainingTime);
+        
         // Remaining shifted object
-        var remainingTime = remainingDuration.shiftTo('hours', 'minutes').toObject();
+        var remainingTime = remainingDuration.shiftTo('days', 'hours', 'minutes', 'seconds').toObject();
+
+        // Days
+        $('#remainingDays').text(remainingTime.days);
 
         // Hours
         $('#remainingHours').text(remainingTime.hours);
-        // Minutes
-        $('#remainingMinutes').text(Math.round(remainingTime.minutes));
 
-        // Recursively update info
-        setTimeout(updateInfo, interval, interval, appealId, updateCallback);
-    };
+        // Minutes
+        $('#remainingMinutes').text(remainingTime.minutes);
+
+        // Timer
+        setTimeout(updateInfo, interval);
+    });
 
     // Update time information
     const interval = 10000;
 
-    updateInfo(interval, appealId, updateCallback);
+    // 
+    const updateInfo = () => infoConnection.invoke("EarlyUpdate", appealId);
+
+    // Start Info connection
+    infoConnection.start()
+        .then(updateInfo)
+        .catch((error) => console.error(error.toString()));
 });

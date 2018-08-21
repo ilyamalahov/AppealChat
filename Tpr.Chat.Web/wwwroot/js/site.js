@@ -32,19 +32,14 @@ const getAccessToken = function () {
 
 // Insert text in textarea at cursor position
 const insertAtCursor = function (element, value) {
-    if (document.selection) {
-        element.focus();
-        var selection = document.selection.createRange();
-        selection.text = value;
-    } else if (element.prop('selectionStart') || element.prop('selectionStart') === '0') {
+    if (element.prop('selectionStart') || element.prop('selectionStart') === '0') {
         var startSubstring = element.val().substring(0, element.prop('selectionStart'));
         var endSubstring = element.val().substring(element.prop('selectionEnd'), element.val().length);
+
         element.val(startSubstring + value + endSubstring);
     } else {
         element.val(element.val() + value);
     }
-
-    element.focus();
 };
 
 // Keyup on message textarea
@@ -52,9 +47,7 @@ const messageTextKeyup = function (e) {
     if (e.keyCode === 13 && !e.shiftKey) {
         e.preventDefault();
 
-        if ($(this).val() !== '') {
-            sendMessage($(this).val());
-        }
+        if ($(this).val().length > 0) sendMessage($(this).val());
     }
 };
 
@@ -72,7 +65,7 @@ const receiveMessage = (message, isSender) => {
 };
 
 // Return new "Join user" message
-const joinUser = function (message, isSender, isAppealOnline, isExpertOnline) {
+const joinMessage = function (message, isSender) {
     const messageDate = luxon.DateTime.fromISO(message.createDate);
 
     const messageText = isSender ? 'Вы подключились к консультации' : message.nickName + ' подключился к консультации';
@@ -83,7 +76,7 @@ const joinUser = function (message, isSender, isAppealOnline, isExpertOnline) {
 };
 
 // Return new "Leave user" message
-const leaveUser = (message, isSender) => {
+const leaveMessage = (message, isSender) => {
     const messageDate = luxon.DateTime.fromISO(message.createDate);
 
     const messageText = isSender ? 'Вы покинули консультацию' : message.nickName + ' покинул консультацию';
@@ -103,6 +96,20 @@ const addMessage = (html, isSender) => {
 // Scroll to element
 jQuery.fn.scrollTo = function (element) {
     $(this).scrollTop($(this).scrollTop() - $(this).offset().top + $(element).offset().top);
+
+    return this;
+};
+
+// 
+jQuery.fn.insertAtCursor = function (value) {
+    if ($(this).prop('selectionStart') || $(this).prop('selectionStart') === '0') {
+        var startSubstring = $(this).val().substring(0, $(this).prop('selectionStart'));
+        var endSubstring = $(this).val().substring($(this).prop('selectionEnd'), $(this).val().length);
+
+        $(this).val(startSubstring + value + endSubstring);
+    } else {
+        $(this).val($(this).val() + value);
+    }
 
     return this;
 };
@@ -128,7 +135,6 @@ const closeModal = () => {
     $('#modal').html('').fadeOut();
 };
 
-
 const changeExpert = (accessToken, beforeSendCallback) => {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -140,5 +146,16 @@ const changeExpert = (accessToken, beforeSendCallback) => {
             error: reject
         });
     });
+};
+
+// Calculate textarea rows by content length
+const calculateExpandRows = (textarea) => {
+    const minRows = textarea.dataset.minRows | 1;
+
+    textarea.rows = minRows;
+
+    const currentRowCount = Math.ceil((textarea.scrollHeight - textarea.clientHeight) / 16);
+
+    return Math.max(0, Math.min(currentRowCount, 4));
 };
 //});

@@ -1,12 +1,47 @@
 ﻿$(document).ready(function () {
     getAccessToken().then(function (accessToken) {
+        // Update info hub connection
+        const infoConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/info")
+            .build();
+
+        // Receive information response event
+        infoConnection.on("ReceiveInfo", (currentDate, remainingTime, isAlarm, isFinished) => {
+            // Finish consultation
+            if (isFinished) completeConsultation();
+
+            // Luxon remaining duration
+            var remainingDuration = luxon.Duration.fromMillis(remainingTime);
+
+            // Remaining minutes
+            var remainingMinutes = remainingDuration.as('minutes');
+
+            if (remainingMinutes < 1) {
+                var remainingText = 'меньше минуты';
+            } else {
+                var remainingText = remainingDuration.toFormat('m минут(-ы)');
+            }
+
+            // 
+            $('#remainingTime').text(remainingText);
+
+            // Alarm
+            if (isAlarm) {
+                var alarmText = 'До окончания консультации осталось ' + remainingText;
+
+                $('#alarm').text(alarmText).show();
+            }
+
+            // Timer
+            timeoutId = setTimeout(updateInfo, interval);
+        });
+
+        var timeoutId;
+
         // Initializing SignalR connection
         const chatConnection = new signalR.HubConnectionBuilder()
             .withUrl("/chat", { accessTokenFactory: () => accessToken })
             .build();
-
-        // Starting SignalR connection
-        chatConnection.start().catch(error => console.error(error));
 
         // Receiving message from user
         chatConnection.on("Receive", (message, sender) => {
@@ -16,8 +51,8 @@
         });
 
         // Joining user to chat
-        chatConnection.on("Join", (message, sender, isAppealOnline, isExpertOnline) => {
-            const li = joinUser(message, sender === "expert", isAppealOnline, isExpertOnline);
+        chatConnection.on("Join", (message, sender, isAppealOnline, expertKey) => {
+            const li = joinMessage(message, sender === "expert");
 
             $("#messagesList").append(li).scrollTo(li);
 
@@ -26,30 +61,38 @@
 
         // Leave user from chat
         chatConnection.on("Leave", (message, sender) => {
-            const li = leaveUser(message, sender === "expert");
+            const li = leaveMessage(message, sender === "expert");
 
             $("#messagesList").append(li).scrollTo(li);
 
             changeStatus(false);
         });
 
+        // 
         $('#sendButton').on('click', () => sendMessage($("#messageText").val()));
 
         // 
         var isQuickReplyVisible = false;
 
+        // 
         $('#quickReplyButton').on('click', () => {
             isQuickReplyVisible = !isQuickReplyVisible;
 
             toggleQuickReplyBlock(isQuickReplyVisible);
         });
 
+        // 
         $('.list-item').on('click', function (e) {
-            toggleQuickReplyBlock(false);
+            isQuickReplyVisible = false;
 
-            insertAtCursor($('#messageText'), $(this).text());
+            toggleQuickReplyBlock(isQuickReplyVisible);
+
+            $('#messageText').insertAtCursor($(this).text())
+                .focus()
+                .trigger('input');
         });
 
+        //
         $('#filterText').on('input', function (e) {
             var value = $(this).val();
 
@@ -60,68 +103,80 @@
             });
         });
 
-        $('#messageText').on('keyup', messageTextKeyup);
+        //
+        $('#messageText').on('keyup', function (e) {
+            if (e.keyCode === 13 && !e.shiftKey) {
+                e.preventDefault();
 
-        $('#messageText').on('input', function (e) {
-            const isDisabled = $(this).val() === '';
-
-            $('#sendButton').prop('disabled', isDisabled);
+                if ($(this).val().length > 0) sendMessage($(this).val());
+            }
         });
 
-        const toggleQuickReplyBlock = (isVisible) => {
-            $('#quickReplyBlock').slideToggle(isVisible);
-            $('#quickReplyButton').toggleClass('send-button', isVisible);
+        //
+        $('#messageText').on('input', function (e) {
+            const isEnabled = $(this).val().length > 0;
+
+            $('#sendButton').prop('disabled', !isEnabled);
+        });
+
+        // 
+        $('#messageText').trigger('input');
+
+        // Quick reply block toggle
+        const toggleQuickReplyBlock = (isVisibled) => {
+            // 
+            $('#quickReplyBlock').slideToggle(isVisibled);
+
+            //
+            $('#quickReplyButton').toggleClass('send-button', isVisibled);
 
             // 
-            const replyText = isVisible ? 'Убрать' : 'Быстрый ответ';
+            const replyText = isVisibled ? 'Убрать' : 'Быстрый ответ';
 
             $('#quickReplyButton').text(replyText);
 
-            if (isVisible) {
-                $('#filterText').focus();
-            }
+            // 
+            $('#filterText').val('').trigger('input');
+
+            // 
+            if (isVisibled) { $('#filterText').focusin(); }
         };
 
+        // Send message
         const sendMessage = (message) => {
             chatConnection.invoke('SendMessage', message)
-                .catch(error => console.error(error));
+                .catch(error => console.error(error.error));
 
+            // 
             $('#messageText').val('').trigger('input');
         };
 
-        // Update status
-        const changeStatus = function (isOnline) {
+        // Change online status
+        const changeStatus = (isOnline) => {
             const statusText = isOnline ? 'Подключен к чату' : 'Отключен от чата';
 
             $('#onlineStatus').text(statusText);
         };
 
-        const updateCallback = function (response) {
-            var remainingDuration = luxon.Duration.fromMillis(response.remainingTime);
+        const completeConsultation = () => {
+            clearTimeout(timeoutId);
 
-            var remainingCheckTime = remainingDuration.as('minutes');
-
-            if (remainingCheckTime <= 0) {
-                var remainingMinutes = 'меньше минуты';
-            } else {
-                var remainingMinutes = remainingDuration.toFormat('m минут(-ы)');
-            }
-
-            $('#remainingTime').text(remainingMinutes);
-
-            if (response.isAlarm) {
-                var alarmText = 'До окончания консультации осталось ' + remainingMinutes;
-
-                $('#alarm').text(alarmText).show();
-            }
-
-            setTimeout(updateInfo, interval, interval, appealId, updateCallback);
+            $('#interactiveBlock').hide();
         };
 
         // Update time information
         const interval = 10000;
 
-        updateInfo(interval, appealId, updateCallback);
+        // 
+        const updateInfo = () => infoConnection.invoke("MainUpdate", appealId);
 
-    }).catch((error) => alert(error));
+        // Start Chat connection
+        chatConnection.start()
+            .catch((error) => console.error(error.toString()));
+
+        // Start Info connection
+        infoConnection.start()
+            .then(updateInfo)
+            .catch((error) => console.error(error.toString()));
+    }).catch((error) => alert(error.error));
 });

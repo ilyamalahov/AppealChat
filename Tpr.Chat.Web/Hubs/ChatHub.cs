@@ -106,14 +106,14 @@ namespace Tpr.Chat.Web.Hubs
                 var isAppealOnline = connectionService.isOnline(appealId, ContextType.Appeal);
 
                 // Check if expert is online
-                var isExpertOnline = false;
+                //var isExpertOnline = false;
                 //var isExpertOnline = connectionService.isOnline(appealId, ContextType.Expert, expertKey);
 
                 // Sender
                 string sender = senderType == ContextType.Appeal ? "appeal" : "expert";
 
                 // Send "Join" message to specified user clients
-                await Clients.User(Context.UserIdentifier).Join(chatMessage, sender, isAppealOnline, isExpertOnline);
+                await Clients.User(Context.UserIdentifier).Join(chatMessage, sender, isAppealOnline, expertKey);
 
                 // Expert welcome message
                 if(senderType == ContextType.Expert)
@@ -195,7 +195,7 @@ namespace Tpr.Chat.Web.Hubs
                 string sender = senderType == ContextType.Appeal ? "appeal" : "expert";
 
                 // Send "Leave" message to specified user clients 
-                await Clients.User(Context.UserIdentifier).Leave(chatMessage, sender);
+                await Clients.User(Context.UserIdentifier).Leave(chatMessage, sender, expertKey);
             }
             catch (Exception throwedException)
             {

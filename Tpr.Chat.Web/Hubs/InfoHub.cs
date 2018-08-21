@@ -26,7 +26,7 @@ namespace Tpr.Chat.Web.Hubs
 
         public override Task OnConnectedAsync()
         {
-            queue.QueueBackgroundWorkItem(Update);
+            //queue.QueueBackgroundWorkItem(Update);
 
             return base.OnConnectedAsync();
         }
@@ -36,26 +36,21 @@ namespace Tpr.Chat.Web.Hubs
             return base.OnDisconnectedAsync(exception);
         }
 
-        private async Task Update(CancellationToken token)
-        {
-            var taskId = Guid.NewGuid();
+        //private async Task Update(CancellationToken token)
+        //{
+        //    var taskId = Guid.NewGuid();
 
-            logger.LogInformation("Task: {0} is started", taskId);
+        //    logger.LogInformation("Task: {0} is started", taskId);
 
-            while (!token.IsCancellationRequested)
-            {
-                logger.LogDebug("Task: {0}, Current date: {1}", taskId, DateTime.Now);
+        //    while (!token.IsCancellationRequested)
+        //    {
+        //        logger.LogDebug("Task: {0}, Current date: {1}", taskId, DateTime.Now);
 
-                await Task.Delay(TimeSpan.FromMinutes(1), token);
-            }
+        //        await Task.Delay(TimeSpan.FromMinutes(1), token);
+        //    }
 
-            logger.LogInformation("Task: {0} is completed", taskId);
-        }
-
-        private void UpdateInfo(object state)
-        {
-            logger.LogDebug("Current date: {0}", DateTime.Now);
-        }
+        //    logger.LogInformation("Task: {0} is completed", taskId);
+        //}
 
         //[Authorize(AuthenticationSchemes = "Bearer")]
         public async Task MainUpdate(Guid appealId)
@@ -73,45 +68,39 @@ namespace Tpr.Chat.Web.Hubs
             // Is alarm
             var isAlarm = remainingTimespan.TotalMinutes < 5;
 
-            // Send
-            await Clients.All.SendAsync("ReceiveInfo", currentDate, remainingTime, isAlarm);
+            // Is finished
+            var isFinished = remainingTimespan.TotalMilliseconds <= 0;
+
+            // Send information response to caller
+            await Clients.Caller.SendAsync("ReceiveInfo", currentDate, remainingTime, isAlarm, isFinished);
         }
 
-        public async Task UpdateInfo()
+        public async Task EarlyUpdate(Guid appealId)
         {
-            // Appeal Identifier
-            Guid appealId = Guid.Empty;
-
-            if (!Guid.TryParse(Context.User.Identity.Name, out appealId))
-            {
-                return;
-            }
-
             // Current Time
-            var currentOffset = DateTimeOffset.Now;
-
-            // Begin Time
-            long beginTimestamp = 0;
-
-            var beginOffset = DateTimeOffset.FromUnixTimeMilliseconds(beginTimestamp);
-
-            var beginTime = beginOffset.Subtract(currentOffset.TimeOfDay);
+            var currentDate = DateTime.Now;
 
             // Remaining Time
-            long finishTimestamp = 0;
+            var chatSession = chatRepository.GetChatSession(appealId);
 
-            var remainingOffset = DateTimeOffset.FromUnixTimeMilliseconds(finishTimestamp);
+            var remainingTimespan = chatSession.StartTime.Subtract(currentDate);
 
-            var remainingTime = remainingOffset.Subtract(currentOffset.TimeOfDay);
+            var remainingTime = remainingTimespan.TotalMilliseconds;
 
-            var info = new
-            {
-                currentTime = currentOffset.ToUnixTimeMilliseconds(),
-                beginTime = beginTime.ToUnixTimeMilliseconds(),
-                remainingTime = remainingTime.ToUnixTimeMilliseconds()
-            };
+            // Is finished
+            var isStarted = remainingTimespan.TotalMilliseconds <= 0;
 
-            await Clients.User(Context.UserIdentifier).SendAsync("UpdateInfo", info);
+            // Send information response to caller
+            await Clients.Caller.SendAsync("ReceiveInfo", currentDate, remainingTime, isStarted);
+        }
+
+        public async Task CompleteUpdate()
+        {
+            // Current Time
+            var currentDate = DateTime.Now;
+
+            // Send information response to caller
+            await Clients.Caller.SendAsync("ReceiveInfo", currentDate);
         }
     }
 }
