@@ -20,9 +20,9 @@
             var remainingMinutes = remainingDuration.as("minutes");
 
             if (remainingMinutes < 1) {
-                var remainingText = 'меньше минуты';
+                var remainingText = 'меньше';
             } else {
-                var remainingText = remainingDuration.toFormat('m минут(-ы)');
+                var remainingText = remainingDuration.toFormat('hh:mm:ss');
             }
 
             $('#remainingTime').text(remainingText);
@@ -34,7 +34,7 @@
 
             // Alarm after minutes (5 minutes default)
             if (isAlarm) {
-                var alarmText = 'До окончания консультации осталось ' + remainingText;
+                var alarmText = 'До окончания консультации осталось ' + remainingText + ' минут(-ы)';
 
                 $('#alarm').text(alarmText).show();
             }
@@ -145,6 +145,9 @@
 
         // 
         const updateInfo = () => infoConnection.invoke("MainUpdate", appealId);
+
+        // 
+        $('#messageText').trigger('input');
 
         // Start Chat connection
         chatConnection.start()

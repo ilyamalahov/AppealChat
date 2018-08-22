@@ -59,7 +59,7 @@ const receiveMessage = (message, isSender) => {
 
     const messageBubble = '<div class="message-bubble">' + message.messageString + '</div>';
 
-    const messageInfo = nickname + ' <b>(' + messageDate.toFormat("F") + ')</b>';
+    const messageInfo = nickname + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
 
     return addMessage(messageBubble + messageInfo, isSender);
 };
@@ -70,7 +70,7 @@ const joinMessage = function (message, isSender) {
 
     const messageText = isSender ? 'Вы подключились к консультации' : message.nickName + ' подключился к консультации';
 
-    const html = messageText + ' <b>(' + messageDate.toFormat("F") + ')</b>';
+    const html = messageText + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
 
     return addMessage(html, isSender);
 };
@@ -81,7 +81,7 @@ const leaveMessage = (message, isSender) => {
 
     const messageText = isSender ? 'Вы покинули консультацию' : message.nickName + ' покинул консультацию';
 
-    const html = messageText + ' <b>(' + messageDate.toFormat("F") + ')</b>';
+    const html = messageText + ' <b>' + messageDate.toFormat("tt") + '</b>';
 
     return addMessage(html, isSender);
 };
