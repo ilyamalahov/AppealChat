@@ -343,6 +343,7 @@ footer {
     padding: 10px 15px;
     border: none;
     resize: none;
+    outline: none;
 }
 
 .send-button {

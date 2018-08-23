@@ -14,5 +14,7 @@ namespace Tpr.Chat.Web.Service
         bool isOnline(Guid appealId, ContextType connectionType = ContextType.Appeal, string expertKey = null);
 
         IEnumerable<string> GetExpertKeys(Guid appealId);
+
+        string GetOnlineExpertKey(Guid appealId, string expertKey);
     }
 }

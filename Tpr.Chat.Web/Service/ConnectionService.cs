@@ -112,5 +112,17 @@ namespace Tpr.Chat.Web.Service
 
             return connection.ExpertConnections.Keys;
         }
+
+        public string GetOnlineExpertKey(Guid appealId, string expertKey)
+        {
+            ChatConnection connection;
+
+            if (!connections.TryGetValue(appealId, out connection))
+            {
+                return null;
+            }
+
+            return connection.ExpertConnections.Select(ec => ec.Key).FirstOrDefault(key => key != expertKey);
+        }
     }
 }

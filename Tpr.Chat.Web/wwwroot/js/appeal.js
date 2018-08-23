@@ -55,21 +55,21 @@
         });
 
         // Joining user to chat
-        chatConnection.on("Join", (message, sender, isAppealOnline, expertKey) => {
+        chatConnection.on("Join", (message, sender, isAppealOnline, onlineExpertKey) => {
             const li = joinMessage(message, sender === "appeal");
 
             $("#messagesList").append(li).scrollTo(li);
 
-            if (sender === 'expert') joinExpert(expertKey);
+            setExpert(onlineExpertKey);
         });
 
         // Leave user from chat
-        chatConnection.on("Leave", (message, sender, expertKey) => {
+        chatConnection.on("Leave", (message, sender, onlineExpertKey) => {
             const li = leaveMessage(message, sender === "appeal");
 
             $("#messagesList").append(li).scrollTo(li);
 
-            if (sender === 'expert') leaveExpert(expertKey);
+            setExpert(onlineExpertKey);
         });
 
         // Sending message
@@ -124,24 +124,25 @@
             $('#messageText').val('').trigger('input');
         };
 
-        // Join expert to chat
-        const joinExpert = (expertKey) => {
-            const addedSpan = $('<span></span>').text(expertKey);
+        // 
+        const setExpert = (onlineExpertKey) => {
+            const isOnline = onlineExpertKey != null;
 
-            $('#expertNumbers').append(addedSpan);
-        };
+            // Set expert text
+            const expertText = isOnline ? '№' + onlineExpertKey : 'отсутствует';
 
-        // Leave expert from chat
-        const leaveExpert = (expertKey) => {
-            $('span[data-key="' + expertKey + '"]').remove();
-        };
+            $('#expertNumber').text(expertText);
+
+            // Change online circled status
+            $('#onlineStatus').toggleClass('online', isOnline);
+        }
 
         // Update online status
-        const changeStatus = (isOnline) => {
-            const statusText = isOnline ? 'В сети' : 'Не в сети';
+        //const changeStatus = (isOnline) => {
+        //    const statusText = isOnline ? 'В сети' : 'Не в сети';
 
-            $('#onlineStatus').text(statusText);
-        };
+        //    $('#onlineStatus').text(statusText);
+        //};
 
         // 
         const updateInfo = () => infoConnection.invoke("MainUpdate", appealId);

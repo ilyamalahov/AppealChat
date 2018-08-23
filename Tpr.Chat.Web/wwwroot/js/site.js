@@ -81,7 +81,7 @@ const leaveMessage = (message, isSender) => {
 
     const messageText = isSender ? 'Вы покинули консультацию' : message.nickName + ' покинул консультацию';
 
-    const html = messageText + ' <b>' + messageDate.toFormat("tt") + '</b>';
+    const html = messageText + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
 
     return addMessage(html, isSender);
 };

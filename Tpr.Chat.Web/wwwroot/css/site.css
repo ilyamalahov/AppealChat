@@ -19,6 +19,18 @@ footer{
 
 }
 
+.message-history {
+    overflow-y: auto;
+    padding: 10px;
+    background: #bbdbf2;
+    flex: auto;
+    color: #8d8d8d;
+}
+
+    .message-history li {
+        overflow: hidden;
+    }
+
 .message {
     padding: 5px;
     min-width: 40%;

@@ -26,7 +26,7 @@
             <div class="online-status offline" id="onlineStatus"></div>
             <span class="write-status" id="writeStatus">Печатает...</span>
         </div>
-        <ul id="messagesList" class="message-history" style="overflow-y: auto; padding:10px; background: #bbdbf2; flex:auto; display: flex; flex-flow: column-reverse; color: #8d8d8d;">
+        <ul id="messagesList" class="message-history">
             @foreach (var message in Model.Messages)
             {
                 var messageDate = message.CreateDate.ToString("T");

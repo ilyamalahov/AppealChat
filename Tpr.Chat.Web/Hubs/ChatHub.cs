@@ -105,15 +105,14 @@ namespace Tpr.Chat.Web.Hubs
                 // Check if appeal is online
                 var isAppealOnline = connectionService.isOnline(appealId, ContextType.Appeal);
 
-                // Check if expert is online
-                //var isExpertOnline = false;
-                //var isExpertOnline = connectionService.isOnline(appealId, ContextType.Expert, expertKey);
+                // Get online expert key
+                var onlineExpertKey = connectionService.GetOnlineExpertKey(appealId, expertKey);
 
                 // Sender
                 string sender = senderType == ContextType.Appeal ? "appeal" : "expert";
 
                 // Send "Join" message to specified user clients
-                await Clients.User(Context.UserIdentifier).Join(chatMessage, sender, isAppealOnline, expertKey);
+                await Clients.User(Context.UserIdentifier).Join(chatMessage, sender, isAppealOnline, onlineExpertKey ?? expertKey);
 
                 // Expert welcome message
                 if(senderType == ContextType.Expert)
@@ -194,8 +193,11 @@ namespace Tpr.Chat.Web.Hubs
                 // Sender
                 string sender = senderType == ContextType.Appeal ? "appeal" : "expert";
 
+                // Get online expert key
+                var onlineExpertKey = connectionService.GetOnlineExpertKey(appealId, expertKey);
+
                 // Send "Leave" message to specified user clients 
-                await Clients.User(Context.UserIdentifier).Leave(chatMessage, sender, expertKey);
+                await Clients.User(Context.UserIdentifier).Leave(chatMessage, sender, onlineExpertKey);
             }
             catch (Exception throwedException)
             {
