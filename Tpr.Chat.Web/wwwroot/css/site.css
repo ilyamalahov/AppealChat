@@ -12,6 +12,13 @@ ul {
     padding: 0;
 }
 
+header {
+
+}
+footer{
+
+}
+
 .message {
     padding: 5px;
     min-width: 40%;
@@ -54,6 +61,16 @@ ul {
     vertical-align: middle;
 }
 
-object {
-    vertical-align: middle;
+.custom-button {
+    background: none;
+    border: none;
+    padding: 5px;
 }
+
+    .custom-button:hover {
+        cursor: pointer;
+    }
+
+    .custom-button:disabled {
+        cursor: default;
+    }

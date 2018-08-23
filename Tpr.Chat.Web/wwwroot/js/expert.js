@@ -154,7 +154,6 @@
         // Change online status
         const changeStatus = (isOnline) => {
             $('#onlineStatus').toggleClass('online', isOnline);
-            $('#onlineStatus').toggleClass('offline', !isOnline);
 
             //const statusText = isOnline ? 'Подключен к чату' : 'Отключен от чата';
 
