@@ -42,16 +42,23 @@ namespace Tpr.Chat.Web.Controllers
             {
                 return BadRequest("Сессии по данному ID аппелянта не существует");
             }
+
+            //
+            var isEarly = DateTime.Now < chatSession.StartTime;
             
+            //
+            var isCompleted = DateTime.Now > chatSession.FinishTime;
+
             // 
             var model = new IndexViewModel
             {
                 ExpertKey = key,
-                ChatSession = chatSession
+                ChatSession = chatSession,
+                IsInRange = !isEarly && !isCompleted
             };
 
             // Check if current date less than chat start time
-            if (DateTime.Now < chatSession.StartTime)
+            if (isEarly)
             {
                 return View("Early", model);
             }
@@ -62,8 +69,6 @@ namespace Tpr.Chat.Web.Controllers
             // Expert checkings
             if (connectionType == ContextType.Expert)
             {
-                model.IsFinished = DateTime.Now > chatSession.FinishTime;
-
                 model.Messages = chatRepository.GetChatMessages(appealId);
 
                 model.QuickReplies = chatRepository.GetQuickReplies();
@@ -73,7 +78,7 @@ namespace Tpr.Chat.Web.Controllers
             else if(connectionType == ContextType.Appeal)
             {
                 // Check if current date more than chat finish time
-                if (DateTime.Now > chatSession.FinishTime)
+                if (isCompleted)
                 {
                     return View("Complete", model);
                 }
@@ -85,8 +90,6 @@ namespace Tpr.Chat.Web.Controllers
                 {
                     return BadRequest("Сессия все еще запущена на другом устройстве");
                 }
-
-                model.OnlineExpertKeys = connectionService.GetExpertKeys(appealId);
 
                 model.Messages = chatRepository.GetChatMessages(appealId);
 

@@ -17,64 +17,22 @@
     <script type="text/javascript" src="~/lib/signalr/signalr.js"></script>
 }
 
-<div class="container">
-    <partial name="_Header" />
-
-    <div class="content">
-        <div class="header">
-            <div class="moscow-time">
-                <div class="highlight">@DateTime.Now.ToLongDateString()</div>
-                <div>Московское время: <span id="moscowTime" class="highlight">00:00</span></div>
-            </div>
-            <div class="info">
-                <img class="one-line" src="~/images/hourglass.png" />
-                <div style="display: inline-block; vertical-align: middle; font-size: 24px; color:#f8941f">Время онлайн консультации по Вашей апелляции еще не наступило</div>
-            </div>
-            <div class="remaining-time">Консультация начнется через: <span id="remainingDays">0</span> дней(-я) <span id="remainingHours">00</span> часов(-а) <span id="remainingMinutes">00</span> минут(-ы)</div>
-        </div>
-        <div class="main">
-            <div class="info-block">
-                <div class="header">Сведения об аппеляции</div>
-                <ul>
-                    <li class="info-item">Дата и время подачи заявления: <strong>@Model.ChatSession.ApplicationDate.ToString("g")</strong></li>
-                    <li class="info-item">Номер апелляции: <strong>@Model.ChatSession.AppealNumber</strong></li>
-                    <li class="info-item">Дата и время регистрации заявления: <strong>@Model.ChatSession.RegistrationDate.ToString("g")</strong></li>
-                    <li class="info-item">Предмет: <strong>@Model.ChatSession.SubjectName</strong></li>
-                    <li class="info-item">Дата экзамена: <strong>@Model.ChatSession.ExamDate.ToShortDateString()</strong></li>
-                    <li class="info-item">Дата и время начала онлайн консультации: <strong>@Model.ChatSession.StartTime.ToString("g")</strong></li>
-                    <li class="info-item">Дата и время окончания онлайн консультации: <strong>@Model.ChatSession.FinishTime.ToString("g")</strong></li>
-                </ul>
-            </div>
-            <div class="info-block">
-                <div class="header">Справочная информация</div>
+    <div class="container">
+        <partial name="_Header" />
+        <div class="content">
+            <partial name="_Sidebar" />
+            <div class="main" style="display: flex; flex-flow:column; justify-content: center; align-items: center; width: 100%; text-align:center; overflow: hidden; color: #000;">
+                <div style="margin-bottom: 50px;">
+                    <div style="margin-bottom: 10px"><img src="~/images/png/hourglass.png" style="width: 80px" /></div>
+                    <div style="color: #ff941a; font-weight: bold; font-size: 20px;">Время онлайн консультации <br />по Вашей аппеляции еще не наступило</div>
+                </div>
                 <div>
-                    <div style="margin-bottom: 10px;">
-                        <div class="one-line">Инструкция по работе с системой онлайн консультации и системой онлайн трансляции заседания конфликтной комиссии  </div>
-                        <img class="one-line" src="~/images/download.png" />
-                    </div>
-                    <div style="margin-bottom: 10px;">
-                        <div>Официальный электронный адрес конфликтной комиссии при проведении государственной итоговой аттестации по образовательным программам среднего общего образования:</div>
-                        <img class="one-line" src="~/images/EMail.png" />
-                        <div class="one-line"><a href="mailto:kk77@mcko.ru">kk77@mcko.ru</a></div>
-                    </div>
-                    <div style="margin-bottom: 10px;">
-                        <div>Официальный электронный адрес конфликтной комиссии при проведении государственной итоговой аттестации по образовательным программам основного общего образования:</div>
-                        <img class="one-line" src="~/images/EMail.png" />
-                        <div class="one-line"><a href="mailto:kkgia9@mcko.ru">kkgia9@mcko.ru</a></div>
-                    </div>
-                    <div style="margin-bottom: 10px;">
-                        <div>Информационно-консультационный центр регионального центра обработки информации города Москвы:</div>
-                        <img class="one-line" src="~/images/phone-call.png" />
-                        <div class="one-line"><a href="tel:+74953660692">+7 (495) 366-06-92</a></div>
-                    </div>
-                    <div style="margin-bottom: 10px;">
-                        <div>Общественная приемная регионального центра обработки информации города Москвы:</div>
-                        <div>Адрес: город Москва, Семеновская пл. д.4.</div>
-                        <div>График работы: понедельник - пятница с 9:00 до 18:00, в дни проведения экзаменов – с 7:30 до 18:00</div>
-                    </div>
+                    <div style="margin-bottom: 10px; font-weight: bold;">Консультация начнется через</div>
+                    <div style="color: #8c8d8f;">
+                        <b id="remainingDays" style="font-size:20px; color: #000;">0</b> дней(-я) 
+                        <b id="remainingHours" style="font-size:20px; color: #000;">00</b> часа(-ов) 
+                        <b id="remainingMinutes" style="font-size:20px; color: #000;">00</b> минут(-ы)</div>
                 </div>
             </div>
         </div>
     </div>
-    <partial name="_Footer" />
-</div>

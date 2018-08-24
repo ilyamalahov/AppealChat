@@ -1,0 +1,85 @@
+﻿@model IndexViewModel
+@{ 
+    var chatSession = @Model.ChatSession;
+}
+
+<div class="sidebar">
+    <div class="sidebar-content">
+        @if (Model.IsInRange)
+        {
+            <div class="switch-expert">
+                <button id="switchExpertButton" class="custom-button expert-button">
+                    <img src="images/png/reload.png" style="height: 25px; vertical-align: middle; margin-right: 10px;" alt="Reload" />
+                    Сменить собеседника
+                </button>
+            </div>
+            <div class="sidebar-block remaining-time">
+                <img src="images/png/stopwatch.png" style="height: 25px; vertical-align: middle; margin-right: 10px;" alt="Stopwatch" />
+                <b id="remainingTime">00</b> минуты осталось
+            </div>
+        }
+
+        <ul class="sidebar-block appeal-info">
+            <li>Сведения об аппеляции</li>
+            <li>
+                <div class="one-line appeal-caption">Начало онлайн-консультации</div>
+                <div class="one-line appeal-value">@chatSession.StartTime</div>
+            </li>
+            <li>
+                <div class="one-line appeal-caption">Завершение онлайн-консультации</div>
+                <div class="one-line appeal-value">@chatSession.FinishTime</div>
+            </li>
+            <li>
+                <div class="one-line appeal-caption">Номер апелляции</div>
+                <div class="one-line appeal-value sidebar-highlight">@chatSession.AppealNumber</div>
+            </li>
+            <li>
+                <div class="one-line appeal-caption">Предмет</div>
+                <div class="one-line appeal-value sidebar-highlight">@chatSession.SubjectName</div>
+            </li>
+            <li>
+                <div class="one-line appeal-caption">Дата экзамена</div>
+                <div class="one-line appeal-value sidebar-highlight">@chatSession.ExamDate</div>
+            </li>
+            <li>
+                <div class="one-line appeal-caption">Зарегистрирована</div>
+                <div class="one-line appeal-value sidebar-highlight">@chatSession.RegistrationDate</div>
+            </li>
+            <li>
+                <div class="one-line appeal-caption">Подано заявление</div>
+                <div class="one-line appeal-value sidebar-highlight">@chatSession.ApplicationDate</div>
+            </li>
+        </ul>
+        <div class="sidebar-block contacts-info" style="position: relative;">
+            <span style="flex: auto;">Контакты</span>
+            <img src="~/images/png/back.png" style="width: 15px; height: 15px;" />
+            <span class="tooltip-wrapper" style="position: absolute;">
+                <span class="tooltip">Tooltip</span>
+            </span>
+            @*<div class="tooltip contacts-tooltip" id="contactsTooltip">*@
+                @*<ul class="other-info">
+                <li>Справочная служба конфликтной комиссии г. Москвы</li>
+                <li class="other-contact">
+                    <img src="images/png/phone-call.png" style="height: 20px; vertical-align: middle; margin-right: 10px;" alt="Phone" />
+                    <a style="color: #8d8d8d; text-decoration: none;" href="tel:+74953660692">+7 (495) 366-06-92</a>
+                </li>
+                <li class="other-contact">
+                    <img src="images/png/envelope.png" style="height: 20px; vertical-align: middle; margin-right: 10px;" alt="Email" />
+                    <a style="color: #8d8d8d; text-decoration: none;" href="mailto:kk77@mcko.ru">kk77@mcko.ru</a>
+                </li>
+            </ul>*@
+            @*</div>*@
+        </div>
+    </div>
+    <div class="footer">2018 (C) Конфликтная комиссия города Москвы</div>
+    <style>
+        .tooltip {
+            display: block;
+            position: absolute;
+            left: 105%;
+            color: #FFFFFF;
+            background: #000000;
+            text-align: center;
+        }
+    </style>
+</div>

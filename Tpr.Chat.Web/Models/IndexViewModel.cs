@@ -9,10 +9,6 @@ namespace Tpr.Chat.Web.Models
 {
     public class IndexViewModel
     {
-        //public Guid AppealId { get; set; }
-
-        public bool IsFinished { get; set; }
-
         public int ExpertKey { get; set; }
 
         public ChatSession ChatSession { get; set; }
@@ -21,6 +17,6 @@ namespace Tpr.Chat.Web.Models
 
         public IEnumerable<QuickReply> QuickReplies { get; set; }
 
-        public IEnumerable<string> OnlineExpertKeys { get; set; }
+        public bool IsInRange { get; set; }
     }
 }

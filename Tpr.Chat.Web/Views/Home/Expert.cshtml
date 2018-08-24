@@ -13,7 +13,6 @@
     <script>
         var appealId = "@Model.ChatSession.AppealId";
         var expertKey = "@Model.ExpertKey";
-        var isFinished = "@Model.IsFinished";
     </script>
     <script type="text/javascript" src="~/js/luxon.min.js"></script>
     <script type="text/javascript" src="~/lib/signalr/signalr.js"></script>
@@ -23,7 +22,7 @@
     <div class="main">
         <div class="main-header">
             <div class="header-title">Участник аппеляции</div>
-            <div class="online-status offline" id="onlineStatus"></div>
+            <div class="online-status" id="onlineStatus"></div>
             <span class="write-status" id="writeStatus">Печатает...</span>
         </div>
         <ul id="messagesList" class="message-history">
