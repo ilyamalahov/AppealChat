@@ -1,4 +1,4 @@
-﻿@model dynamic
+﻿@model IndexViewModel
 
 @{
     ViewData["Title"] = "Система онлайн консультирования по вопросам";
@@ -18,7 +18,7 @@
 }
 
     <div class="container">
-        <partial name="_Header" />
+        <partial name="_Header" for="@Model" />
         <div class="content">
             <partial name="_Sidebar" />
             <div class="main" style="display: flex; flex-flow:column; justify-content: center; align-items: center; width: 100%; text-align:center; overflow: hidden; color: #000;">

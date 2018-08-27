@@ -159,3 +159,15 @@ const calculateExpandRows = (textarea) => {
     return Math.max(0, Math.min(currentRowCount, 4));
 };
 //});
+
+$(document).ready(function (e) {
+    var contactsIsVisible = false;
+
+    $('#contactsButton:not(.contacts-tooltip)').on('click', function(e) {
+        contactsIsVisible = !contactsIsVisible;
+
+        $('#contactsTooltip').toggle(contactsIsVisible);
+        $('#contactsChevron').toggleClass('chevron-reverse', contactsIsVisible);
+        $(this).toggleClass('active', contactsIsVisible);
+    });
+});

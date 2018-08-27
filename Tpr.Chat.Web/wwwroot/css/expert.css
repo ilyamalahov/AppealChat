@@ -136,19 +136,29 @@
     outline: none;
 }
 
-.send-button {
+.round-button {
     padding: 10px;
 }
-    .send-button .image-wrapper {
-        background: #3587dd;
+    .round-button .image-wrapper {
         padding: 10px;
         border-radius: 50%;
     }
+    .round-button:disabled .image-wrapper {
+        background: #c7c7c7;
+    }
+
+.reply-button .image-wrapper {
+    background: #e8e8e8;
+}
+.reply-button:hover .image-wrapper {
+    background: #d4d4d4;
+}
+
+.send-button .image-wrapper {
+    background: #3587dd;
+}
     .send-button:hover .image-wrapper {
         background: #3b78b5;
-    }
-    .send-button:disabled .image-wrapper {
-        background: #c7c7c7;
     }
 
 .header-button {

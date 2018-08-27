@@ -1,5 +1,5 @@
 ﻿@model IndexViewModel
-@{ 
+@{
     var chatSession = @Model.ChatSession;
 }
 
@@ -50,36 +50,44 @@
                 <div class="one-line appeal-value sidebar-highlight">@chatSession.ApplicationDate</div>
             </li>
         </ul>
-        <div class="sidebar-block contacts-info" style="position: relative;">
-            <span style="flex: auto;">Контакты</span>
-            <img src="~/images/png/back.png" style="width: 15px; height: 15px;" />
-            <span class="tooltip-wrapper" style="position: absolute;">
-                <span class="tooltip">Tooltip</span>
-            </span>
-            @*<div class="tooltip contacts-tooltip" id="contactsTooltip">*@
-                @*<ul class="other-info">
-                <li>Справочная служба конфликтной комиссии г. Москвы</li>
-                <li class="other-contact">
-                    <img src="images/png/phone-call.png" style="height: 20px; vertical-align: middle; margin-right: 10px;" alt="Phone" />
-                    <a style="color: #8d8d8d; text-decoration: none;" href="tel:+74953660692">+7 (495) 366-06-92</a>
-                </li>
-                <li class="other-contact">
-                    <img src="images/png/envelope.png" style="height: 20px; vertical-align: middle; margin-right: 10px;" alt="Email" />
-                    <a style="color: #8d8d8d; text-decoration: none;" href="mailto:kk77@mcko.ru">kk77@mcko.ru</a>
-                </li>
-            </ul>*@
-            @*</div>*@
+        <div id="contactsButton" class="sidebar-block contacts-button">
+            <b style="flex: auto;">Контакты</b>
+            <img id="contactsChevron" src="~/images/png/back.png" class="arrow-chevron" />
+            <div id="contactsTooltip" class="contacts-tooltip">
+                <button style="position: absolute; right: 0; top: 0;">Close</button>
+                <ul style="clear:both;" class="contacts-info">
+                    <li>
+                        <div style="margin-bottom: 10px;">Справочная служба конфликтной комиссии г. Москвы</div>
+                        <div>Время работы: пн - сб с 9:00 до 19:00,<br />выходные - воскресенье и праздничные дни</div>
+                    </li>
+                    <li>
+                        <div style="margin-bottom: 10px;">Официальный <b>электронный адрес конфликтной комиссии</b> при проведении государственной итоговой аттестации по образовательным программам <b>среднего общего образования</b>:</div>
+                        <div>
+                            <img src="images/png/envelope.png" style="height: 20px; vertical-align: middle; margin-right: 10px;" alt="Email" />
+                            <a class="contact-link" href="mailto:kk77@mcko.ru">kk77@mcko.ru</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div style="margin-bottom: 10px;">Официальный <b>электронный адрес конфликтной комиссии</b> при проведении государственной итоговой аттестации по образовательным программам <b>общего общего образования</b>:</div>
+                        <div>
+                            <img src="images/png/envelope.png" style="height: 20px; vertical-align: middle; margin-right: 10px;" alt="Email" />
+                            <a class="contact-link" href="mailto:kkgia9@mcko.ru">kkgia9@mcko.ru</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div style="margin-bottom: 10px;">Информационно-консультационный центр регионального центра обработки информации города Москвы:</div>
+                        <div>
+                            <img src="images/png/phone-call.png" style="height: 20px; vertical-align: middle; margin-right: 10px;" alt="Phone" />
+                            <a class="contact-link" href="tel:+74953660692">+7 (495) 366-06-92</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div style="margin-bottom: 10px;">Общественная приемная регионального центра обработки информации города Москвы:</div>
+                        <div>г. Москва, Семеновская пл., д.4</div>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
     <div class="footer">2018 (C) Конфликтная комиссия города Москвы</div>
-    <style>
-        .tooltip {
-            display: block;
-            position: absolute;
-            left: 105%;
-            color: #FFFFFF;
-            background: #000000;
-            text-align: center;
-        }
-    </style>
 </div>
