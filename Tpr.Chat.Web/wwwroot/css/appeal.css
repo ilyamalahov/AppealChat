@@ -161,7 +161,7 @@ footer {
     flex: auto;
     display: flex;
     flex-flow: column;
-    margin: 15px 15px 0 15px;
+    margin: 0 15px;
 }
 
 .main-header {

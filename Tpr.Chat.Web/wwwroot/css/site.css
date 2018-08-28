@@ -12,6 +12,20 @@ ul {
     padding: 0;
 }
 
+.custom-button {
+    background: none;
+    border: none;
+    padding: 5px;
+}
+
+    .custom-button:hover {
+        cursor: pointer;
+    }
+
+    .custom-button:disabled {
+        cursor: default;
+    }
+
 .container {
     display: flex;
     flex-flow: column;
@@ -68,11 +82,11 @@ ul {
     flex: none;
     display: flex;
     flex-flow: column;
+    min-width: 350px;
 }
 
 .sidebar-content {
     flex: auto;
-    padding: 5px 5px 5px 0;
 }
 
 .sidebar-block {
@@ -93,6 +107,7 @@ ul {
     padding: 15px;
     background: #3c8cdd;
     color: #fff;
+    margin-bottom: 15px;
 }
 
     .expert-button:hover {
@@ -136,40 +151,20 @@ ul {
     color: #000;
 }
 
+.contacts-info {
+    position: relative;
+    padding: 0;
+}
+
 .contacts-button {
     display: flex;
     align-items: center;
-    position: relative;
     color: #000;
+    padding: 20px 15px;
 }
+
     .contacts-button:hover {
         cursor: pointer;
-    }
-    .active {
-        background: #f5f5f5;
-    }
-
-.contacts-info {
-    line-height: 1;
-}
-
-    .contacts-info li {
-        padding: 10px 0;
-        border-bottom: 1px solid #6ba8eb;
-    }
-
-        .contacts-info li:last-child {
-            border: none;
-        }
-
-.contact-link {
-    color: inherit;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-    .contact-link:hover {
-        text-decoration: underline;
     }
 
 .contacts-tooltip {
@@ -183,6 +178,7 @@ ul {
     background: #2b7bde;
     color: #fff;
 }
+
     .contacts-tooltip::before {
         content: "";
         position: absolute;
@@ -195,16 +191,42 @@ ul {
         border-right: inherit;
         background: inherit;
     }
-    .contacts-tooltip:hover{
+
+    .contacts-tooltip:hover {
         cursor: default;
     }
+
+.contacts-list {
+    line-height: 1;
+}
+
+    .contacts-list li {
+        padding: 10px 0;
+        border-bottom: 1px solid #6ba8eb;
+    }
+
+        .contacts-list li:last-child {
+            border: none;
+        }
+
+.contact-link {
+    color: inherit;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+    .contact-link:hover {
+        text-decoration: underline;
+    }
+
 .arrow-chevron {
     width: 15px;
     height: 15px;
 }
-    .chevron-reverse {
-        transform: scaleX(-1);
-    }
+
+.chevron-reverse {
+    transform: scaleX(-1);
+}
 
 .footer {
     flex: none;
@@ -267,20 +289,6 @@ ul {
     display: inline-block;
     vertical-align: middle;
 }
-
-.custom-button {
-    background: none;
-    border: none;
-    padding: 5px;
-}
-
-    .custom-button:hover {
-        cursor: pointer;
-    }
-
-    .custom-button:disabled {
-        cursor: default;
-    }
 
 .header-button {
     padding: 15px;

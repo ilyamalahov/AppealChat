@@ -72,20 +72,14 @@
         $('#sendButton').on('click', () => sendMessage($("#messageText").val()));
 
         // 
-        var isQuickReplyVisible = false;
+        var quickReplyIsVisible = false;
 
         // 
-        $('#quickReplyButton').on('click', () => {
-            isQuickReplyVisible = !isQuickReplyVisible;
-
-            toggleQuickReplyBlock(isQuickReplyVisible);
-        });
+        $('#quickReplyButton').on('click', () => toggleQuickReplyBlock(!quickReplyIsVisible));
 
         // 
-        $('.list-item').on('click', function (e) {
-            isQuickReplyVisible = false;
-
-            toggleQuickReplyBlock(isQuickReplyVisible);
+        $('#replyList').on('click', 'li', function (e) {
+            toggleQuickReplyBlock(false);
 
             $('#messageText').insertAtCursor($(this).text())
                 .focus()
@@ -123,23 +117,22 @@
         $('#messageText').trigger('input');
 
         // Quick reply block toggle
-        const toggleQuickReplyBlock = (isVisibled) => {
-            // 
-            $('#quickReplyBlock').slideToggle(isVisibled);
-
-            //
-            $('#quickReplyButton').toggleClass('send-button', isVisibled);
+        const toggleQuickReplyBlock = (isVisible) => {
+            quickReplyIsVisible = isVisible;
 
             // 
-            const replyText = isVisibled ? 'Убрать' : 'Быстрый ответ';
+            $('#quickReplyBlock').slideToggle(isVisible);
 
-            $('#quickReplyButton').text(replyText);
+            // 
+            const imageSrc = isVisible ? 'images/png/back.png' : 'images/png/chat.png';
+
+            $('#quickReplyButton>img').attr('src', imageSrc);
 
             // 
             $('#filterText').val('').trigger('input');
 
             // 
-            if (isVisibled) { $('#filterText').focus(); }
+            if (isVisible) { $('#filterText').focus(); }
         };
 
         // Send message
@@ -161,6 +154,9 @@
         };
 
         const completeConsultation = () => {
+            chatConnection.stop();
+            infoConnection.stop();
+
             clearTimeout(timeoutId);
 
             $('#interactiveBlock').hide();

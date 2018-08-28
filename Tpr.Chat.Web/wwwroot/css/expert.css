@@ -137,27 +137,26 @@
 }
 
 .round-button {
+    margin: 10px;
     padding: 10px;
+    border-radius: 50%;
 }
-    .round-button .image-wrapper {
-        padding: 10px;
-        border-radius: 50%;
-    }
-    .round-button:disabled .image-wrapper {
+    .round-button:disabled {
         background: #c7c7c7;
+        cursor: default;
     }
 
-.reply-button .image-wrapper {
+.reply-button {
     background: #e8e8e8;
 }
-.reply-button:hover .image-wrapper {
-    background: #d4d4d4;
-}
+    .reply-button:hover {
+        background: #d4d4d4;
+    }
 
-.send-button .image-wrapper {
+.send-button {
     background: #3587dd;
 }
-    .send-button:hover .image-wrapper {
+    .send-button:hover {
         background: #3b78b5;
     }
 
@@ -168,3 +167,40 @@
     .header-button img {
         height: 25px;
     }
+
+.quick-reply {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: #f1f1f1;
+}
+
+.filter-block {
+    background: #fff;
+    padding: 15px;
+    box-shadow: 0 5px 5px 0 #dfe8ef;
+}
+.filter-text {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    outline: none;
+}
+
+.reply-list {
+    overflow-y: auto;
+    max-height: 200px;
+    padding: 15px;
+}
+    .reply-list li {
+        background: #fff;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 0 5px 0 #dfe8ef;
+    }
+        .reply-list li:hover {
+            background: #f7f7f7;
+            cursor: pointer;
+        }
