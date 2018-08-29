@@ -61,7 +61,7 @@ const receiveMessage = (message, isSender) => {
 
     const messageInfo = nickname + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
 
-    return addMessage(messageBubble + messageInfo, isSender);
+    return addMessage(messageBubble + messageInfo, false, isSender);
 };
 
 // Return new "Join user" message
@@ -72,7 +72,7 @@ const joinMessage = function (message, isSender) {
 
     const html = messageText + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
 
-    return addMessage(html, isSender);
+    return addMessage(html, true, isSender);
 };
 
 // Return new "Leave user" message
@@ -83,14 +83,18 @@ const leaveMessage = (message, isSender) => {
 
     const html = messageText + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
 
-    return addMessage(html, isSender);
+    return addMessage(html, true, isSender);
 };
 
 // Return new list item
-const addMessage = (html, isSender) => {
+const addMessage = (html, isStatusMessage, isSender) => {
     const div = $('<div class="message ' + (isSender ? 'place-left' : 'place-right') + '"></div>').html(html);
 
-    return $('<li></li>').html(div);
+    var liElement = $('<li></li>');
+
+    if (isStatusMessage) liElement.addClass('message-status');
+
+    return liElement.html(div);
 };
 
 // Scroll to element
@@ -111,6 +115,28 @@ jQuery.fn.insertAtCursor = function (value) {
         $(this).val($(this).val() + value);
     }
 
+    return this;
+};
+
+// 
+jQuery.fn.highlightText = function (matchText) {
+    var value = $(this).text();
+
+    // 
+    var matchStart = value.toLowerCase().indexOf(matchText.toLowerCase());
+    // 
+    var matchEnd = matchStart + matchText.length;
+
+    // 
+    var beforeMatch = value.slice(0, matchStart);
+    // 
+    var matchText = value.slice(matchStart, matchEnd);
+    // 
+    var afterMatch = value.slice(matchEnd);
+
+    $(this).html(beforeMatch + "<strong>" + matchText + "</strong>" + afterMatch);
+
+    //return beforeMatch + "<em>" + matchText + "</em>" + afterMatch;
     return this;
 };
 

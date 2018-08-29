@@ -1,4 +1,5 @@
-﻿@model Tpr.Chat.Web.Models.IndexViewModel
+﻿@using Tpr.Chat.Core.Models
+@model Tpr.Chat.Web.Models.IndexViewModel
 
 @{
     ViewData["Title"] = "Home Page";
@@ -32,8 +33,31 @@
                 @foreach (var message in Model.Messages)
                 {
                     var isCurrent = message.NickName == "Аппелянт";
+                    var messageDate = message.CreateDate.ToString("T");
+                    var nickname = isCurrent ? "Вы" : message.NickName;
 
-                    <partial name="_Message" model="new { Message = message, IsCurrent = isCurrent }" />
+                    @*<partial name="_Message" model="new { Message = message, IsCurrent = isCurrent }" />*@
+
+                    @switch (message.ChatMessageTypeId)
+                    {
+                        case ChatMessageTypes.Joined:
+                            <li class="message-status">
+                                <div class="message @(isCurrent ? "place-left" : "place-right")">@nickname @(isCurrent ? " подключились" : " подключился") к консультации</div>
+                            </li>
+                            break;
+                        case ChatMessageTypes.Message:
+                            <li>
+                                <div class="message @(isCurrent ? "place-left" : "place-right")">
+                                    <div class="message-bubble">@Html.Raw(message.MessageString)</div>@nickname <b class="message-date">@messageDate</b>
+                                </div>
+                            </li>
+                            break;
+                        case ChatMessageTypes.Leave:
+                            <li class="message-status">
+                                <div class="message @(isCurrent ? "place-left" : "place-right")">@nickname @(isCurrent ? " покинули" : " покинул") консультацию</div>
+                            </li>
+                            break;
+                    }
                 }
             </ul>
             <div class="main-footer">

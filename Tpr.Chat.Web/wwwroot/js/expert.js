@@ -90,11 +90,11 @@
         $('#filterText').on('input', function (e) {
             var value = $(this).val();
 
-            $(".list-item").each(function () {
-                const isContains = $(this).is(":icontains('" + value + "')");
-
-                $(this).toggle(isContains);
-            });
+            $("#replyList li")
+                .hide()
+                .filter(":icontains('" + value + "')")
+                .show()
+                .each((index, element) => $(element).highlightText(value));
         });
 
         //
@@ -108,9 +108,9 @@
 
         //
         $('#messageText').on('input', function (e) {
-            const isEnabled = $(this).val().length > 0;
+            const isDisabled = $(this).val().length === 0;
 
-            $('#sendButton').prop('disabled', !isEnabled);
+            $('#sendButton').prop('disabled', isDisabled);
         });
 
         // 
@@ -124,15 +124,16 @@
             $('#quickReplyBlock').slideToggle(isVisible);
 
             // 
-            const imageSrc = isVisible ? 'images/png/back.png' : 'images/png/chat.png';
+            const imageSrc = isVisible ? 'images/back.svg' : 'images/question.svg';
 
-            $('#quickReplyButton>img').attr('src', imageSrc);
-
-            // 
-            $('#filterText').val('').trigger('input');
+            $('#quickReplyButton>object').attr('data', imageSrc);
 
             // 
-            if (isVisible) { $('#filterText').focus(); }
+            if (isVisible) {
+                $('#filterText').focus();
+            } else {
+                $('#filterText').val('').trigger('input');
+            }
         };
 
         // Send message
@@ -145,13 +146,7 @@
         };
 
         // Change online status
-        const changeStatus = (isOnline) => {
-            $('#onlineStatus').toggleClass('online', isOnline);
-
-            //const statusText = isOnline ? 'Подключен к чату' : 'Отключен от чата';
-
-            //$('#onlineStatus').text(statusText);
-        };
+        const changeStatus = (isOnline) => $('#onlineStatus').toggleClass('online', isOnline);
 
         const completeConsultation = () => {
             chatConnection.stop();

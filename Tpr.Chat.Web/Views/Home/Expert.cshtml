@@ -36,34 +36,27 @@
                 var isCurrent = isExpert && message.NickName.Contains(Model.ExpertKey.ToString());
 
                 var nickname = isCurrent ? "Вы" : message.NickName;
-
-                <li style="position: relative;">
-                    <div class="message @(isExpert ? "place-left" : "place-right")">
-                        @* padding: 5px 10px;
-            z-index: 10;
-            box-shadow: 0 0 15px 0 #a6cae4;
-            color: #3387dd;
-                                <div style="
-        position: absolute;
-        bottom: 50%;
-        width: 100%;
-        border-bottom: 1px solid #9ec9ec;
-        z-index: 0;
-        "></div>*@
-                        @switch (message.ChatMessageTypeId)
-                        {
-                            case ChatMessageTypes.Joined:
-                                @nickname @(isCurrent ? " подключились" : " подключился") @:к консультации <b class="message-date">@messageDate</b>
-                                break;
-                            case ChatMessageTypes.Message:
+                
+                @switch (message.ChatMessageTypeId)
+                {
+                    case ChatMessageTypes.Joined:
+                        <li class="message-status">
+                            <div class="message @(isExpert ? "place-left" : "place-right")">@nickname @(isCurrent ? " подключились" : " подключился") к консультации</div>
+                        </li>
+                        break;
+                    case ChatMessageTypes.Message:
+                        <li>
+                            <div class="message @(isExpert ? "place-left" : "place-right")">
                                 <div class="message-bubble">@Html.Raw(message.MessageString)</div>@nickname <b class="message-date">@messageDate</b>
-                                break;
-                            case ChatMessageTypes.Leave:
-                                @nickname @(isCurrent ? " покинули" : " покинул") @:консультацию <b class="message-date">@messageDate</b>
-                                break;
-                        }
-                    </div>
-                </li>
+                            </div>
+                        </li>
+                        break;
+                    case ChatMessageTypes.Leave:
+                        <li class="message-status">
+                            <div class="message @(isExpert ? "place-left" : "place-right")">@nickname @(isCurrent ? " покинули" : " покинул") консультацию</div>
+                        </li>
+                        break;
+                }
             }
         </ul>
         <div id="quickReplyBlock" class="quick-reply">
@@ -78,11 +71,13 @@
     </div>
     <div id="interactiveBlock" class="main-footer">
         <button id="quickReplyButton" class="custom-button round-button reply-button">
-            <img src="~/images/png/chat.png" style="height: 20px;" alt="QuickReply" />
+            <object type="image/svg+xml" data="~/images/question.svg" style="height: 20px;"></object>
+            @*<img src="~/images/png/chat.png" alt="QuickReply" />*@
         </button>
         <textarea id="messageText" class="message-text" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
         <button id="sendButton" class="custom-button round-button send-button">
-            <img src="~/images/png/send-mail.png" style="height: 20px;" alt="Send" />
+            <object type="image/svg+xml" data="~/images/send-mail.svg" style="height: 20px;"></object>
+            @*<img src="~/images/png/send-mail.png" style="height: 20px;" alt="Send" />*@
         </button>
     </div>
 </div>
