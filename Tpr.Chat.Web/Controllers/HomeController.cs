@@ -60,7 +60,7 @@ namespace Tpr.Chat.Web.Controllers
             // Check if current date less than chat start time
             if (isEarly)
             {
-                return View("Early", model);
+                return View("Before", model);
             }
 
             // 
@@ -80,7 +80,7 @@ namespace Tpr.Chat.Web.Controllers
                 // Check if current date more than chat finish time
                 if (isCompleted)
                 {
-                    return View("Complete", model);
+                    return View("After", model);
                 }
 
                 // 

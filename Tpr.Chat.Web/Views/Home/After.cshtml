@@ -8,13 +8,13 @@
 }
 
 @section Styles{
-    <link rel="stylesheet" type="text/css" href="~/css/early-complete.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/before-after.css" />
     <style>
     </style>
 }
 @section Scripts {
     <script type="text/javascript" src="~/js/luxon.min.js"></script>
-    <script type="text/javascript" src="~/js/complete.js"></script>
+    <script type="text/javascript" src="~/js/after.js"></script>
     <script type="text/javascript" src="~/lib/signalr/signalr.js"></script>
 }
 
@@ -29,12 +29,18 @@
                     <div style="color: #ff941a; font-weight: bold; font-size: 20px; margin-bottom: 10px;">Сведения о заседании конфликтной комиссии</div>
 
                     <div style="margin-bottom: 10px">Заседание конфликтной комиссии, в рамках которой будет вынесено<br />Решение по Вашей аппеляции состоится</div>
-                    <div style="margin-bottom: 30px"><img src="" alt="Calendar" style="margin-right: 10px;" /><b style="color:#000;">01.08.2018</b></div>
+                    <div style="margin-bottom: 30px">
+                        <img src="" alt="Calendar" style="margin-right: 5px; height: 30px; vertical-align: middle;" />
+                        <b style="color:#000; font-size: 20px;">01.08.2018</b>
+                    </div>
 
                     <div style="margin-bottom: 10px">Запланированное время рассмотрения Вашей аппеляции</div>
-                    <div style="margin-bottom: 30px"><img src="" alt="Time" style="margin-right: 10px;" /><b style="color:#000;">09:00 - 09:15</b></div>
+                    <div style="margin-bottom: 30px">
+                        <img src="~/images/noun_clock.svg" alt="Time" style="margin-right: 5px; height: 30px; vertical-align: middle;" />
+                        <b style="color:#000; font-size: 20px;">09:00 - 09:15</b>
+                    </div>
 
-                    <div style="margin-bottom: 10px; color:#000;">Онлайн трансляцию заседания конфликтной комиссии Вы сможете посмотреть, перейдя по <a href="#">данной ссылке</a></div>
+                    <div style="margin-bottom: 10px; color:#000;">Онлайн трансляцию заседания конфликтной комиссии Вы сможете посмотреть, перейдя по <a href="@Model.ChatSession.CommissionLink">данной ссылке</a></div>
                     <div>По итогам рассмотрения аппеляции Вам будет направлено Решение конфликтной комисии, ознакомиться с которым Вы сможете в личном кабинете на портале.</div>
                 </div>
             </div>

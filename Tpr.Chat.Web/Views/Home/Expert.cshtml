@@ -59,6 +59,7 @@
                 }
             }
         </ul>
+        <div id="quickReplyOverlay" style="position: absolute; top:0; bottom: 0; right: 0; left:0; background: rgba(0, 0, 0, 0.50); display:none;"></div>
         <div id="quickReplyBlock" class="quick-reply">
             <div class="filter-block"><input id="filterText" class="filter-text" type="text" placeholder="Введите текст" /></div>
             <ul id="replyList" class="reply-list">
@@ -70,15 +71,9 @@
         </div>
     </div>
     <div id="interactiveBlock" class="main-footer">
-        <button id="quickReplyButton" class="custom-button round-button reply-button">
-            <object type="image/svg+xml" data="~/images/question.svg" style="height: 20px;"></object>
-            @*<img src="~/images/png/chat.png" alt="QuickReply" />*@
-        </button>
+        <button id="quickReplyButton" class="custom-button round-button reply-button"><img src="~/images/question.svg" style="height: 20px;" alt="QuickReply" /></button>
         <textarea id="messageText" class="message-text" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
-        <button id="sendButton" class="custom-button round-button send-button">
-            <object type="image/svg+xml" data="~/images/send-mail.svg" style="height: 20px;"></object>
-            @*<img src="~/images/png/send-mail.png" style="height: 20px;" alt="Send" />*@
-        </button>
+        <button id="sendButton" class="custom-button round-button send-button"><img src="~/images/send-mail.svg" style="height: 20px;" alt="Send" /></button>
     </div>
 </div>
 

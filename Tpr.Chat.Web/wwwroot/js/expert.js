@@ -121,18 +121,14 @@
             quickReplyIsVisible = isVisible;
 
             // 
-            $('#quickReplyBlock').slideToggle(isVisible);
-
-            // 
-            const imageSrc = isVisible ? 'images/back.svg' : 'images/question.svg';
-
-            $('#quickReplyButton>object').attr('data', imageSrc);
-
-            // 
             if (isVisible) {
-                $('#filterText').focus();
+                $('#quickReplyButton>img').attr('src', 'images/down-chevron.svg');
+                $('#quickReplyBlock').slideDown('fast', () => $('#filterText').focus());
+                $('#quickReplyOverlay').fadeIn('fast');
             } else {
-                $('#filterText').val('').trigger('input');
+                $('#quickReplyButton>img').attr('src', 'images/question.svg');
+                $('#quickReplyBlock').slideUp('fast', () => $('#filterText').val('').trigger('input'));
+                $('#quickReplyOverlay').fadeOut('fast');
             }
         };
 

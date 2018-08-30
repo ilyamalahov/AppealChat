@@ -162,6 +162,7 @@ footer {
     display: flex;
     flex-flow: column;
     margin: 0 15px;
+    box-shadow: 0 0 10px #b7bec3;
 }
 
 .main-header {
@@ -214,22 +215,32 @@ footer {
     outline: none;
 }
 
-.send-button {
+/* */
+.round-button {
+    margin: 10px;
     padding: 10px;
+    border-radius: 50%;
 }
 
-    .send-button .image-wrapper {
-        background: #3587dd;
-        padding: 10px;
-        border-radius: 50%;
-    }
-
-    .send-button:hover .image-wrapper {
-        background: #3b78b5;
-    }
-
-    .send-button:disabled .image-wrapper {
+    .round-button:disabled {
         background: #c7c7c7;
+        cursor: default;
+    }
+
+.reply-button {
+    background: #e8e8e8;
+}
+
+    .reply-button:hover {
+        background: #d4d4d4;
+    }
+
+.send-button {
+    background: #3587dd;
+}
+
+    .send-button:hover {
+        background: #3b78b5;
     }
 
 @media screen and (max-width: 769px) {

@@ -56,6 +56,8 @@
 
         // Joining user to chat
         chatConnection.on("Join", (message, sender, isAppealOnline, onlineExpertKey) => {
+            if (sender == 'expert') return;
+
             const li = joinMessage(message, sender === "appeal");
 
             $("#messagesList").append(li).scrollTo(li);
@@ -65,6 +67,8 @@
 
         // Leave user from chat
         chatConnection.on("Leave", (message, sender, onlineExpertKey) => {
+            if (sender == 'expert') return;
+
             const li = leaveMessage(message, sender === "appeal");
 
             $("#messagesList").append(li).scrollTo(li);

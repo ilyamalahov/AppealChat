@@ -34,18 +34,19 @@
                 {
                     var isCurrent = message.NickName == "Аппелянт";
                     var messageDate = message.CreateDate.ToString("T");
-                    var nickname = isCurrent ? "Вы" : message.NickName;
 
                     @*<partial name="_Message" model="new { Message = message, IsCurrent = isCurrent }" />*@
 
                     @switch (message.ChatMessageTypeId)
                     {
                         case ChatMessageTypes.Joined:
-                            <li class="message-status">
-                                <div class="message @(isCurrent ? "place-left" : "place-right")">@nickname @(isCurrent ? " подключились" : " подключился") к консультации</div>
-                            </li>
+                            @if (!isCurrent)
+                            {
+                                <li class="message-status"><div class="message place-left">Вы подключились к консультации</div></li>
+                            }
                             break;
                         case ChatMessageTypes.Message:
+                            var nickname = isCurrent ? "Вы" : message.NickName;
                             <li>
                                 <div class="message @(isCurrent ? "place-left" : "place-right")">
                                     <div class="message-bubble">@Html.Raw(message.MessageString)</div>@nickname <b class="message-date">@messageDate</b>
@@ -53,17 +54,18 @@
                             </li>
                             break;
                         case ChatMessageTypes.Leave:
-                            <li class="message-status">
-                                <div class="message @(isCurrent ? "place-left" : "place-right")">@nickname @(isCurrent ? " покинули" : " покинул") консультацию</div>
-                            </li>
+                            @if (!isCurrent)
+                            {
+                                <li class="message-status"><div class="message place-left">Вы покинули консультацию</div></li>
+                            }
                             break;
                     }
                 }
             </ul>
             <div class="main-footer">
                 <textarea id="messageText" class="message-text" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
-                <button id="sendButton" class="custom-button send-button">
-                    <div class="image-wrapper"><img src="images/png/send-mail.png" style="height: 20px;" alt="Send" /></div>
+                <button id="sendButton" class="custom-button round-button send-button">
+                    <img src="images/send-mail.svg" style="height: 20px;" alt="Send" />
                 </button>
             </div>
         </div>

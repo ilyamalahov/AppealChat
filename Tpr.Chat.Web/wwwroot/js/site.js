@@ -186,14 +186,16 @@ const calculateExpandRows = (textarea) => {
 };
 //});
 
+var helpInfoIsVisible = false;
+
+const switchHelpInfo = (isVisible) => {
+    helpInfoIsVisible = isVisible;
+
+    $('#contactsTooltip').toggle(isVisible);
+};
+
 $(document).ready(function (e) {
-    var contactsIsVisible = false;
+    $('#contactsButton').on('click', () => switchHelpInfo(!helpInfoIsVisible));
 
-    $('#contactsButton:not(.contacts-tooltip)').on('click', function(e) {
-        contactsIsVisible = !contactsIsVisible;
-
-        $('#contactsTooltip').toggle(contactsIsVisible);
-        $('#contactsChevron').toggleClass('chevron-reverse', contactsIsVisible);
-        $(this).toggleClass('active', contactsIsVisible);
-    });
+    $('#closeHelpButton').on('click', () => switchHelpInfo(false));
 });
