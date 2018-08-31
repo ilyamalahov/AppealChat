@@ -12,7 +12,7 @@ namespace Tpr.Chat.Core.Repositories
 
         // Messages
         IList<ChatMessage> GetChatMessages(Guid appealId);
-        IEnumerable<ChatMessage> GetExpertMessages(Guid appealId, string expertKey, ChatMessageTypes messageType);
+        int GetExpertMessagesCount(Guid appealId, string nickName);
 
         long WriteMessage(Guid appealId, string nickName, string messageString);
         long WriteJoined(Guid appealId, string nickName);
@@ -21,9 +21,6 @@ namespace Tpr.Chat.Core.Repositories
         long WriteChatMessage(ChatMessage message);
 
         // Experts
-        //IEnumerable<int> GetExperts(Guid appealId);
-
-        //bool AddExpert(Guid appealId, int expertKey);
         IEnumerable<QuickReply> GetQuickReplies();
     }
 }

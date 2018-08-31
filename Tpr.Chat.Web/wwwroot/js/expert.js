@@ -44,28 +44,43 @@
             .build();
 
         // Receiving message from user
-        chatConnection.on("Receive", (message, sender) => {
-            const li = receiveMessage(message, sender === "expert");
+        chatConnection.on("Receive", (message) => {
+            const isSender = message.nickName === 'Член КК № ' + expertKey;
+
+            const li = receiveMessage(message, isSender);
 
             $('#messagesList').append(li).scrollTo(li);
         });
 
         // Joining user to chat
-        chatConnection.on("Join", (message, sender, isAppealOnline, expertKey) => {
-            const li = joinMessage(message, sender === "expert");
+        chatConnection.on("Join", (message, isAppealOnline, onlineExpertKey) => {
+            changeStatus(isAppealOnline);
+
+            const isSender = message.nickName === 'Член КК № ' + expertKey;
+
+            const li = joinMessage(message, isSender);
 
             $("#messagesList").append(li).scrollTo(li);
-
-            changeStatus(isAppealOnline);
         });
 
         // Leave user from chat
-        chatConnection.on("Leave", (message, sender) => {
-            const li = leaveMessage(message, sender === "expert");
+        chatConnection.on("Leave", (message) => {
+            changeStatus(false);
+
+            const isSender = message.nickName === 'Член КК № ' + expertKey;
+            
+            const li = leaveMessage(message, isSender);
 
             $("#messagesList").append(li).scrollTo(li);
+        });
 
-            changeStatus(false);
+        // Leave user from chat
+        chatConnection.on("FirstJoinExpert", (nickname) => {
+            const isSender = nickname !== 'Аппелянт';
+
+            const li = firstJoinExpertMessage(nickname, isSender);
+
+            $("#messagesList").append(li).scrollTo(li);
         });
 
         // 

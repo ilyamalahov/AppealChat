@@ -8,10 +8,13 @@ namespace Tpr.Chat.Web.Hubs
 {
     public interface IChat
     {
-        Task Receive(ChatMessage message, string sender);
-        Task Join(ChatMessage message, string sender, bool isAppealOnline, string expertKey);
-        Task Leave(ChatMessage message, string sender, string expertKey);
+        // Common send methods
+        Task Receive(ChatMessage message);
+        Task Join(ChatMessage message, bool isAppealOnline, string expertKey);
+        Task Leave(ChatMessage message, string onlineExpertKey);
 
-        Task ChangeStatus(bool isOnline);
+        // Expert send methods
+        Task ChangeExpert(string nickname);
+        Task FirstJoinExpert(string nickname);
     }
 }

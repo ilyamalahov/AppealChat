@@ -31,20 +31,20 @@
             {
                 var messageDate = message.CreateDate.ToString("T");
 
-                var isExpert = message.NickName.Contains("Член КК");
+                var isExpert = message.NickName != "Аппелянт";
 
-                var isCurrent = isExpert && message.NickName.Contains(Model.ExpertKey.ToString());
+                var isCurrent = message.NickName == "Член КК № " + Model.ExpertKey;
 
-                var nickname = isCurrent ? "Вы" : message.NickName;
-                
                 @switch (message.ChatMessageTypeId)
                 {
                     case ChatMessageTypes.Joined:
-                        <li class="message-status">
-                            <div class="message @(isExpert ? "place-left" : "place-right")">@nickname @(isCurrent ? " подключились" : " подключился") к консультации</div>
-                        </li>
+                        message.MessageString = isCurrent ? "Вы подключились к консультации" : message.NickName + " подключился к консультации";
+
+                        <li class="message-status"><div class="message @(isExpert ? "place-left" : "place-right")">@message.MessageString <b class="message-date">@messageDate</b></div></li>
                         break;
                     case ChatMessageTypes.Message:
+                        var nickname = isCurrent ? "Вы" : message.NickName;
+
                         <li>
                             <div class="message @(isExpert ? "place-left" : "place-right")">
                                 <div class="message-bubble">@Html.Raw(message.MessageString)</div>@nickname <b class="message-date">@messageDate</b>
@@ -52,9 +52,15 @@
                         </li>
                         break;
                     case ChatMessageTypes.Leave:
-                        <li class="message-status">
-                            <div class="message @(isExpert ? "place-left" : "place-right")">@nickname @(isCurrent ? " покинули" : " покинул") консультацию</div>
-                        </li>
+                        message.MessageString = isCurrent ? "Вы покинули консультацию" : message.NickName + " покинул консультацию";
+
+                        <li class="message-status"><div class="message @(isExpert ? "place-left" : "place-right")">@message.MessageString <b class="message-date">@messageDate</b></div></li>
+                        break;
+                    case ChatMessageTypes.ChangeExpert:
+                        <li class="message-status"><div class="message place-left">@message.MessageString</div></li>
+                        break;
+                    case ChatMessageTypes.FirstExpert:
+                        <li class="message-status"><div class="message @(isExpert ? "place-left" : "place-right")">@message.NickName подключился к консультации. Вы можете задать ему свои вопросы</div></li>
                         break;
                 }
             }
@@ -87,19 +93,19 @@
 
         <ul id="messagesList" class="block message-history">
             @foreach (var message in Model.Messages)
-            {
-                var messageDate = message.CreateDate.ToString("G");
+                {
+                    var messageDate = message.CreateDate.ToString("G");
 
-                var isExpert = message.NickName.Contains("Член КК");
+                    var isExpert = message.NickName.Contains("Член КК");
 
-                var isCurrent = isExpert && message.NickName.Contains(Model.ExpertKey.ToString());
+                    var isCurrent = isExpert && message.NickName.Contains(Model.ExpertKey.ToString());
 
-                var nickname = isCurrent ? "Вы" : message.NickName;
+                    var nickname = isCurrent ? "Вы" : message.NickName;
 
                 <li>
                     <div class="message @(isExpert ? "place-left" : "place-right")">
                         @switch (message.ChatMessageTypeId)
-                        {
+                {
                             case ChatMessageTypes.Joined:
                                 @nickname @(isCurrent ? " подключились" : " подключился") @:к консультации <b>(@messageDate) </b>
                                 break;
@@ -116,7 +122,7 @@
         </ul>
 
         @if (!Model.IsFinished)
-        {
+                {
             <div id="interactiveBlock">
                 <div class="block" style="text-align: right;">До конца консультации осталось: <b id="remainingTime">00</b></div>
 

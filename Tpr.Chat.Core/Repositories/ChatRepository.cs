@@ -53,15 +53,15 @@ namespace Tpr.Chat.Core.Repositories
             }
         }
 
-        public IEnumerable<ChatMessage> GetExpertMessages(Guid appealId, string nickName, ChatMessageTypes messageType)
+        public int GetExpertMessagesCount(Guid appealId, string nickName)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
-                string sql = "SELECT * FROM dbo.ChatMessages WHERE AppealId = @appealId AND NickName = @nickName AND ChatMessageTypeId = @messageType";
+                string sql = "SELECT COUNT(id) FROM dbo.ChatMessages WHERE AppealId = @appealId AND NickName = @nickName";
 
-                return connection.Query<ChatMessage>(sql, new { appealId, nickName, messageType = (int)messageType });
+                return connection.ExecuteScalar<int>(sql, new { appealId, nickName });
             }
         }
 

@@ -35,16 +35,8 @@
                     var isCurrent = message.NickName == "Аппелянт";
                     var messageDate = message.CreateDate.ToString("T");
 
-                    @*<partial name="_Message" model="new { Message = message, IsCurrent = isCurrent }" />*@
-
                     @switch (message.ChatMessageTypeId)
                     {
-                        case ChatMessageTypes.Joined:
-                            @if (!isCurrent)
-                            {
-                                <li class="message-status"><div class="message place-left">Вы подключились к консультации</div></li>
-                            }
-                            break;
                         case ChatMessageTypes.Message:
                             var nickname = isCurrent ? "Вы" : message.NickName;
                             <li>
@@ -53,11 +45,23 @@
                                 </div>
                             </li>
                             break;
-                        case ChatMessageTypes.Leave:
-                            @if (!isCurrent)
+                        case ChatMessageTypes.Joined:
+                            @if (isCurrent)
                             {
-                                <li class="message-status"><div class="message place-left">Вы покинули консультацию</div></li>
+                                <li class="message-status"><div class="message place-left">Вы подключились к консультации <b class="message-date">@messageDate</b></div></li>
                             }
+                            break;
+                        case ChatMessageTypes.Leave:
+                            @if (isCurrent)
+                            {
+                                <li class="message-status"><div class="message place-left">Вы покинули консультацию <b class="message-date">@messageDate</b></div></li>
+                            }
+                            break;
+                        case ChatMessageTypes.ChangeExpert:
+                            <li class="message-status"><div class="message place-left">@message.MessageString</div></li>
+                            break;
+                        case ChatMessageTypes.FirstExpert:
+                            <li class="message-status"><div class="message @(isCurrent ? "place-left" : "place-right")">@message.NickName подключился к консультации. Вы можете задать ему свои вопросы</div></li>
                             break;
                     }
                 }

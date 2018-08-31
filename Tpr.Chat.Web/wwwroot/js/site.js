@@ -53,13 +53,12 @@ const messageTextKeyup = function (e) {
 
 // Return new "Receive" message
 const receiveMessage = (message, isSender) => {
+    const nickName = isSender ? 'Вы' : message.nickName;
     const messageDate = luxon.DateTime.fromISO(message.createDate);
-
-    const nickname = isSender ? 'Вы' : message.nickName;
 
     const messageBubble = '<div class="message-bubble">' + message.messageString + '</div>';
 
-    const messageInfo = nickname + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
+    const messageInfo = nickName + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
 
     return addMessage(messageBubble + messageInfo, false, isSender);
 };
@@ -85,6 +84,16 @@ const leaveMessage = (message, isSender) => {
 
     return addMessage(html, true, isSender);
 };
+
+// 
+const firstJoinExpertMessage = (nickname, isSender) => {
+    const messageText = nickname + ' подключился к консультации. Вы можете задать ему свои вопросы';
+
+    return addMessage(messageText, true, isSender);
+};
+
+// 
+const changeExpertMessage = (messageText) => addMessage(messageText, true, true);
 
 // Return new list item
 const addMessage = (html, isStatusMessage, isSender) => {
@@ -119,13 +128,13 @@ jQuery.fn.insertAtCursor = function (value) {
 };
 
 // 
-jQuery.fn.highlightText = function (matchText) {
+jQuery.fn.highlightText = function (match) {
     var value = $(this).text();
 
     // 
-    var matchStart = value.toLowerCase().indexOf(matchText.toLowerCase());
+    var matchStart = value.toLowerCase().indexOf(match.toLowerCase());
     // 
-    var matchEnd = matchStart + matchText.length;
+    var matchEnd = matchStart + match.length;
 
     // 
     var beforeMatch = value.slice(0, matchStart);
