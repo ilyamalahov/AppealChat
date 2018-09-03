@@ -20,6 +20,21 @@
 }
 
 <div class="container">
+    <div class="sidemenu" style="display: flex; display:none; flex-flow: column; width:300px; height: 100%; background: #3e89e4; position: absolute; z-index: 1; color: #fff; font-size: 18px;">
+        <div class="sidemenu-header" style="flex: none; margin-bottom: 50px;">
+            <button id="closeSideButton" class="custom-button close-tooltip-button" style="width:30px; height: 30px;"></button>
+        </div>
+
+        <div class="sidemenu-content" style="flex: auto; padding: 20px;">
+            <div id="appealInfoButton" class="sidemenu-button" style="margin-bottom: 20px; text-transform: uppercase; cursor: pointer;"><img src="~/images/chat.svg" alt="Сведения об аппеляции" style="height: 25px; vertical-align: middle; margin-right: 10px;" /><span style="overflow:hidden;">Сведения об аппеляции</span></div>
+            <div id="contactsButton" class="sidemenu-button" style="margin-bottom: 20px; text-transform: uppercase; cursor: pointer;"><img src="~/images/envelope.svg" alt="Контакты" style="height: 25px; vertical-align: middle; margin-right: 10px;" />Контакты</div>
+            <div id="guideButton" class="sidemenu-button" style="margin-bottom: 20px; text-transform: uppercase; cursor: pointer;"><img src="~/images/round-help-button.svg" alt="Инструкция по работе с чатом" style="height: 25px; vertical-align: middle; margin-right: 10px;" /><span style="vertical-align: middle;">Инструкция по работе с чатом</span></div>
+        </div>
+        <div class="sidemenu-footer" style="flex: none; padding: 20px;">
+            <div id="completeButton" class="sidemenu-button" style="margin-bottom: 50px; text-transform: uppercase; cursor: pointer;"><img src="~/images/back.svg" style="height: 25px; vertical-align: middle; margin-right: 10px;" alt="Сведения об аппеляции" />Завершить консультацию</div>
+            <div class="copyright" style="color: #fff; font-size: 12px;">2018 (C) Конфликтная комиссия города Москвы</div>
+        </div>
+    </div>
     <partial name="_Header" />
     <div class="content">
         <partial name="_Sidebar" />
@@ -76,4 +91,12 @@
     </div>
 </div>
 
+<div class="modal-overlay" style="position:absolute; top: 0; left:0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center;">
+    <div class="modal-window" style="width:500px; height: 300px; background: #fff; border-radius: 3px; padding: 15px;">
+        <div class="modal-header" style="border-bottom: 1px solid #ccc; display: flex; padding-bottom: 15px;">
+            <div class="modal-title" style="flex: auto; font-size: 18px; font-weight: bold;">Title</div>
+            <div class="close-button" style="flex: none;"><img src="~/images/close.svg" style="width: 20px;" /></div>
+        </div>
+    </div>
+</div>
 @*<div id="modal" style="display: none;" class="modal-overlay center"></div>*@

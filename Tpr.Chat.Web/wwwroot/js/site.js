@@ -197,14 +197,28 @@ const calculateExpandRows = (textarea) => {
 
 var helpInfoIsVisible = false;
 
-const switchHelpInfo = (isVisible) => {
+const switchHelpInfo = function (isVisible) {
     helpInfoIsVisible = isVisible;
 
-    $('#contactsTooltip').toggle(isVisible);
+    var offset = { top: 0, left: 0 };
+
+    if (isVisible) {
+        const parent = $('#contactsTooltip').parent();
+
+        const tooltipTop = parent.position().top + parent.outerHeight() - $('#contactsTooltip').outerHeight();
+
+        const tooltipLeft = parent.position().left + parent.outerWidth() + 20;
+
+        offset = { top: tooltipTop, left: tooltipLeft };
+    }
+
+    $('#contactsTooltip').toggle(isVisible).css(offset);
 };
 
 $(document).ready(function (e) {
-    $('#contactsButton').on('click', () => switchHelpInfo(!helpInfoIsVisible));
+    $('#contactsButton').on('click', function() {
+        switchHelpInfo(!helpInfoIsVisible);
+    });
 
     $('#closeHelpButton').on('click', () => switchHelpInfo(false));
 });
