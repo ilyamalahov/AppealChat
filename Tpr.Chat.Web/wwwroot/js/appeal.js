@@ -121,10 +121,12 @@
         $('#emojiButton').on('click', () => $('#emojiGrid').toggle());
 
         // 
-        $('#switchExpertButton').on('click', () => showModal("ajax/changeexpert"));
+        $('#switchExpertButton').on('click', () => $('#modal').showModal('ajax/switchexpert'));
 
         // 
-        $('#completeButton').on('click', () => showModal("ajax/complete"));
+        $('#completeButton').on('click', () => $('#modal').showModal('ajax/completechat'));
+
+        $('#appealInfoButton').on('click', () => $('#modal').showModal('ajax/appealinfo'));
 
         // 
         const switchLoader = (isVisibled) => {

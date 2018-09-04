@@ -149,26 +149,22 @@ jQuery.fn.highlightText = function (match) {
     return this;
 };
 
+jQuery.fn.showModal = function (url, data, duration = 'fast') {
+    $.get(url, data, (response) => $(this).html(response).fadeIn(duration));
+}
+jQuery.fn.hideModal = function (url, data, duration = 'fast') {
+    $(this).html('').fadeOut();
+}
+
 jQuery.expr.filters.icontains = function (elem, i, m) {
     return (elem.innerText || elem.textContent || "").toLowerCase().indexOf(m[3].toLowerCase()) > -1;
 };
 
 // Show modal window
-const showModal = (url, data) => {
-    return new Promise((resolve, reject) => {
-        $.get(url, data)
-            .done((html) => {
-                $('#modal').html(html).fadeIn();
-                return resolve();
-            })
-            .fail(reject);
-    });
-};
+const showModal = (url, data) => $.get(url, data, (response) => $('#modal').html(response).fadeIn('fast'));
 
 // Close modal window
-const closeModal = () => {
-    $('#modal').html('').fadeOut();
-};
+const closeModal = () => $('#modal').html('').fadeOut();
 
 const changeExpert = (accessToken, beforeSendCallback) => {
     return new Promise((resolve, reject) => {
@@ -215,10 +211,22 @@ const switchHelpInfo = function (isVisible) {
     $('#contactsTooltip').toggle(isVisible).css(offset);
 };
 
+var sideMenuIsVisible = false;
+
+const switchSideMenu = (isVisible) => {
+    sideMenuIsVisible = isVisible;
+
+    $('#sideMenu').toggle(isVisible);
+};
+
 $(document).ready(function (e) {
-    $('#contactsButton').on('click', function() {
-        switchHelpInfo(!helpInfoIsVisible);
-    });
+    $('#contactsButton').on('click', () => switchHelpInfo(!helpInfoIsVisible));
 
     $('#closeHelpButton').on('click', () => switchHelpInfo(false));
+
+    $('#sideMenuButton').on('click', () => switchSideMenu(!sideMenuIsVisible));
+
+    $('#closeSideButton').on('click', () => switchSideMenu(false));
+
+    $('#appealInfoButton').on('click', () => $('modal').showModal('ajax/appealinfo', appealId));
 });

@@ -153,4 +153,8 @@
     <ProjectReference Include="..\Tpr.Chat.Core\Tpr.Chat.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Modal\" />
+  </ItemGroup>
+
 </Project>

@@ -334,6 +334,43 @@ ul {
     display: inline-block;
     vertical-align: middle;
 }
+.sidemenu {
+    position: absolute;
+    z-index: 1;
+    display: flex;
+    flex-flow: column;
+    width: 300px;
+    height: 100%;
+    background: #3e89e4;
+    color: #fff;
+    font-size: 18px;
+}
+.sidemenu-header {
+    flex: none;
+    margin-bottom: 50px;
+}
+.sidemenu-content {
+    flex: auto;
+    padding: 20px;
+}
+.sidemenu-footer {
+    flex: none;
+    padding: 20px;
+}
+.sidemenu-copyright {
+    color: #fff;
+    font-size: 12px;
+}
+.sidemenu-button {
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+.button-icon {
+    height: 25px;
+    vertical-align: middle;
+    margin-right: 10px;
+}
 
 @media screen and (max-width: 767px) {
     .sidebar {
@@ -346,9 +383,16 @@ ul {
     .button-block {
         display: none;
     }
+    .message-status .place-left, .place-right {
+        float: none;
+        text-align: center;
+    }
+    .message-status .message {
+        max-width: 100%;
+    }
 }
 @media screen and (min-width: 768px) {
-    #sideButton {
+    #sideMenuButton {
         display: none;
     }
 }
