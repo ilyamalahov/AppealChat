@@ -1,4 +1,5 @@
-﻿@model Tpr.Chat.Web.Models.IndexViewModel
+﻿@using Tpr.Chat.Core.Models
+@model Tpr.Chat.Web.Models.IndexViewModel
 
 @{
     ViewData["Title"] = "Home Page";
@@ -19,6 +20,20 @@
 }
 
 <div class="container">
+    <div id="sideMenu" class="sidemenu" style="display: none;">
+        <div class="sidemenu-header">
+            <button id="closeSideButton" class="custom-button close-tooltip-button" style="width:30px; height: 30px;"></button>
+        </div>
+        <div class="sidemenu-content">
+            <div id="appealInfoButton" class="sidemenu-button"><img class="button-icon" src="~/images/chat.svg" alt="Сведения об аппеляции" /><span style="overflow:hidden;">Сведения об аппеляции</span></div>
+            <div id="contactsButton" class="sidemenu-button"><img class="button-icon" src="~/images/envelope.svg" alt="Контакты" />Контакты</div>
+            <div id="guideButton" class="sidemenu-button"><img class="button-icon" src="~/images/round-help-button.svg" alt="Инструкция по работе с чатом" /><span style="vertical-align: middle;">Инструкция по работе с чатом</span></div>
+        </div>
+        <div class="sidemenu-footer">
+            <div id="completeButton" class="sidemenu-button"><img class="button-icon" src="~/images/back.svg" alt="Завершить консультацию" />Завершить консультацию</div>
+            <div class="sidemenu-copyright">2018 (C) Конфликтная комиссия города Москвы</div>
+        </div>
+    </div>
     <partial name="_Header" />
     <div class="content">
         <partial name="_Sidebar" />
@@ -32,14 +47,43 @@
                 @foreach (var message in Model.Messages)
                 {
                     var isCurrent = message.NickName == "Аппелянт";
+                    var messageDate = message.CreateDate.ToString("T");
 
-                    <partial name="_Message" model="new { Message = message, IsCurrent = isCurrent }" />
+                    @switch (message.ChatMessageTypeId)
+                    {
+                        case ChatMessageTypes.Message:
+                            var nickname = isCurrent ? "Вы" : message.NickName;
+                            <li>
+                                <div class="message @(isCurrent ? "place-left" : "place-right")">
+                                    <div class="message-bubble">@Html.Raw(message.MessageString)</div>@nickname <b class="message-date">@messageDate</b>
+                                </div>
+                            </li>
+                            break;
+                        case ChatMessageTypes.Joined:
+                            @if (isCurrent)
+                            {
+                                <li class="message-status"><div class="message place-left">Вы подключились к консультации <b class="message-date">@messageDate</b></div></li>
+                            }
+                            break;
+                        case ChatMessageTypes.Leave:
+                            @if (isCurrent)
+                            {
+                                <li class="message-status"><div class="message place-left">Вы покинули консультацию <b class="message-date">@messageDate</b></div></li>
+                            }
+                            break;
+                        case ChatMessageTypes.ChangeExpert:
+                            <li class="message-status"><div class="message place-left">@message.MessageString</div></li>
+                            break;
+                        case ChatMessageTypes.FirstExpert:
+                            <li class="message-status"><div class="message @(isCurrent ? "place-left" : "place-right")">@message.NickName подключился к консультации. Вы можете задать ему свои вопросы</div></li>
+                            break;
+                    }
                 }
             </ul>
             <div class="main-footer">
                 <textarea id="messageText" class="message-text" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
-                <button id="sendButton" class="custom-button send-button">
-                    <div class="image-wrapper"><img src="images/png/send-mail.png" style="height: 20px;" alt="Send" /></div>
+                <button id="sendButton" class="custom-button round-button send-button">
+                    <img src="images/send-mail.svg" style="height: 20px;" alt="Send" />
                 </button>
             </div>
         </div>

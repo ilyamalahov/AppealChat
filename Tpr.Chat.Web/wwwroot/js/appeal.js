@@ -48,28 +48,47 @@
             .build();
 
         // Receiving message from user
-        chatConnection.on("Receive", (message, sender) => {
-            const li = receiveMessage(message, sender === "appeal");
+        chatConnection.on("Receive", (message) => {
+            const isSender = message.nickName === 'Аппелянт';
+
+            const li = receiveMessage(message, isSender);
 
             $('#messagesList').append(li).scrollTo(li);
         });
 
         // Joining user to chat
-        chatConnection.on("Join", (message, sender, isAppealOnline, onlineExpertKey) => {
-            const li = joinMessage(message, sender === "appeal");
+        chatConnection.on("Join", (message, isAppealOnline, onlineExpertKey) => {
+            setExpert(onlineExpertKey);
+
+            const isSender = message.nickName === 'Аппелянт';
+
+            if (!isSender) return;
+
+            const li = joinMessage(message, isSender);
 
             $("#messagesList").append(li).scrollTo(li);
-
-            setExpert(onlineExpertKey);
         });
 
         // Leave user from chat
-        chatConnection.on("Leave", (message, sender, onlineExpertKey) => {
-            const li = leaveMessage(message, sender === "appeal");
+        chatConnection.on("Leave", (message, onlineExpertKey) => {
+            setExpert(onlineExpertKey);
+
+            const isSender = message.nickName === 'Аппелянт';
+
+            if (!isSender) return;
+
+            const li = leaveMessage(message, isSender);
 
             $("#messagesList").append(li).scrollTo(li);
+        });
 
-            setExpert(onlineExpertKey);
+        // Leave user from chat
+        chatConnection.on("FirstJoinExpert", (nickname) => {
+            const isSender = nickname === 'Аппелянт';
+
+            const li = firstJoinExpertMessage(nickname, isSender);
+
+            $("#messagesList").append(li).scrollTo(li);
         });
 
         // Sending message
@@ -102,10 +121,12 @@
         $('#emojiButton').on('click', () => $('#emojiGrid').toggle());
 
         // 
-        $('#switchExpertButton').on('click', () => showModal("ajax/changeexpert"));
+        $('#switchExpertButton').on('click', () => $('#modal').showModal('ajax/switchexpert'));
 
         // 
-        $('#completeButton').on('click', () => showModal("ajax/complete"));
+        $('#completeButton').on('click', () => $('#modal').showModal('ajax/completechat'));
+
+        $('#appealInfoButton').on('click', () => $('#modal').showModal('ajax/appealinfo'));
 
         // 
         const switchLoader = (isVisibled) => {
@@ -126,7 +147,7 @@
 
         // 
         const setExpert = (onlineExpertKey) => {
-            const isOnline = onlineExpertKey != null;
+            const isOnline = onlineExpertKey !== null;
 
             // Set expert text
             const expertText = isOnline ? '№' + onlineExpertKey : 'отсутствует';
@@ -135,7 +156,7 @@
 
             // Change online circled status
             $('#onlineStatus').toggleClass('online', isOnline);
-        }
+        };
 
         // Update online status
         //const changeStatus = (isOnline) => {

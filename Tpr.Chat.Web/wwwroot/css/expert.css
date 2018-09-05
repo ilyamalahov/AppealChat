@@ -190,17 +190,20 @@
 
 .reply-list {
     overflow-y: auto;
-    max-height: 200px;
-    padding: 15px;
+    max-height: 250px;
+    padding: 0px 15px;
 }
     .reply-list li {
         background: #fff;
         border-radius: 5px;
         padding: 15px;
-        margin-bottom: 15px;
+        margin: 15px 0;
         box-shadow: 0 0 5px 0 #dfe8ef;
     }
         .reply-list li:hover {
             background: #f7f7f7;
             cursor: pointer;
+        }
+        .reply-list li strong {
+            color: #33ddb6;
         }

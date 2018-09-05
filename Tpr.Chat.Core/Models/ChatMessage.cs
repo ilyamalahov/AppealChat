@@ -19,6 +19,8 @@ namespace Tpr.Chat.Core.Models
     {
         Joined = 1,
         Message = 2,
-        Leave = 3
+        Leave = 3,
+        ChangeExpert = 4,
+        FirstExpert = 5
     }
 }

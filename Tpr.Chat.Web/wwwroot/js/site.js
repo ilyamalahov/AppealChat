@@ -53,15 +53,14 @@ const messageTextKeyup = function (e) {
 
 // Return new "Receive" message
 const receiveMessage = (message, isSender) => {
+    const nickName = isSender ? 'Вы' : message.nickName;
     const messageDate = luxon.DateTime.fromISO(message.createDate);
-
-    const nickname = isSender ? 'Вы' : message.nickName;
 
     const messageBubble = '<div class="message-bubble">' + message.messageString + '</div>';
 
-    const messageInfo = nickname + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
+    const messageInfo = nickName + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
 
-    return addMessage(messageBubble + messageInfo, isSender);
+    return addMessage(messageBubble + messageInfo, false, isSender);
 };
 
 // Return new "Join user" message
@@ -72,7 +71,7 @@ const joinMessage = function (message, isSender) {
 
     const html = messageText + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
 
-    return addMessage(html, isSender);
+    return addMessage(html, true, isSender);
 };
 
 // Return new "Leave user" message
@@ -83,14 +82,28 @@ const leaveMessage = (message, isSender) => {
 
     const html = messageText + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
 
-    return addMessage(html, isSender);
+    return addMessage(html, true, isSender);
 };
 
+// 
+const firstJoinExpertMessage = (nickname, isSender) => {
+    const messageText = nickname + ' подключился к консультации. Вы можете задать ему свои вопросы';
+
+    return addMessage(messageText, true, isSender);
+};
+
+// 
+const changeExpertMessage = (messageText) => addMessage(messageText, true, true);
+
 // Return new list item
-const addMessage = (html, isSender) => {
+const addMessage = (html, isStatusMessage, isSender) => {
     const div = $('<div class="message ' + (isSender ? 'place-left' : 'place-right') + '"></div>').html(html);
 
-    return $('<li></li>').html(div);
+    var liElement = $('<li></li>');
+
+    if (isStatusMessage) liElement.addClass('message-status');
+
+    return liElement.html(div);
 };
 
 // Scroll to element
@@ -114,26 +127,44 @@ jQuery.fn.insertAtCursor = function (value) {
     return this;
 };
 
+// 
+jQuery.fn.highlightText = function (match) {
+    var value = $(this).text();
+
+    // 
+    var matchStart = value.toLowerCase().indexOf(match.toLowerCase());
+    // 
+    var matchEnd = matchStart + match.length;
+
+    // 
+    var beforeMatch = value.slice(0, matchStart);
+    // 
+    var matchText = value.slice(matchStart, matchEnd);
+    // 
+    var afterMatch = value.slice(matchEnd);
+
+    $(this).html(beforeMatch + "<strong>" + matchText + "</strong>" + afterMatch);
+
+    //return beforeMatch + "<em>" + matchText + "</em>" + afterMatch;
+    return this;
+};
+
+jQuery.fn.showModal = function (url, data, duration = 'fast') {
+    $.get(url, data, (response) => $(this).html(response).fadeIn(duration));
+}
+jQuery.fn.hideModal = function (url, data, duration = 'fast') {
+    $(this).html('').fadeOut();
+}
+
 jQuery.expr.filters.icontains = function (elem, i, m) {
     return (elem.innerText || elem.textContent || "").toLowerCase().indexOf(m[3].toLowerCase()) > -1;
 };
 
 // Show modal window
-const showModal = (url, data) => {
-    return new Promise((resolve, reject) => {
-        $.get(url, data)
-            .done((html) => {
-                $('#modal').html(html).fadeIn();
-                return resolve();
-            })
-            .fail(reject);
-    });
-};
+const showModal = (url, data) => $.get(url, data, (response) => $('#modal').html(response).fadeIn('fast'));
 
 // Close modal window
-const closeModal = () => {
-    $('#modal').html('').fadeOut();
-};
+const closeModal = () => $('#modal').html('').fadeOut();
 
 const changeExpert = (accessToken, beforeSendCallback) => {
     return new Promise((resolve, reject) => {
@@ -160,14 +191,42 @@ const calculateExpandRows = (textarea) => {
 };
 //});
 
+var helpInfoIsVisible = false;
+
+const switchHelpInfo = function (isVisible) {
+    helpInfoIsVisible = isVisible;
+
+    var offset = { top: 0, left: 0 };
+
+    if (isVisible) {
+        const parent = $('#contactsTooltip').parent();
+
+        const tooltipTop = parent.position().top + parent.outerHeight() - $('#contactsTooltip').outerHeight();
+
+        const tooltipLeft = parent.position().left + parent.outerWidth() + 20;
+
+        offset = { top: tooltipTop, left: tooltipLeft };
+    }
+
+    $('#contactsTooltip').toggle(isVisible).css(offset);
+};
+
+var sideMenuIsVisible = false;
+
+const switchSideMenu = (isVisible) => {
+    sideMenuIsVisible = isVisible;
+
+    $('#sideMenu').toggle(isVisible);
+};
+
 $(document).ready(function (e) {
-    var contactsIsVisible = false;
+    $('#contactsButton').on('click', () => switchHelpInfo(!helpInfoIsVisible));
 
-    $('#contactsButton:not(.contacts-tooltip)').on('click', function(e) {
-        contactsIsVisible = !contactsIsVisible;
+    $('#closeHelpButton').on('click', () => switchHelpInfo(false));
 
-        $('#contactsTooltip').toggle(contactsIsVisible);
-        $('#contactsChevron').toggleClass('chevron-reverse', contactsIsVisible);
-        $(this).toggleClass('active', contactsIsVisible);
-    });
+    $('#sideMenuButton').on('click', () => switchSideMenu(!sideMenuIsVisible));
+
+    $('#closeSideButton').on('click', () => switchSideMenu(false));
+
+    $('#appealInfoButton').on('click', () => $('modal').showModal('ajax/appealinfo', appealId));
 });

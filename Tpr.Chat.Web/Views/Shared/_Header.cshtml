@@ -1,16 +1,19 @@
 ﻿@model IndexViewModel
 
 <div class="header">
+    <button id="sideMenuButton" class="custom-button header-button"><img src="~/images/round-help-button.svg" alt="Help" /></button>
     <div class="moscow-time">
-        <div class="time-value" id="moscowTime">00:00</div>
+        <div class="time-value"><img src="~/images/noun_clock.svg" style="height: 25px; vertical-align: middle;" alt="Moscow time" /><b id="moscowTime">00:00</b></div>
         <div class="time-caption">Московское время</div>
     </div>
+    <div class="vertical-line"></div>
     <div class="header-title">Онлайн консультации по результатам рассмотрения апелляций о несогласии с выставленными баллами ГИА</div>
-    <div class="buttons-block">
-        <button class="custom-button header-button"><img src="images/png/round-help-button.png" alt="Help" /></button>
+    <div class="button-block">
+        <button class="custom-button header-button"><img src="~/images/round-help-button.svg" alt="Help" /></button>
         @if (Model.IsInRange)
         {
-            <button class="custom-button header-button"><img src="images/png/login.png" alt="Complete" /></button>
+            <div class="vertical-line"></div>
+            <button class="custom-button header-button"><img src="~/images/login.svg" alt="Complete" /></button>
         }
     </div>
 </div>

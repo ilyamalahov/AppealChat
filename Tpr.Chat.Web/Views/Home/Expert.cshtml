@@ -31,41 +31,41 @@
             {
                 var messageDate = message.CreateDate.ToString("T");
 
-                var isExpert = message.NickName.Contains("Член КК");
+                var isExpert = message.NickName != "Аппелянт";
 
-                var isCurrent = isExpert && message.NickName.Contains(Model.ExpertKey.ToString());
+                var isCurrent = message.NickName == "Член КК № " + Model.ExpertKey;
 
-                var nickname = isCurrent ? "Вы" : message.NickName;
+                @switch (message.ChatMessageTypeId)
+                {
+                    case ChatMessageTypes.Joined:
+                        message.MessageString = isCurrent ? "Вы подключились к консультации" : message.NickName + " подключился к консультации";
 
-                <li style="position: relative;">
-                    <div class="message @(isExpert ? "place-left" : "place-right")">
-                        @* padding: 5px 10px;
-            z-index: 10;
-            box-shadow: 0 0 15px 0 #a6cae4;
-            color: #3387dd;
-                                <div style="
-        position: absolute;
-        bottom: 50%;
-        width: 100%;
-        border-bottom: 1px solid #9ec9ec;
-        z-index: 0;
-        "></div>*@
-                        @switch (message.ChatMessageTypeId)
-                        {
-                            case ChatMessageTypes.Joined:
-                                @nickname @(isCurrent ? " подключились" : " подключился") @:к консультации <b class="message-date">@messageDate</b>
-                                break;
-                            case ChatMessageTypes.Message:
+                        <li class="message-status"><div class="message @(isExpert ? "place-left" : "place-right")">@message.MessageString <b class="message-date">@messageDate</b></div></li>
+                        break;
+                    case ChatMessageTypes.Message:
+                        var nickname = isCurrent ? "Вы" : message.NickName;
+
+                        <li>
+                            <div class="message @(isExpert ? "place-left" : "place-right")">
                                 <div class="message-bubble">@Html.Raw(message.MessageString)</div>@nickname <b class="message-date">@messageDate</b>
-                                break;
-                            case ChatMessageTypes.Leave:
-                                @nickname @(isCurrent ? " покинули" : " покинул") @:консультацию <b class="message-date">@messageDate</b>
-                                break;
-                        }
-                    </div>
-                </li>
+                            </div>
+                        </li>
+                        break;
+                    case ChatMessageTypes.Leave:
+                        message.MessageString = isCurrent ? "Вы покинули консультацию" : message.NickName + " покинул консультацию";
+
+                        <li class="message-status"><div class="message @(isExpert ? "place-left" : "place-right")">@message.MessageString <b class="message-date">@messageDate</b></div></li>
+                        break;
+                    case ChatMessageTypes.ChangeExpert:
+                        <li class="message-status"><div class="message place-left">@message.MessageString</div></li>
+                        break;
+                    case ChatMessageTypes.FirstExpert:
+                        <li class="message-status"><div class="message @(isExpert ? "place-left" : "place-right")">@message.NickName подключился к консультации. Вы можете задать ему свои вопросы</div></li>
+                        break;
+                }
             }
         </ul>
+        <div id="quickReplyOverlay" style="position: absolute; top:0; bottom: 0; right: 0; left:0; background: rgba(0, 0, 0, 0.50); display:none;"></div>
         <div id="quickReplyBlock" class="quick-reply">
             <div class="filter-block"><input id="filterText" class="filter-text" type="text" placeholder="Введите текст" /></div>
             <ul id="replyList" class="reply-list">
@@ -77,13 +77,9 @@
         </div>
     </div>
     <div id="interactiveBlock" class="main-footer">
-        <button id="quickReplyButton" class="custom-button round-button reply-button">
-            <img src="~/images/png/chat.png" style="height: 20px;" alt="QuickReply" />
-        </button>
+        <button id="quickReplyButton" class="custom-button round-button reply-button"><img src="~/images/question.svg" style="height: 20px;" alt="QuickReply" /></button>
         <textarea id="messageText" class="message-text" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
-        <button id="sendButton" class="custom-button round-button send-button">
-            <img src="~/images/png/send-mail.png" style="height: 20px;" alt="Send" />
-        </button>
+        <button id="sendButton" class="custom-button round-button send-button"><img src="~/images/send-mail.svg" style="height: 20px;" alt="Send" /></button>
     </div>
 </div>
 
@@ -97,19 +93,19 @@
 
         <ul id="messagesList" class="block message-history">
             @foreach (var message in Model.Messages)
-            {
-                var messageDate = message.CreateDate.ToString("G");
+                {
+                    var messageDate = message.CreateDate.ToString("G");
 
-                var isExpert = message.NickName.Contains("Член КК");
+                    var isExpert = message.NickName.Contains("Член КК");
 
-                var isCurrent = isExpert && message.NickName.Contains(Model.ExpertKey.ToString());
+                    var isCurrent = isExpert && message.NickName.Contains(Model.ExpertKey.ToString());
 
-                var nickname = isCurrent ? "Вы" : message.NickName;
+                    var nickname = isCurrent ? "Вы" : message.NickName;
 
                 <li>
                     <div class="message @(isExpert ? "place-left" : "place-right")">
                         @switch (message.ChatMessageTypeId)
-                        {
+                {
                             case ChatMessageTypes.Joined:
                                 @nickname @(isCurrent ? " подключились" : " подключился") @:к консультации <b>(@messageDate) </b>
                                 break;
@@ -126,7 +122,7 @@
         </ul>
 
         @if (!Model.IsFinished)
-        {
+                {
             <div id="interactiveBlock">
                 <div class="block" style="text-align: right;">До конца консультации осталось: <b id="remainingTime">00</b></div>
 

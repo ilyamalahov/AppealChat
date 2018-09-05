@@ -44,28 +44,43 @@
             .build();
 
         // Receiving message from user
-        chatConnection.on("Receive", (message, sender) => {
-            const li = receiveMessage(message, sender === "expert");
+        chatConnection.on("Receive", (message) => {
+            const isSender = message.nickName === 'Член КК № ' + expertKey;
+
+            const li = receiveMessage(message, isSender);
 
             $('#messagesList').append(li).scrollTo(li);
         });
 
         // Joining user to chat
-        chatConnection.on("Join", (message, sender, isAppealOnline, expertKey) => {
-            const li = joinMessage(message, sender === "expert");
+        chatConnection.on("Join", (message, isAppealOnline, onlineExpertKey) => {
+            changeStatus(isAppealOnline);
+
+            const isSender = message.nickName === 'Член КК № ' + expertKey;
+
+            const li = joinMessage(message, isSender);
 
             $("#messagesList").append(li).scrollTo(li);
-
-            changeStatus(isAppealOnline);
         });
 
         // Leave user from chat
-        chatConnection.on("Leave", (message, sender) => {
-            const li = leaveMessage(message, sender === "expert");
+        chatConnection.on("Leave", (message) => {
+            changeStatus(false);
+
+            const isSender = message.nickName === 'Член КК № ' + expertKey;
+            
+            const li = leaveMessage(message, isSender);
 
             $("#messagesList").append(li).scrollTo(li);
+        });
 
-            changeStatus(false);
+        // Leave user from chat
+        chatConnection.on("FirstJoinExpert", (nickname) => {
+            const isSender = nickname !== 'Аппелянт';
+
+            const li = firstJoinExpertMessage(nickname, isSender);
+
+            $("#messagesList").append(li).scrollTo(li);
         });
 
         // 
@@ -90,11 +105,11 @@
         $('#filterText').on('input', function (e) {
             var value = $(this).val();
 
-            $(".list-item").each(function () {
-                const isContains = $(this).is(":icontains('" + value + "')");
-
-                $(this).toggle(isContains);
-            });
+            $("#replyList li")
+                .hide()
+                .filter(":icontains('" + value + "')")
+                .show()
+                .each((index, element) => $(element).highlightText(value));
         });
 
         //
@@ -108,9 +123,9 @@
 
         //
         $('#messageText').on('input', function (e) {
-            const isEnabled = $(this).val().length > 0;
+            const isDisabled = $(this).val().length === 0;
 
-            $('#sendButton').prop('disabled', !isEnabled);
+            $('#sendButton').prop('disabled', isDisabled);
         });
 
         // 
@@ -121,18 +136,15 @@
             quickReplyIsVisible = isVisible;
 
             // 
-            $('#quickReplyBlock').slideToggle(isVisible);
-
-            // 
-            const imageSrc = isVisible ? 'images/png/back.png' : 'images/png/chat.png';
-
-            $('#quickReplyButton>img').attr('src', imageSrc);
-
-            // 
-            $('#filterText').val('').trigger('input');
-
-            // 
-            if (isVisible) { $('#filterText').focus(); }
+            if (isVisible) {
+                $('#quickReplyButton>img').attr('src', 'images/down-chevron.svg');
+                $('#quickReplyBlock').slideDown('fast', () => $('#filterText').focus());
+                $('#quickReplyOverlay').fadeIn('fast');
+            } else {
+                $('#quickReplyButton>img').attr('src', 'images/question.svg');
+                $('#quickReplyBlock').slideUp('fast', () => $('#filterText').val('').trigger('input'));
+                $('#quickReplyOverlay').fadeOut('fast');
+            }
         };
 
         // Send message
@@ -145,13 +157,7 @@
         };
 
         // Change online status
-        const changeStatus = (isOnline) => {
-            $('#onlineStatus').toggleClass('online', isOnline);
-
-            //const statusText = isOnline ? 'Подключен к чату' : 'Отключен от чата';
-
-            //$('#onlineStatus').text(statusText);
-        };
+        const changeStatus = (isOnline) => $('#onlineStatus').toggleClass('online', isOnline);
 
         const completeConsultation = () => {
             chatConnection.stop();
