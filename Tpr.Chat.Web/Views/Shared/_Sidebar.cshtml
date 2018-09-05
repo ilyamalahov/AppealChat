@@ -11,24 +11,25 @@
                 <button id="switchExpertButton" class="custom-button expert-button">
                     <img src="~/images/reload.svg" style="height: 25px; vertical-align: middle; margin-right: 10px;" alt="Reload" />
                     <span style="vertical-align:middle;">Сменить собеседника</span>
-</button>
+                </button>
             </div>
             <div class="sidebar-block remaining-time">
                 <img src="~/images/stopwatch.svg" style="height: 25px; vertical-align: middle; margin-right: 10px;" alt="Stopwatch" />
                 <span style="vertical-align:middle;"><b id="remainingTime">00</b> минуты осталось</span>
             </div>
         }
-
-        <ul class="sidebar-block appeal-info">
-            <li style="font-weight: bold;">Сведения об аппеляции</li>
-            <li><div class="appeal-caption">Начало онлайн консультации</div><div class="appeal-value">@chatSession.StartTime</div></li>
-            <li><div class="appeal-caption">Завершение онлайн консультации</div><div class="appeal-value">@chatSession.FinishTime</div></li>
-            <li><div class="appeal-caption">Номер апелляции</div><div class="appeal-value sidebar-highlight">@chatSession.AppealNumber</div></li>
-            <li><div class="appeal-caption">Предмет</div><div class="appeal-value sidebar-highlight">@chatSession.SubjectName</div></li>
-            <li><div class="appeal-caption">Дата экзамена</div><div class="appeal-value sidebar-highlight">@chatSession.ExamDate</div></li>
-            <li><div class="appeal-caption">Зарегистрирована</div><div class="appeal-value sidebar-highlight">@chatSession.RegistrationDate</div></li>
-            <li><div class="appeal-caption">Подано заявление</div><div class="appeal-value sidebar-highlight">@chatSession.ApplicationDate</div></li>
-        </ul>
+        <div class="sidebar-block">
+            <ul class="appeal-info">
+                <li style="font-weight: bold;">Сведения об аппеляции</li>
+                <li><div class="appeal-caption">Начало онлайн консультации</div><div class="appeal-value">@chatSession.StartTime</div></li>
+                <li><div class="appeal-caption">Завершение онлайн консультации</div><div class="appeal-value">@chatSession.FinishTime</div></li>
+                <li><div class="appeal-caption">Номер апелляции</div><div class="appeal-value sidebar-highlight">@chatSession.AppealNumber</div></li>
+                <li><div class="appeal-caption">Предмет</div><div class="appeal-value sidebar-highlight">@chatSession.SubjectName</div></li>
+                <li><div class="appeal-caption">Дата экзамена</div><div class="appeal-value sidebar-highlight">@chatSession.ExamDate</div></li>
+                <li><div class="appeal-caption">Зарегистрирована</div><div class="appeal-value sidebar-highlight">@chatSession.RegistrationDate</div></li>
+                <li><div class="appeal-caption">Подано заявление</div><div class="appeal-value sidebar-highlight">@chatSession.ApplicationDate</div></li>
+            </ul>
+        </div>
         <div class="sidebar-block contacts-info">
             <div id="contactsButton" class="contacts-button">
                 <b style="flex: auto;">Контакты</b>

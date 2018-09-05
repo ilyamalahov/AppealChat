@@ -126,8 +126,6 @@
         // 
         $('#completeButton').on('click', () => $('#modal').showModal('ajax/completechat'));
 
-        $('#appealInfoButton').on('click', () => $('#modal').showModal('ajax/appealinfo'));
-
         // 
         const switchLoader = (isVisibled) => {
             $('#changeOverlay').toggle(isVisibled);

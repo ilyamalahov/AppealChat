@@ -176,7 +176,6 @@ footer {
 }
 
     .main-header .header-title {
-        flex: auto;
         font-size: 18px;
         font-weight: bold;
     }
@@ -246,7 +245,6 @@ footer {
 @media screen and (max-width: 767px) {
     .header {
         margin: 0;
-        box-shadow: none;
     }
     .main {
         margin: 0;
@@ -255,5 +253,19 @@ footer {
 
     .main-header {
         border-radius: 0;
+        padding: 0;
+    }
+    .header-title {
+        margin-bottom: 5px;
+        width: 100%;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .main-moscow-time {
+        display: none;
+    }
+    .switch-button {
+        display: none;
     }
 }

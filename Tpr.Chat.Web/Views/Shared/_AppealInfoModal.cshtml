@@ -1,24 +1,23 @@
 ﻿@using Tpr.Chat.Core.Models
 @model ChatSession
 
-<div class="modal-overlay">
-    <div class="modal-window" style="display: flex; flex-flow:column; width: 500px; height: 300px; background: #fff; border-radius: 3px; padding: 15px; margin:20px;">
-        <div class="modal-header" style="flex: none; border-bottom: 1px solid #ccc; display: flex; padding-bottom: 15px;">
-            <div class="modal-title" style="flex: auto; font-size: 18px; font-weight: bold;">Сведения об аппеляции</div>
-            <button class="custom-button close-button" style="flex: none;"><img src="~/images/close.svg" style="width: 20px;" /></button>
-        </div>
-        <div class="modal-content" style="flex: auto">
-            <ul class="appeal-info">
-                <li><div class="appeal-caption">Номер апелляции</div><div class="appeal-value sidebar-highlight">@Model.AppealNumber</div></li>
-                <li><div class="appeal-caption">Предмет</div><div class="appeal-value sidebar-highlight">@Model.SubjectName</div></li>
-                <li><div class="appeal-caption">Дата экзамена</div><div class="appeal-value sidebar-highlight">@Model.ExamDate</div></li>
-                <li><div class="appeal-caption">Зарегистрирована</div><div class="appeal-value sidebar-highlight">@Model.RegistrationDate</div></li>
-                <li><div class="appeal-caption">Подано заявление</div><div class="appeal-value sidebar-highlight">@Model.ApplicationDate</div></li>
-            </ul>
-        </div>
-        <div class="modal-footer" style="display: none; flex: none; display: flex; justify-content:space-between">
-            <button style="padding:5px;">OK</button>
-            <button style="padding:5px;">Cancel</button>
-        </div>
+
+<div class="modal-window">
+    <div class="modal-header">
+        <div class="modal-title">Сведения об аппеляции</div>
+        <button id="closeModalButton" class="custom-button close-button" style="flex: none;"><img src="~/images/close.svg" style="width: 20px;" /></button>
+    </div>
+    <div class="modal-content">
+        <ul class="appeal-info">
+            <li><div class="appeal-caption">Номер апелляции</div><div class="appeal-value sidebar-highlight">@Model.AppealNumber</div></li>
+            <li><div class="appeal-caption">Предмет</div><div class="appeal-value sidebar-highlight">@Model.SubjectName</div></li>
+            <li><div class="appeal-caption">Дата экзамена</div><div class="appeal-value sidebar-highlight">@Model.ExamDate</div></li>
+            <li><div class="appeal-caption">Зарегистрирована</div><div class="appeal-value sidebar-highlight">@Model.RegistrationDate</div></li>
+            <li><div class="appeal-caption">Подано заявление</div><div class="appeal-value sidebar-highlight">@Model.ApplicationDate</div></li>
+        </ul>
+    </div>
+    <div class="modal-footer" style="display: none;">
+        <button style="padding:5px;">OK</button>
+        <button style="padding:5px;">Cancel</button>
     </div>
 </div>

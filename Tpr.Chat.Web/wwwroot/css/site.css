@@ -38,6 +38,7 @@ ul {
     height: 100%;
     background: #ddd;
 }
+
 .container {
     display: flex;
     flex-flow: column;
@@ -91,9 +92,38 @@ ul {
         height: 30px;
     }
 
-    .button-block {
-        display: flex;
+.button-block {
+    display: flex;
+}
+
+.appeal-info {
+    color: #000;
+}
+
+    .appeal-info li {
+        padding: 20px 0;
+        border-bottom: 1px solid #dddddd
     }
+
+        .appeal-info li:last-child {
+            border: none;
+        }
+
+        .appeal-info li div {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+.appeal-caption {
+    width: 150px;
+    font-size: 14px;
+    color: #959595;
+}
+
+.appeal-value {
+    font-weight: bold;
+}
+
 .content {
     flex: auto;
     position: relative;
@@ -115,12 +145,14 @@ ul {
 }
 
 .sidebar-block {
-    padding: 20px 15px;
     border-radius: 0 5px 5px 0;
     background: #fff;
     box-shadow: 0 0 10px 0 #b7bec3;
     margin-bottom: 15px;
 }
+    .sidebar-block .appeal-info {
+        padding: 0 15px;
+    }
 
 .switch-expert {
     margin-left: 15px;
@@ -134,9 +166,11 @@ ul {
     background: #3c8cdd;
     color: #fff;
 }
+
     .expert-button:hover {
         background: #2b6eb0;
     }
+
     .expert-button:disabled {
         background: #d7dbde;
         color: #fefefe;
@@ -149,35 +183,6 @@ ul {
     background: #fff;
     color: #f00;
 }
-
-.appeal-info {
-    padding: 0 15px;
-    border-radius: 0 5px 5px 0;
-    background: #fff;
-    color: #000;
-}
-
-    .appeal-info li {
-        padding: 20px 0;
-        border-bottom: 1px solid #dddddd
-    }
-
-        .appeal-info li:last-child {
-            border: none;
-        }
-        .appeal-info li div {
-            display: inline-block;
-            vertical-align: middle;
-        }
-
-    .appeal-caption {
-        width: 150px;
-        font-size: 14px;
-        color: #959595;
-    }
-    .appeal-value {
-        font-weight: bold;
-    }
 
 .contacts-info {
     position: static;
@@ -289,15 +294,15 @@ ul {
     color: #3389e0;
 }
 
-    .message-status::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        width: 100%;
-        height: 1px;
-        background: #9ec9ec;
-        z-index: -1;
-    }
+.message-status::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+    background: #9ec9ec;
+    z-index: -1;
+}
 
 .message-bubble {
     background: #fff;
@@ -334,48 +339,115 @@ ul {
     display: inline-block;
     vertical-align: middle;
 }
+
 .sidemenu {
-    position: absolute;
-    z-index: 1;
     display: flex;
     flex-flow: column;
-    width: 300px;
+    width: 350px;
     height: 100%;
     background: #3e89e4;
     color: #fff;
     font-size: 18px;
 }
+
 .sidemenu-header {
     flex: none;
     margin-bottom: 50px;
 }
+
 .sidemenu-content {
     flex: auto;
     padding: 20px;
+    overflow-y: auto;
 }
+
 .sidemenu-footer {
     flex: none;
     padding: 20px;
+    margin-bottom: 20px;
 }
+
 .sidemenu-copyright {
     color: #fff;
     font-size: 12px;
 }
+
 .sidemenu-button {
-    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
     text-transform: uppercase;
     cursor: pointer;
 }
+
 .button-icon {
     height: 25px;
     vertical-align: middle;
     margin-right: 10px;
 }
 
+.center-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0, 0.6);
+    z-index: 1;
+}
+
+.modal-window {
+    display: flex;
+    flex-flow: column;
+    min-width: 350px;
+    max-height: 700px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #fff;
+    border-radius: 3px;
+    margin: 20px;
+}
+
+.modal-header {
+    flex: none;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    padding: 15px 0;
+    margin: 0 20px;
+}
+
+.modal-title {
+    flex: auto;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.modal-content {
+    flex: auto
+}
+
+.modal-footer {
+    flex: none;
+    display: flex;
+    justify-content: space-between
+}
+
+.modal-content .appeal-info {
+    margin: 0 20px;
+}
+
 @media screen and (max-width: 767px) {
     .sidebar {
         display: none;
     }
+
     .moscow-time {
         display: none;
     }
@@ -383,14 +455,17 @@ ul {
     .button-block {
         display: none;
     }
+
     .message-status .place-left, .place-right {
         float: none;
         text-align: center;
     }
+
     .message-status .message {
         max-width: 100%;
     }
 }
+
 @media screen and (min-width: 768px) {
     #sideMenuButton {
         display: none;

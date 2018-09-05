@@ -19,29 +19,39 @@
     <script type="text/javascript" src="~/js/appeal.js"></script>
 }
 
-<div class="container">
-    <div id="sideMenu" class="sidemenu" style="display: none;">
+<div id="sideMenu" class="overlay" style="display: none;">
+    <div class="sidemenu">
         <div class="sidemenu-header">
             <button id="closeSideButton" class="custom-button close-tooltip-button" style="width:30px; height: 30px;"></button>
         </div>
         <div class="sidemenu-content">
             <div id="appealInfoButton" class="sidemenu-button"><img class="button-icon" src="~/images/chat.svg" alt="Сведения об аппеляции" /><span style="overflow:hidden;">Сведения об аппеляции</span></div>
             <div id="contactsButton" class="sidemenu-button"><img class="button-icon" src="~/images/envelope.svg" alt="Контакты" />Контакты</div>
-            <div id="guideButton" class="sidemenu-button"><img class="button-icon" src="~/images/round-help-button.svg" alt="Инструкция по работе с чатом" /><span style="vertical-align: middle;">Инструкция по работе с чатом</span></div>
+            <div id="guideButton" class="sidemenu-button"><img class="button-icon" src="~/images/round-help-button.svg" alt="Инструкция по работе с чатом" /><div>Инструкция по работе с чатом</div></div>
         </div>
         <div class="sidemenu-footer">
             <div id="completeButton" class="sidemenu-button"><img class="button-icon" src="~/images/back.svg" alt="Завершить консультацию" />Завершить консультацию</div>
             <div class="sidemenu-copyright">2018 (C) Конфликтная комиссия города Москвы</div>
         </div>
     </div>
+</div>
+
+<div class="container">
     <partial name="_Header" />
     <div class="content">
         <partial name="_Sidebar" />
         <div class="main">
             <div class="main-header">
-                <div class="header-title">Член конфликтной комиссии <span id="expertNumber">отсутствует</span></div>
-                <div class="online-status" id="onlineStatus"></div>
-                <span class="write-status" id="writeStatus">Печатает...</span>
+                <div class="main-moscow-time" style="margin: 10px; border-radius: 3px; text-align: center; background: #72ade7; padding: 5px 10px;">
+                    <div id="moscowTime" style="font-weight: bold; font-size: 18px;">00:00</div>
+                    <div style="color: #aed3f0;">минуты осталось</div>
+                </div>
+                <div style="flex: auto; display: flex; align-items: center; flex-wrap: wrap;">
+                    <div class="header-title" style="flex:auto;">Член конфликтной комиссии <span id="expertNumber">отсутствует</span></div>
+                    <div class="online-status" id="onlineStatus"></div>
+                    <span class="write-status" id="writeStatus">Печатает...</span>
+                </div>
+                <button class="custom-button switch-button" style="flex: none; margin:10px; padding: 5px; background: #fff; border-radius: 3px;"><img src="~/images/information.svg" style="height: 40px;" alt="Switch" /></button>
             </div>
             <ul id="messagesList" class="message-history">
                 @foreach (var message in Model.Messages)
@@ -90,4 +100,4 @@
     </div>
 </div>
 
-@*<div id="modal" style="display: none;" class="modal-overlay center"></div>*@
+<div id="modal" style="display: none;" class="overlay center-content"></div>

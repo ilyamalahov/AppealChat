@@ -7,7 +7,7 @@ using Tpr.Chat.Core.Repositories;
 
 namespace Tpr.Chat.Web.Controllers
 {
-    [Route("ajax/[controller]")]
+    [Route("ajax")]
     public class AjaxController : Controller
     {
         private readonly IChatRepository chatRepository;
@@ -32,7 +32,6 @@ namespace Tpr.Chat.Web.Controllers
         [HttpGet("appealinfo")]
         public IActionResult AppealInfo(Guid appealId)
         {
-
             // Check if chat session is exists
             var chatSession = chatRepository.GetChatSession(appealId);
 
@@ -41,7 +40,7 @@ namespace Tpr.Chat.Web.Controllers
                 return BadRequest("Сессии по данному ID аппелянта не существует");
             }
 
-            return PartialView("_AppealInfoModal");
+            return PartialView("_AppealInfoModal", chatSession);
         }
     }
 }
