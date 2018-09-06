@@ -91,6 +91,13 @@ ul {
     .header-button img {
         height: 30px;
     }
+.side-button {
+    display: none;
+    padding: 15px;
+}
+.side-button img {
+    height: 40px;
+}
 
 .button-block {
     display: flex;
@@ -206,8 +213,6 @@ ul {
     border-radius: 5px;
     background: #2b7bde;
     color: #fff;
-    /*top: 0;*/
-    /*left:350px;*/
 }
 
     .contacts-tooltip::before {
@@ -221,10 +226,6 @@ ul {
         border-bottom: inherit;
         border-right: inherit;
         background: inherit;
-    }
-
-    .contacts-tooltip:hover {
-        cursor: default;
     }
 
 .contacts-list {
@@ -255,7 +256,7 @@ ul {
     height: 15px;
 }
 
-.footer {
+.sidebar-footer {
     flex: none;
     padding: 15px;
     font-size: 12px;
@@ -281,7 +282,6 @@ ul {
 
 
 .message {
-    /*min-width: 40%;*/
     max-width: 80%;
     margin: 15px;
 }
@@ -456,7 +456,7 @@ ul {
         display: none;
     }
 
-    .message-status .place-left, .place-right {
+    .message-status .place-left, .message-status .place-right {
         float: none;
         text-align: center;
     }
@@ -464,10 +464,7 @@ ul {
     .message-status .message {
         max-width: 100%;
     }
-}
-
-@media screen and (min-width: 768px) {
-    #sideMenuButton {
-        display: none;
+    .side-button {
+        display: block;
     }
 }

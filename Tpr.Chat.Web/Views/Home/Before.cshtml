@@ -13,26 +13,29 @@
         var appealId = "@Model.ChatSession.AppealId";
     </script>
     <script type="text/javascript" src="~/js/luxon.min.js"></script>
-    <script type="text/javascript" src="~/js/vefore.js"></script>
+    <script type="text/javascript" src="~/js/before.js"></script>
     <script type="text/javascript" src="~/lib/signalr/signalr.js"></script>
 }
 
-    <div class="container">
-        <partial name="_Header" for="@Model" />
-        <div class="content">
-            <partial name="_Sidebar" />
-            <div class="main" style="display: flex; flex-flow:column; justify-content: center; align-items: center; width: 100%; text-align:center; overflow: hidden; color: #000;">
-                <div style="margin-bottom: 40px;">
-                    <div style="margin-bottom: 10px"><img src="~/images/hourglass.svg" style="width: 80px" /></div>
-                    <div style="color: #ff941a; font-weight: bold; font-size: 20px;">Время онлайн консультации <br />по Вашей аппеляции еще не наступило</div>
-                </div>
-                <div>
-                    <div style="font-weight: bold;">Консультация начнется через</div>
-                    <div style="color: #8c8d8f;">
-                        <b id="remainingDays" style="font-size:20px; color: #000;">0</b> дней(-я) 
-                        <b id="remainingHours" style="font-size:20px; color: #000;">00</b> часа(-ов) 
-                        <b id="remainingMinutes" style="font-size:20px; color: #000;">00</b> минут(-ы)</div>
+<partial name="_SideMenu" />
+
+<div class="container">
+    <partial name="_Header" for="@Model" />
+    <div class="content">
+        <partial name="_Sidebar" />
+        <div class="main" style="display: flex; flex-flow:column; justify-content: center; align-items: center; width: 100%; text-align:center; overflow: hidden; color: #000;">
+            <div style="margin-bottom: 40px;">
+                <div style="margin-bottom: 10px"><img src="~/images/hourglass.svg" style="width: 80px" /></div>
+                <div style="color: #ff941a; font-weight: bold; font-size: 20px;">Время онлайн консультации <br />по Вашей аппеляции еще не наступило</div>
+            </div>
+            <div>
+                <div style="font-weight: bold; font-size: 20px;">Консультация начнется через</div>
+                <div style="color: #8c8d8f;">
+                    <b id="remainingDays" style="font-size:20px; color: #000;">0</b> дней(-я)
+                    <b id="remainingHours" style="font-size:20px; color: #000;">00</b> часа(-ов)
+                    <b id="remainingMinutes" style="font-size:20px; color: #000;">00</b> минут(-ы)
                 </div>
             </div>
         </div>
     </div>
+</div>

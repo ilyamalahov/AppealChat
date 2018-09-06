@@ -1,15 +1,7 @@
 ﻿//$(document).ready(function () {
 
 // Update info in interval
-const updateInfo = function (interval, appealId, callback) {
-    $.post("update", { appealId }).done(callback);
-
-    //{
-    //method: "POST",
-    //    url: "update",
-    //    //headers: { "Authorization": "Bearer " + accessToken }
-    //}
-};
+const updateInfo = (interval, appealId, callback) => $.post("update", { appealId }).done(callback);
 
 // Get JWT access token
 const getAccessToken = function () {
@@ -28,18 +20,6 @@ const getAccessToken = function () {
             })
             .fail(reject);
     });
-};
-
-// Insert text in textarea at cursor position
-const insertAtCursor = function (element, value) {
-    if (element.prop('selectionStart') || element.prop('selectionStart') === '0') {
-        var startSubstring = element.val().substring(0, element.prop('selectionStart'));
-        var endSubstring = element.val().substring(element.prop('selectionEnd'), element.val().length);
-
-        element.val(startSubstring + value + endSubstring);
-    } else {
-        element.val(element.val() + value);
-    }
 };
 
 // Keyup on message textarea
@@ -144,27 +124,21 @@ jQuery.fn.highlightText = function (match) {
     var afterMatch = value.slice(matchEnd);
 
     $(this).html(beforeMatch + "<strong>" + matchText + "</strong>" + afterMatch);
-
-    //return beforeMatch + "<em>" + matchText + "</em>" + afterMatch;
+    
     return this;
 };
 
-jQuery.fn.showModal = function (url, data, duration = 'fast') {
-    $.get(url, data, (response) => $(this).html(response).fadeIn(duration));
+jQuery.fn.showModal = function (url, data) {
+    $.get(url, data, (response) => $(this).html(response).show());
 }
+
 jQuery.fn.hideModal = function () {
-    $(this).html('').fadeOut();
+    $(this).html('').hide();
 }
 
 jQuery.expr.filters.icontains = function (elem, i, m) {
     return (elem.innerText || elem.textContent || "").toLowerCase().indexOf(m[3].toLowerCase()) > -1;
 };
-
-// Show modal window
-const showModal = (url, data) => $.get(url, data, (response) => $('#modal').html(response).fadeIn('fast'));
-
-// Close modal window
-const closeModal = () => $('#modal').fadeOut().html('');
 
 const changeExpert = (accessToken, beforeSendCallback) => {
     return new Promise((resolve, reject) => {
@@ -189,7 +163,6 @@ const calculateExpandRows = (textarea) => {
 
     return Math.max(0, Math.min(currentRowCount, 4));
 };
-//});
 
 var helpInfoIsVisible = false;
 
