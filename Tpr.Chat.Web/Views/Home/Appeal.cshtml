@@ -41,7 +41,7 @@
             <ul id="messagesList" class="message-history">
                 @foreach (var message in Model.Messages)
                 {
-                    var isCurrent = message.NickName == "Аппелянт";
+                    var isCurrent = message.NickName == "Апеллянт";
                     var messageDate = message.CreateDate.ToString("T");
 
                     @switch (message.ChatMessageTypeId)
@@ -76,7 +76,7 @@
                 }
             </ul>
             <div class="main-footer">
-                <textarea id="messageText" class="message-text" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
+                <textarea id="messageText" maxlength="1000" class="message-text" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
                 <button id="sendButton" class="custom-button send-button"><img src="~/images/chat/send.svg" alt="Отправить" /></button>
             </div>
         </div>

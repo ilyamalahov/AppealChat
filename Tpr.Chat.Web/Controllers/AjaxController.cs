@@ -37,7 +37,7 @@ namespace Tpr.Chat.Web.Controllers
 
             if (chatSession == null)
             {
-                return BadRequest("Сессии по данному ID аппелянта не существует");
+                return BadRequest("Сессии по данному ID апеллянта не существует");
             }
 
             return PartialView("_AppealInfoModal", chatSession);

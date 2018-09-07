@@ -105,7 +105,7 @@ const onLeaveUser = (message) => {
 
 // First join expert to chat callback
 const onFirstJoinExpert = (nickname) => {
-    const isSender = nickname !== 'Аппелянт';
+    const isSender = nickname !== 'Апеллянт';
 
     const li = firstJoinExpertMessage(nickname, isSender);
 

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using Tpr.Chat.Core.Constants;
 using Tpr.Chat.Core.Models;
 using Tpr.Chat.Core.Repositories;
@@ -41,7 +42,7 @@ namespace Tpr.Chat.Web.Hubs
                 var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
 
                 // Nick name
-                var nickName = senderType == ContextType.Appeal ? "Аппелянт" : "Член КК № " + expertKey;
+                var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
 
 
                 // Chat message
@@ -49,7 +50,7 @@ namespace Tpr.Chat.Web.Hubs
                 {
                     AppealId = appealId,
                     CreateDate = DateTime.Now,
-                    MessageString = message,
+                    MessageString = HttpUtility.HtmlEncode(message),
                     NickName = nickName,
                     ChatMessageTypeId = ChatMessageTypes.Message
                 };
@@ -83,7 +84,7 @@ namespace Tpr.Chat.Web.Hubs
                 var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
 
                 // Nick name
-                var nickName = senderType == ContextType.Appeal ? "Аппелянт" : "Член КК № " + expertKey;
+                var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
 
                 
                 // Add connection ID to collection
@@ -175,7 +176,7 @@ namespace Tpr.Chat.Web.Hubs
                 var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
 
                 // Nick name
-                var nickName = senderType == ContextType.Appeal ? "Аппелянт" : "Член КК № " + expertKey;
+                var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
 
 
                 // Remove caller's connection ID

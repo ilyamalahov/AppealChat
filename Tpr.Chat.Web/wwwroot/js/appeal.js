@@ -50,7 +50,7 @@
 
         // Receiving message from user
         chatConnection.on("Receive", (message) => {
-            const isSender = message.nickName === 'Аппелянт';
+            const isSender = message.nickName === 'Апеллянт';
 
             const li = receiveMessage(message, isSender);
 
@@ -61,7 +61,7 @@
         chatConnection.on("Join", (message, isAppealOnline, onlineExpertKey) => {
             setExpert(onlineExpertKey);
 
-            const isSender = message.nickName === 'Аппелянт';
+            const isSender = message.nickName === 'Апеллянт';
 
             if (!isSender) return;
 
@@ -74,7 +74,7 @@
         chatConnection.on("Leave", (message, onlineExpertKey) => {
             setExpert(onlineExpertKey);
 
-            const isSender = message.nickName === 'Аппелянт';
+            const isSender = message.nickName === 'Апеллянт';
 
             if (!isSender) return;
 
@@ -85,7 +85,7 @@
 
         // Leave user from chat
         chatConnection.on("FirstJoinExpert", (nickname) => {
-            const isSender = nickname === 'Аппелянт';
+            const isSender = nickname === 'Апеллянт';
 
             const li = firstJoinExpertMessage(nickname, isSender);
 
