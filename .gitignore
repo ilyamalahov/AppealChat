@@ -260,3 +260,5 @@ paket-files/
 __pycache__/
 *.pyc
 /Tpr.Chat.Web/appsettings.Development.json
+/appsettings.Development.json
+/Tpr.Chat.Web/Properties/PublishProfiles/10.126.77.2 - Production.pubxml
