@@ -10,10 +10,9 @@
 @section Styles{
     <link rel="stylesheet" type="text/css" href="~/css/before-after.css" />
 }
+
 @section Scripts {
-    <script type="text/javascript" src="~/js/luxon.min.js"></script>
     <script type="text/javascript" src="~/js/after.js"></script>
-    <script type="text/javascript" src="~/lib/signalr/signalr.js"></script>
 }
 
 <partial name="_SideMenu" />
@@ -25,18 +24,18 @@
         <div class="main" style="display: flex; flex-flow:column; justify-content: center; align-items: center; width: 100%; text-align:center; overflow: auto;">
             <div style="margin-bottom: 20px; font-weight:bold; font-size: 20px;">Консультация по аппеляции завершена</div>
             <div style="box-shadow: 0 0 5px 0 #ccc; max-width: 500px; padding: 50px; margin:20px;">
-                <div style="margin-bottom: 10px"><img src="~/images/interview.png" style="width: 80px" /></div>
+                <div style="margin-bottom: 10px"><img src="~/images/after/interview.png" style="width: 80px" /></div>
                 <div style="color: #ff941a; font-weight: bold; font-size: 20px; margin-bottom: 10px;">Сведения о заседании конфликтной комиссии</div>
 
                 <div style="margin-bottom: 10px">Заседание конфликтной комиссии, в рамках которой будет вынесено<br />Решение по Вашей аппеляции состоится</div>
                 <div style="margin-bottom: 30px">
-                    <img src="~/images/calendar.png" alt="Calendar" style="margin-right: 5px; height: 20px; vertical-align: middle;" />
+                    <img src="~/images/after/calendar.png" alt="Calendar" style="margin-right: 5px; height: 20px; vertical-align: middle;" />
                     <b style="color:#000; font-size: 20px; vertical-align: middle;">@chatSession.ApplicationDate</b>
                 </div>
 
                 <div style="margin-bottom: 10px">Запланированное время рассмотрения Вашей аппеляции</div>
                 <div style="margin-bottom: 30px">
-                    <img src="~/images/noun_clock.svg" alt="Time" style="margin-right: 5px; height: 30px; vertical-align: middle;" />
+                    <img src="~/images/after/clock.svg" alt="Time" style="margin-right: 5px; height: 30px; vertical-align: middle;" />
                     <b style="color:#000; font-size: 20px;">@chatSession.CommissionStartTime.ToShortTimeString() - @chatSession.CommissionFinishTime.ToShortTimeString()</b>
                 </div>
 
@@ -45,10 +44,12 @@
             </div>
             <a class="webcast-button" href="@chatSession.CommissionLink">
                 <div style="display:flex; align-items: center;">
-                    <img src="~/images/chat.svg" alt="Webcast" />
+                    <img src="~/images/after/film.png" alt="Webcast" />
                     <div>Онлайн трансляция заседания конфликтной комиссии</div>
                 </div>
             </a>
         </div>
     </div>
 </div>
+
+<div id="modal" style="display: none;" class="overlay center-content"></div>

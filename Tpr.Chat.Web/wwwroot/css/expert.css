@@ -1,86 +1,4 @@
-﻿/*.content {
-    display: flex;
-    flex-flow: column;
-}
-
-.block {
-    margin: 5px;
-    position: relative;
-}
-
-.appeal-info {
-    position: relative;
-    border: 1px solid #ccc;
-    padding: 5px;
-    text-align: center;
-    font-size: 18px;
-}
-
-.close-button {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 5px;
-}
-
-.message-history {
-    border: 1px solid #ccc;
-}
-
-.message-text {
-    width: 100%;
-    resize: none;
-    padding: 5px;
-}
-
-.buttons {
-    flex: none;
-    display: flex;
-    justify-content: space-between;
-}
-.form-button {
-    background: #fff;
-    border: 1px solid #476cd4;
-    border-radius: 5px;
-    padding: 8px;
-}
-    .form-button:hover {
-        background: #3054b9;
-        border-color: #3054b9;
-        color: #fff;
-        cursor: pointer;
-    }
-    .form-button:disabled {
-        background: #d4d4d4;
-        border-color: #d4d4d4;
-        color: #b3b3b3;
-        cursor: default;
-    }
-    .send-button {
-        background: #476cd4;
-        color: #fff;
-    }
-
-.quick-reply {
-    background: #ccc;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    border: 1px solid #8c8c8c;
-    box-sizing: border-box;
-}
-    .quick-reply .list-item {
-        border: 1px solid #777;
-        margin: 10px;
-        padding: 5px;
-        background: #fff;
-    }
-    .quick-reply .list-item:hover {
-        background: #d3d3d3;
-        cursor: pointer;
-    }*/
-
-.main {
+﻿.main {
     display: flex;
     flex-flow: column;
     height: 100%;
@@ -95,31 +13,14 @@
     background: #4d97e2;
     color: #fff;
 }
-
-    .main-header .header-title {
+    .main-header .title {
         flex: auto;
         font-size: 18px;
         font-weight: bold;
     }
-
-.online-status {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    border: 2px solid #fff;
-    background: #f00;
-}
-
-.online {
-    background: #0f0;
-}
-
-.write-status {
-    display: none;
-    font-size: 12px;
-    color: #a7d0ec;
-    margin-left: 10px;
-}
+    .status-block {
+        display: flex;
+    }
 
 .main-footer {
     flex: none;
@@ -136,40 +37,22 @@
     outline: none;
 }
 
-.round-button {
+/* Expert only */
+
+.reply-button {
     margin: 10px;
     padding: 10px;
     border-radius: 50%;
-}
-    .round-button:disabled {
-        background: #c7c7c7;
-        cursor: default;
-    }
-
-.reply-button {
     background: #e8e8e8;
 }
     .reply-button:hover {
         background: #d4d4d4;
     }
-
-.send-button {
-    background: #3587dd;
-}
-    .send-button:hover {
-        background: #3b78b5;
-    }
-
-.header-button {
-    padding: 15px;
-}
-
-    .header-button img {
-        height: 25px;
+    .reply-button:disabled {
+        background: #c7c7c7;
     }
 
 .quick-reply {
-    display: none;
     position: absolute;
     bottom: 0;
     width: 100%;
@@ -191,7 +74,7 @@
 .reply-list {
     overflow-y: auto;
     max-height: 250px;
-    padding: 0px 15px;
+    padding: 0 15px;
 }
     .reply-list li {
         background: #fff;

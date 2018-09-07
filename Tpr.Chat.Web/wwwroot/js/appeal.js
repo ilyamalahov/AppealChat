@@ -16,13 +16,14 @@
             // Remaining duration
             var remainingDuration = luxon.Duration.fromMillis(remainingTime);
 
+            // Remaining time text
+            var remainingText = remainingDuration.toFormat('hh:mm:ss');
+
             // Remaining format minutes
             var remainingMinutes = remainingDuration.as("minutes");
 
             if (remainingMinutes < 1) {
-                var remainingText = 'меньше';
-            } else {
-                var remainingText = remainingDuration.toFormat('hh:mm:ss');
+                remainingText = 'меньше';
             }
 
             $('#remainingTime').text(remainingText);
@@ -30,7 +31,7 @@
             // Moscow date
             var moscowDate = luxon.DateTime.fromISO(currentDate, { zone: 'utc+3' });
 
-            $('#moscowTime').text(moscowDate.toFormat('t'));
+            $('.moscow-value').text(moscowDate.toFormat('t'));
 
             // Alarm after minutes (5 minutes default)
             if (isAlarm) {

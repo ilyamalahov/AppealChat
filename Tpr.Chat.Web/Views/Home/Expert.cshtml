@@ -13,17 +13,18 @@
     <script>
         var appealId = "@Model.ChatSession.AppealId";
         var expertKey = "@Model.ExpertKey";
+        var inRange = "@Model.IsInRange"
     </script>
-    <script type="text/javascript" src="~/js/luxon.min.js"></script>
-    <script type="text/javascript" src="~/lib/signalr/signalr.js"></script>
     <script type="text/javascript" src="~/js/expert.js"></script>
 }
 
 <div class="main">
     <div class="main-header">
-        <div class="header-title">Участник аппеляции</div>
-        <div class="online-status" id="onlineStatus"></div>
-        <span class="write-status" id="writeStatus">Печатает...</span>
+        <div class="title">Участник аппеляции</div>
+        <div class="status-block">
+            <div class="online-status" id="onlineStatus"></div>
+            <div class="write-status" id="writeStatus">Печатает...</div>
+        </div>
     </div>
     <div style="flex: auto; display: flex; position:relative; min-height: 0;">
         <ul id="messagesList" class="message-history">
@@ -65,86 +66,27 @@
                 }
             }
         </ul>
-        <div id="quickReplyOverlay" style="position: absolute; top:0; bottom: 0; right: 0; left:0; background: rgba(0, 0, 0, 0.50); display:none;"></div>
-        <div id="quickReplyBlock" class="quick-reply">
-            <div class="filter-block"><input id="filterText" class="filter-text" type="text" placeholder="Введите текст" /></div>
-            <ul id="replyList" class="reply-list">
-                @foreach (var reply in Model.QuickReplies)
-                {
-                    <li>@reply.MessageText</li>
-                }
-            </ul>
-        </div>
-    </div>
-    <div id="interactiveBlock" class="main-footer">
-        <button id="quickReplyButton" class="custom-button round-button reply-button"><img src="~/images/question.svg" style="height: 20px;" alt="QuickReply" /></button>
-        <textarea id="messageText" class="message-text" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
-        <button id="sendButton" class="custom-button round-button send-button"><img src="~/images/send-mail.svg" style="height: 20px;" alt="Send" /></button>
-    </div>
-</div>
-
-@*<div class="container">
-        <div id="alarm" class="block alarm"></div>
-        <div class="block appeal-info">
-            <div>Участник по аппеляции</div>
-            <div style="font-weight:bold;">№ <span>@Model.ChatSession.AppealNumber</span></div>
-            <div id="onlineStatus" style="font-weight:bold; color: #009966;">Отключен от чата</div>
-        </div>
-
-        <ul id="messagesList" class="block message-history">
-            @foreach (var message in Model.Messages)
-                {
-                    var messageDate = message.CreateDate.ToString("G");
-
-                    var isExpert = message.NickName.Contains("Член КК");
-
-                    var isCurrent = isExpert && message.NickName.Contains(Model.ExpertKey.ToString());
-
-                    var nickname = isCurrent ? "Вы" : message.NickName;
-
-                <li>
-                    <div class="message @(isExpert ? "place-left" : "place-right")">
-                        @switch (message.ChatMessageTypeId)
-                {
-                            case ChatMessageTypes.Joined:
-                                @nickname @(isCurrent ? " подключились" : " подключился") @:к консультации <b>(@messageDate) </b>
-                                break;
-                            case ChatMessageTypes.Message:
-                                <div class="message-bubble">@Html.Raw(message.MessageString)</div>@nickname <b>(@messageDate)</b>
-                                break;
-                            case ChatMessageTypes.Leave:
-                                @nickname @(isCurrent ? " покинули" : " покинул") @:консультацию <b>(@messageDate)</b>
-                                break;
+        @if (Model.IsInRange)
+        {
+            <div id="quickReply" class="overlay" style="display:none;">
+                <div class="quick-reply">
+                    <div class="filter-block"><input id="filterText" class="filter-text" type="text" placeholder="Введите текст" /></div>
+                    <ul id="replyList" class="reply-list">
+                        @foreach (var reply in Model.QuickReplies)
+                        {
+                            <li>@reply.MessageText</li>
                         }
-                    </div>
-                </li>
-            }
-        </ul>
-
-        @if (!Model.IsFinished)
-                {
-            <div id="interactiveBlock">
-                <div class="block" style="text-align: right;">До конца консультации осталось: <b id="remainingTime">00</b></div>
-
-                <div class="block" style="flex: none;">
-                    <div id="quickReplyBlock" class="quick-reply" style="display: none;">
-                        <div style="border-bottom: 1px solid #000; padding: 10px;">
-                            <input id="filterText" style="width: 100%; padding: 8px 16px; border-radius: 16px; border: none;" type="text" placeholder="Введите текст" />
-                        </div>
-                        <div style="overflow-y: auto; max-height: 200px;">
-                            @foreach (var reply in Model.QuickReplies)
-                            {
-                                <div class="list-item">@reply.MessageText</div>
-                            }
-                        </div>
-                    </div>
-
-                    <textarea id="messageText" class="message-text" rows="5" autocomplete="off" placeholder="Введите сообщение..."></textarea>
-                </div>
-                <div class="block buttons">
-                    <button id="quickReplyButton" class="form-button">Быстрый ответ</button>
-                    <button id="sendButton" class="form-button send-button">Отправить</button>
+                    </ul>
                 </div>
             </div>
         }
-    </div>*@
+    </div>
+    @if (Model.IsInRange)
+    {
+        <div class="main-footer">
+            <button id="quickReplyButton" class="custom-button reply-button"><img src="~/images/chat/quick-reply.svg" style="height: 20px;" alt="QuickReply" /></button>
+            <textarea id="messageText" class="message-text" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
+            <button id="sendButton" class="custom-button send-button"><img src="~/images/chat/send.svg" style="height: 20px;" alt="Send" /></button>
+        </div>
+    }
+</div>

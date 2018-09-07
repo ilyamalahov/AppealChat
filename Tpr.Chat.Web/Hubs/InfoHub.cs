@@ -14,13 +14,13 @@ namespace Tpr.Chat.Web.Hubs
     public class InfoHub : Hub
     {
         private readonly IChatRepository chatRepository;
-        private readonly IBackgroundTaskQueue queue;
+        //private readonly IBackgroundTaskQueue queue;
         private readonly ILogger logger;
 
-        public InfoHub(IChatRepository chatRepository, IBackgroundTaskQueue queue, ILoggerFactory loggerFactory)
+        public InfoHub(IChatRepository chatRepository, ILoggerFactory loggerFactory)
         {
             this.chatRepository = chatRepository;
-            this.queue = queue;
+            //this.queue = queue;
             logger = loggerFactory.CreateLogger<InfoHub>();
         }
 

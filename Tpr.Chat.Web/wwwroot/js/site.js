@@ -1,12 +1,7 @@
-﻿//$(document).ready(function () {
-
-// Update info in interval
-const updateInfo = (interval, appealId, callback) => $.post("update", { appealId }).done(callback);
-
-// Get JWT access token
-const getAccessToken = function () {
+﻿// Get JWT access token
+const getAccessToken = () => {
     return new Promise((resolve, reject) => {
-        var accessToken = sessionStorage.getItem('access_token');
+        const accessToken = sessionStorage.getItem('access_token');
 
         if (accessToken) {
             return resolve(accessToken);
@@ -22,15 +17,6 @@ const getAccessToken = function () {
     });
 };
 
-// Keyup on message textarea
-const messageTextKeyup = function (e) {
-    if (e.keyCode === 13 && !e.shiftKey) {
-        e.preventDefault();
-
-        if ($(this).val().length > 0) sendMessage($(this).val());
-    }
-};
-
 // Return new "Receive" message
 const receiveMessage = (message, isSender) => {
     const nickName = isSender ? 'Вы' : message.nickName;
@@ -44,7 +30,7 @@ const receiveMessage = (message, isSender) => {
 };
 
 // Return new "Join user" message
-const joinMessage = function (message, isSender) {
+const joinMessage = (message, isSender) => {
     const messageDate = luxon.DateTime.fromISO(message.createDate);
 
     const messageText = isSender ? 'Вы подключились к консультации' : message.nickName + ' подключился к консультации';
@@ -124,22 +110,26 @@ jQuery.fn.highlightText = function (match) {
     var afterMatch = value.slice(matchEnd);
 
     $(this).html(beforeMatch + "<strong>" + matchText + "</strong>" + afterMatch);
-    
+
     return this;
 };
 
+// Show modal window
 jQuery.fn.showModal = function (url, data) {
     $.get(url, data, (response) => $(this).html(response).show());
-}
+};
 
+// Hide modal window
 jQuery.fn.hideModal = function () {
     $(this).html('').hide();
-}
+};
 
+// Compare text in case insensitive
 jQuery.expr.filters.icontains = function (elem, i, m) {
     return (elem.innerText || elem.textContent || "").toLowerCase().indexOf(m[3].toLowerCase()) > -1;
 };
 
+// 
 const changeExpert = (accessToken, beforeSendCallback) => {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -164,6 +154,7 @@ const calculateExpandRows = (textarea) => {
     return Math.max(0, Math.min(currentRowCount, 4));
 };
 
+// 
 var helpInfoIsVisible = false;
 
 const switchHelpInfo = function (isVisible) {
@@ -184,24 +175,21 @@ const switchHelpInfo = function (isVisible) {
     $('#contactsTooltip').toggle(isVisible).css(offset);
 };
 
-var sideMenuIsVisible = false;
+const switchSideMenu = (isVisible) => $('#sideMenu').toggle(isVisible);
 
-const switchSideMenu = (isVisible) => {
-    sideMenuIsVisible = isVisible;
-
-    $('#sideMenu').toggle(isVisible);
-};
-
-$(document).ready(function (e) {
+// 
+$(document).ready(() => {
     $('#contactsButton').on('click', () => switchHelpInfo(!helpInfoIsVisible));
 
     $('#closeHelpButton').on('click', () => switchHelpInfo(false));
 
-    $('#sideMenuButton').on('click', () => switchSideMenu(!sideMenuIsVisible));
+    $('#sideMenuButton').on('click', () => switchSideMenu(true));
 
     $('#closeSideButton').on('click', () => switchSideMenu(false));
 
-    $('#appealInfoButton').on('click', () => { switchSideMenu(false); $('#modal').showModal('ajax/appealinfo', { appealId }) });
+    $('#appealSidemenuLink').on('click', () => $('#modal').showModal('ajax/appealinfo', { appealId }));
+
+    $('.sidemenu-item').on('click', () => switchSideMenu(false));
 });
 
 $(document).on('click', '#closeModalButton', () => $('#modal').hideModal());

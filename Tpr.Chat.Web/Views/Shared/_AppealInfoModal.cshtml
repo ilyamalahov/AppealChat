@@ -5,7 +5,7 @@
 <div class="modal-window">
     <div class="modal-header">
         <div class="modal-title">Сведения об аппеляции</div>
-        <button id="closeModalButton" class="custom-button close-button" style="flex: none;"><img src="~/images/close.svg" style="width: 20px;" /></button>
+        <button id="closeModalButton" class="custom-button close-button"><img src="~/images/modal-close.png" /></button>
     </div>
     <div class="modal-content">
         <ul class="appeal-info">
@@ -15,9 +15,5 @@
             <li><div class="appeal-caption">Зарегистрирована</div><div class="appeal-value sidebar-highlight">@Model.RegistrationDate</div></li>
             <li><div class="appeal-caption">Подано заявление</div><div class="appeal-value sidebar-highlight">@Model.ApplicationDate</div></li>
         </ul>
-    </div>
-    <div class="modal-footer" style="display: none;">
-        <button style="padding:5px;">OK</button>
-        <button style="padding:5px;">Cancel</button>
     </div>
 </div>
