@@ -20,7 +20,16 @@
     });
 
     // 
-    const updateInfo = () => infoConnection.invoke("CompleteUpdate");
+    const updateInfo = () => {
+        infoConnection.invoke("CompleteUpdate");
+
+        const infoSubscription = infoConnection.stream("Counter", 10, 1000)
+            .subscribe({
+                next: item => console.log(item),
+                complete: () => { infoSubscription.dispose(); console.log("Stream completed"); },
+                error: error => console.log(error)
+            });
+    };
 
     // Start Info connection
     infoConnection.start()

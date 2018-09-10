@@ -49,12 +49,7 @@ ul {
 
 .vertical-line {
     width: 2px;
-    height: 100%;
     background: #ddd;
-}
-
-.moscow-value {
-    font-weight: bold;
 }
 
 .online-status {
@@ -90,12 +85,16 @@ ul {
     display: flex;
     align-items: center;
     background: #fff;
-    padding: 5px 0;
+    /*padding: 5px 0;*/
     margin-bottom: 15px;
     box-shadow: 0 5px 5px 0 #dfe8ef;
-    height: 80px;
+    /*height: 80px;*/
     box-sizing: border-box;
     overflow: hidden;
+}
+.header .vertical-line {
+    height: 70px;
+    margin: 5px;
 }
 
     .header .title {
@@ -109,17 +108,22 @@ ul {
             content: "Онлайн консультации по результатам рассмотрения апелляций о несогласии с выставленными баллами ГИА";
         }
 
-.header .moscow-time {
+    .header .moscow-time img {
+        height: 25px;
+        vertical-align: middle;
+    }
+
+.moscow-time {
     flex: none;
     padding: 15px;
 }
-    .header .moscow-value {
+    .moscow-value {
         color: #000;
         font-weight: bold;
         font-size: 22px;
     }
 
-    .header .moscow-caption {
+    .moscow-caption {
         font-size: 12px;
         color: #8c8c8c;
     }
@@ -234,19 +238,19 @@ ul {
         vertical-align: middle;
     }
 
-.remaining-time {
+.sidebar .remaining-time {
     text-align: center;
     padding: 15px;
     border-radius: 0 5px 5px 0;
     background: #fff;
     color: #f00;
 }
-    .remaining-time img {
+    .sidebar .remaining-time img {
         height: 25px;
         vertical-align: middle;
         margin-right: 10px;
     }
-    .remaining-time span {
+    .sidebar .remaining-time span {
         vertical-align: middle;
     }
 
@@ -488,7 +492,7 @@ ul {
 .modal-window {
     display: flex;
     flex-flow: column;
-    min-width: 350px;
+    max-width: 900px;
     max-height: 700px;
     overflow-y: auto;
     overflow-x: hidden;

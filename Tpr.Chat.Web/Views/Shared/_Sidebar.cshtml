@@ -8,20 +8,20 @@
         @if (Model.IsInRange)
         {
             <div class="switch-expert">
-                <button id="switchExpertButton" class="custom-button expert-button"><img src="~/images/sidebar/switch.svg" alt="Сменить собеседника" /><span>Сменить собеседника</span></button>
+                <button id="changeExpertButton" class="custom-button expert-button" @(chatSession.IsExpertChanged ? "disabled" : "")><img src="~/images/sidebar/switch.svg" alt="Сменить собеседника" /><span>Сменить собеседника</span></button>
             </div>
-            <div class="sidebar-block remaining-time"><img src="~/images/sidebar/stopwatch.svg" alt="Оставшееся время" /><span><b id="remainingTime">00</b> минуты осталось</span></div>
+            <div class="sidebar-block remaining-time"><img src="~/images/sidebar/stopwatch.svg" alt="Оставшееся время" /><span><b id="remainingTime" class="remaining-value">00</b> минуты осталось</span></div>
         }
         <div class="sidebar-block">
             <ul class="appeal-info">
                 <li style="font-weight: bold;">Сведения об аппеляции</li>
-                <li><div class="appeal-caption">Начало онлайн консультации</div><div class="appeal-value">@chatSession.StartTime</div></li>
-                <li><div class="appeal-caption">Завершение онлайн консультации</div><div class="appeal-value">@chatSession.FinishTime</div></li>
-                <li><div class="appeal-caption">Номер апелляции</div><div class="appeal-value">@chatSession.AppealNumber</div></li>
+                <li><div class="appeal-caption">Начало онлайн консультации</div><div class="appeal-value">@chatSession.StartTime.ToString("g")</div></li>
+                @*<li><div class="appeal-caption">Завершение онлайн консультации</div><div class="appeal-value">@chatSession.FinishTime</div></li>*@
+                <li><div class="appeal-caption">Номер апелляции</div><div class="appeal-value">@chatSession.AppealNumber от @chatSession.RegistrationDate.ToShortDateString()</div></li>
                 <li><div class="appeal-caption">Предмет</div><div class="appeal-value">@chatSession.SubjectName</div></li>
-                <li><div class="appeal-caption">Дата экзамена</div><div class="appeal-value">@chatSession.ExamDate</div></li>
-                <li><div class="appeal-caption">Зарегистрирована</div><div class="appeal-value">@chatSession.RegistrationDate</div></li>
-                <li><div class="appeal-caption">Подано заявление</div><div class="appeal-value">@chatSession.ApplicationDate</div></li>
+                <li><div class="appeal-caption">Дата экзамена</div><div class="appeal-value">@chatSession.ExamDate.ToShortDateString()</div></li>
+                @*<li><div class="appeal-caption">Зарегистрирована</div><div class="appeal-value">@chatSession.RegistrationDate</div></li>*@
+                @*<li><div class="appeal-caption">Подано заявление</div><div class="appeal-value">@chatSession.ApplicationDate</div></li>*@
             </ul>
         </div>
         <div class="sidebar-block contacts-info">
