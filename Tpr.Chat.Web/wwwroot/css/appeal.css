@@ -41,7 +41,7 @@
 }
 
 /* Appeal only */
-    .main-header .moscow-time {
+    .main-header .remaining-time {
         display: none;
         margin: 10px;
         padding: 5px 10px;
@@ -50,11 +50,11 @@
         background: #72ade7;
     }
 
-    .main-header .moscow-value {
+    .main-header .remaining-value {
         font-size: 18px;
     }
 
-    .main-header .moscow-caption {
+    .main-header .remaining-caption {
         color: #aed3f0;
     }
 
@@ -106,7 +106,7 @@
         padding: 0;
     }
 
-        .main-header .moscow-time {
+        .main-header .remaining-time {
             display: block;
         }
 

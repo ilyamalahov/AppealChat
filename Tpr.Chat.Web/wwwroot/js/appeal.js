@@ -26,12 +26,12 @@
                 remainingText = 'меньше';
             }
 
-            $('#remainingTime').text(remainingText);
+            $('.remaining-value').text(remainingText);
 
             // Moscow date
             var moscowDate = luxon.DateTime.fromISO(currentDate, { zone: 'utc+3' });
 
-            $('.moscow-value').text(moscowDate.toFormat('t'));
+            $('#moscowTime').text(moscowDate.toFormat('t'));
 
             // Alarm after minutes (5 minutes default)
             if (isAlarm) {
@@ -122,18 +122,10 @@
         $('#emojiButton').on('click', () => $('#emojiGrid').toggle());
 
         // 
-        $('#switchExpertButton').on('click', () => $('#modal').showModal('ajax/switchexpert'));
+        $('#changeExpertButton').on('click', () => changeExpert(appealId).then(changeSuccess).catch(changeError));
 
         // 
         $('#completeButton').on('click', () => $('#modal').showModal('ajax/completechat'));
-
-        // 
-        const switchLoader = (isVisibled) => {
-            $('#changeOverlay').toggle(isVisibled);
-            $('#changeSpinner').toggle(isVisibled);
-
-            $('#switchExpertButton').prop('disabled', !isVisibled);
-        };
 
         // Send message
         const sendMessage = (message) => {
@@ -142,6 +134,14 @@
 
             // 
             $('#messageText').val('').trigger('input');
+        };
+
+        //
+        const changeSuccess = (data) => {
+            console.log(data.expertKey);
+        }
+        const changeError = (error) => {
+            console.log(error.responseText);
         };
 
         // 
@@ -153,16 +153,9 @@
 
             $('#expertNumber').text(expertText);
 
-            // Change online circled status
+            // Change online circle status
             $('#onlineStatus').toggleClass('online', isOnline);
         };
-
-        // Update online status
-        //const changeStatus = (isOnline) => {
-        //    const statusText = isOnline ? 'В сети' : 'Не в сети';
-
-        //    $('#onlineStatus').text(statusText);
-        //};
 
         // 
         const updateInfo = () => infoConnection.invoke("MainUpdate", appealId);

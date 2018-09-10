@@ -116,12 +116,12 @@ jQuery.fn.highlightText = function (match) {
 
 // Show modal window
 jQuery.fn.showModal = function (url, data) {
-    $.get(url, data, (response) => $(this).html(response).show());
+    $.get(url, data, (response) => $(this).html(response).fadeIn(300));
 };
 
 // Hide modal window
 jQuery.fn.hideModal = function () {
-    $(this).html('').hide();
+    $(this).html('').fadeOut(300);
 };
 
 // Compare text in case insensitive
@@ -129,16 +129,16 @@ jQuery.expr.filters.icontains = function (elem, i, m) {
     return (elem.innerText || elem.textContent || "").toLowerCase().indexOf(m[3].toLowerCase()) > -1;
 };
 
-// 
-const changeExpert = (accessToken, beforeSendCallback) => {
+const changeExpert = (appeal) => {
     return new Promise((resolve, reject) => {
         $.ajax({
-            method: "GET",
-            url: "api/expert/change",
-            headers: { "Authorization": "Bearer " + accessToken },
-            beforeSend: beforeSendCallback,
+            method: "POST",
+            url: "expert/change",
+            data: { appealId: appeal },
+            beforeSend: () => $('#modal').showModal('modal/changeexpertwait'),
             success: resolve,
-            error: reject
+            error: reject,
+            complete: () => $('#modal').hideModal()
         });
     });
 };

@@ -23,8 +23,8 @@ namespace Tpr.Chat.Web.Controllers
         private readonly IConnectionService connectionService;
 
         public HomeController(
-            IChatRepository chatRepository, 
-            ICommonService commonService, 
+            IChatRepository chatRepository,
+            ICommonService commonService,
             IConnectionService connectionService)
         {
             this.chatRepository = chatRepository;
@@ -45,7 +45,7 @@ namespace Tpr.Chat.Web.Controllers
 
             //
             var isEarly = DateTime.Now < chatSession.StartTime;
-            
+
             //
             var isCompleted = DateTime.Now > chatSession.FinishTime;
 
@@ -75,7 +75,7 @@ namespace Tpr.Chat.Web.Controllers
 
                 return View("Expert", model);
             }
-            else if(connectionType == ContextType.Appeal)
+            else if (connectionType == ContextType.Appeal)
             {
                 // Check if current date more than chat finish time
                 if (isCompleted)
@@ -138,56 +138,30 @@ namespace Tpr.Chat.Web.Controllers
             return Ok(response);
         }
 
-        //[Authorize]
-        [Produces("application/json")]
-        [HttpPost("update")]
-        public IActionResult Update(Guid appealId)
+        [HttpPost("expert/change")]
+        public async Task<IActionResult> ChangeExpert(Guid appealId)
         {
-            // Current Time
-            var currentDate = DateTime.Now;
+            await Task.Delay(5000);
 
             var chatSession = chatRepository.GetChatSession(appealId);
 
-            if(chatSession == null)
+            if(chatSession.IsExpertChanged)
             {
-                return BadRequest("Error");
+                return BadRequest("Консультант уже был заменен");
             }
 
-            // Begin Time
-            //long beginTimestamp;
+            chatSession.IsExpertChanged = true;
 
-            //if(!long.TryParse(HttpContext.User.FindFirstValue("nbf"), out beginTimestamp))
-            //{
-            //    return BadRequest(beginTimestamp);
-            //}
+            var isUpdated = chatRepository.UpdateSession(chatSession);
 
-            //var beginDate = DateTimeOffset.FromUnixTimeSeconds(beginTimestamp);
-
-            var beginTime = chatSession.StartTime.Subtract(currentDate);
-
-            // Remaining Time
-            //long finishTimestamp;
-
-            //if (!long.TryParse(HttpContext.User.FindFirstValue("exp"), out finishTimestamp))
-            //{
-            //    return BadRequest(beginTimestamp);
-            //}
-
-            //var finishDate = DateTimeOffset.FromUnixTimeSeconds(finishTimestamp);
-
-            var remainingTime = chatSession.FinishTime.Subtract(currentDate);
-
-            // 
-            var isAlarm = remainingTime.TotalMinutes < 5;
-
-            // JSON Response
-            var response = new
+            if (!isUpdated)
             {
-                moscowDate = currentDate,
-                beginTime = beginTime.TotalMilliseconds,
-                remainingTime = remainingTime.TotalMilliseconds,
-                isAlarm
-            };
+                return BadRequest("Ошибка обновления сессии чата");
+            }
+
+            var expertKey = new Random().Next(100, 10000);
+
+            var response = new { expertKey };
 
             return Ok(response);
         }

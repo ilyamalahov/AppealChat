@@ -34,5 +34,8 @@ namespace Tpr.Chat.Core.Models
         public DateTime CommissionFinishTime { get; set; }
 
         public string CommissionLink { get; set; }
+
+        // Test
+        public bool IsExpertChanged { get; set; }
     }
 }
