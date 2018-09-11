@@ -1,19 +1,15 @@
 ﻿@model IndexViewModel
 
 <div class="header">
-    <button id="sideMenuButton" class="custom-button side-button"><img src="~/images/header/three-dots.svg" alt="Help"/></button>
+    <a id="sideMenuButton" class="side-button" href="#" title="Боковое меню"><img src="~/images/header/three-dots.svg" alt="Боковое меню" /></a>
     <div class="moscow-time">
         <img src="~/images/header/clock.svg" alt="Московское время" /><span id="moscowTime" class="moscow-value">00:00</span>
         <div class="moscow-caption">Московское время</div>
     </div>
-    <div class="vertical-line"></div>
     <div class="title"></div>
-    <div class="button-block">
-        <button class="custom-button header-button"><img src="~/images/header/help.svg" alt="Help" /></button>
-        @if (Model.IsInRange)
-        {
-            <div class="vertical-line"></div>
-            <button class="custom-button header-button"><img src="~/images/header/login.svg" alt="Complete" /></button>
-        }
-    </div>
+    <a class="right-button" title="Инструкция по работе с чатом" href="~/files/manual.pdf" target="_blank"><img src="~/images/header/help.svg" alt="Помощь" /></a>
+    @if (Model.IsInRange)
+    {
+        <a id="completeButton" class="right-button" title="Завершение консультации" href="#"><img src="~/images/header/login.svg" alt="Завершение консультации" /></a>
+    }
 </div>

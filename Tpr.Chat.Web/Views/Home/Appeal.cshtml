@@ -38,43 +38,45 @@
                 </div>
                 <button class="custom-button switch-button"><img src="~/images/chat/switch.png" alt="Сменить консультанта" /></button>
             </div>
-            <ul id="messagesList" class="message-history">
-                @foreach (var message in Model.Messages)
-                {
-                    var isCurrent = message.NickName == "Апеллянт";
-                    var messageDate = message.CreateDate.ToString("T");
-
-                    @switch (message.ChatMessageTypeId)
+            <div style="flex: auto; display: flex; min-height: 0;">
+                <ul id="messagesList" class="message-history">
+                    @foreach (var message in Model.Messages)
                     {
-                        case ChatMessageTypes.Message:
-                            var nickname = isCurrent ? "Вы" : message.NickName;
-                            <li>
-                                <div class="message @(isCurrent ? "place-left" : "place-right")">
-                                    <div class="message-bubble">@Html.Raw(message.MessageString)</div>@nickname <b class="message-date">@messageDate</b>
-                                </div>
-                            </li>
-                            break;
-                        case ChatMessageTypes.Joined:
-                            @if (isCurrent)
-                            {
-                                <li class="message-status"><div class="message place-left">Вы подключились к консультации <b class="message-date">@messageDate</b></div></li>
-                            }
-                            break;
-                        case ChatMessageTypes.Leave:
-                            @if (isCurrent)
-                            {
-                                <li class="message-status"><div class="message place-left">Вы покинули консультацию <b class="message-date">@messageDate</b></div></li>
-                            }
-                            break;
-                        case ChatMessageTypes.ChangeExpert:
-                            <li class="message-status"><div class="message place-left">@message.MessageString</div></li>
-                            break;
-                        case ChatMessageTypes.FirstExpert:
-                            <li class="message-status"><div class="message @(isCurrent ? "place-left" : "place-right")">@message.NickName подключился к консультации. Вы можете задать ему свои вопросы</div></li>
-                            break;
+                        var isCurrent = message.NickName == "Апеллянт";
+                        var messageDate = message.CreateDate.ToString("T");
+
+                        @switch (message.ChatMessageTypeId)
+                        {
+                            case ChatMessageTypes.Message:
+                                var nickname = isCurrent ? "Вы" : message.NickName;
+                                <li>
+                                    <div class="message @(isCurrent ? "place-left" : "place-right")">
+                                        <div class="message-bubble">@Html.Raw(message.MessageString)</div>@nickname <b class="message-date">@messageDate</b>
+                                    </div>
+                                </li>
+                                break;
+                            case ChatMessageTypes.Joined:
+                                @if (isCurrent)
+                                {
+                                    <li class="message-status"><div class="message place-left">Вы подключились к консультации <b class="message-date">@messageDate</b></div></li>
+                                }
+                                break;
+                            case ChatMessageTypes.Leave:
+                                @if (isCurrent)
+                                {
+                                    <li class="message-status"><div class="message place-left">Вы покинули консультацию <b class="message-date">@messageDate</b></div></li>
+                                }
+                                break;
+                            case ChatMessageTypes.ChangeExpert:
+                                <li class="message-status"><div class="message place-left">@message.MessageString</div></li>
+                                break;
+                            case ChatMessageTypes.FirstExpert:
+                                <li class="message-status"><div class="message @(isCurrent ? "place-left" : "place-right")">@message.NickName подключился к консультации. Вы можете задать ему свои вопросы</div></li>
+                                break;
+                        }
                     }
-                }
-            </ul>
+                </ul>
+            </div>
             <div class="main-footer">
                 <textarea id="messageText" maxlength="1000" class="message-text" data-min-rows="1" rows="1" autocomplete="off" placeholder="Введите сообщение..."></textarea>
                 <button id="sendButton" class="custom-button send-button"><img src="~/images/chat/send.svg" alt="Отправить" /></button>

@@ -172,7 +172,7 @@ const switchHelpInfo = function (isVisible) {
         offset = { top: tooltipTop, left: tooltipLeft };
     }
 
-    $('#contactsTooltip').toggle(isVisible).css(offset);
+    $('#contactsTooltip').toggle(isVisible);
 };
 
 const switchSideMenu = (isVisible) => $('#sideMenu').toggle(isVisible);

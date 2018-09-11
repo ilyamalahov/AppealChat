@@ -13,6 +13,12 @@ ul {
 }
 
 /* Shared classes */
+.link-button {
+    display: block;
+    text-decoration: none;
+}
+
+
 .custom-button {
     background: none;
     border: none;
@@ -27,6 +33,10 @@ ul {
     .custom-button:disabled {
         cursor: default;
     }
+
+#sideMenuButton {
+    display: none;
+}
 
 .send-button {
     margin: 10px;
@@ -85,17 +95,34 @@ ul {
     display: flex;
     align-items: center;
     background: #fff;
-    /*padding: 5px 0;*/
+    padding: 5px 0;
     margin-bottom: 15px;
     box-shadow: 0 5px 5px 0 #dfe8ef;
     /*height: 80px;*/
     box-sizing: border-box;
     overflow: hidden;
 }
-.header .vertical-line {
-    height: 70px;
-    margin: 5px;
-}
+
+    .header .right-button {
+        padding: 20px;
+    }
+
+        .header .right-button img {
+            height: 34px;
+        }
+
+        .header .right-button:not(:last-child) {
+            border-right: 2px solid #ccc;
+        }
+
+    .header .side-button {
+        padding: 15px;
+        border-right: 2px solid #ccc;
+    }
+
+        .header .side-button img {
+            height: 40px;
+        }
 
     .header .title {
         flex: auto;
@@ -104,46 +131,35 @@ ul {
         font-weight: bold;
         color: #3387dd;
     }
+
         .header .title::after {
             content: "Онлайн консультации по результатам рассмотрения апелляций о несогласии с выставленными баллами ГИА";
         }
 
-    .header .moscow-time img {
-        height: 25px;
-        vertical-align: middle;
+    .header .moscow-time {
+        border-right: 2px solid #ccc;
     }
+
+        .header .moscow-time img {
+            height: 25px;
+            vertical-align: middle;
+        }
 
 .moscow-time {
     flex: none;
     padding: 15px;
 }
-    .moscow-value {
-        color: #000;
-        font-weight: bold;
-        font-size: 22px;
-    }
 
-    .moscow-caption {
-        font-size: 12px;
-        color: #8c8c8c;
-    }
-
-.header-button {
-    padding: 20px;
+.moscow-value {
+    color: #000;
+    font-weight: bold;
+    font-size: 22px;
 }
 
-    .header-button img {
-        height: 30px;
-    }
-
-.side-button {
-    display: none;
-    padding: 15px;
+.moscow-caption {
+    font-size: 12px;
+    color: #8c8c8c;
 }
-
-    .side-button img {
-        height: 40px;
-    }
 
 .button-block {
     display: flex;
@@ -181,6 +197,7 @@ ul {
     flex: auto;
     position: relative;
     display: flex;
+    min-height: 0;
 }
 
 .sidebar {
@@ -229,11 +246,13 @@ ul {
         background: #d7dbde;
         color: #fefefe;
     }
+
     .expert-button img {
         height: 25px;
         vertical-align: middle;
         margin-right: 10px;
     }
+
     .expert-button span {
         vertical-align: middle;
     }
@@ -245,11 +264,13 @@ ul {
     background: #fff;
     color: #f00;
 }
+
     .sidebar .remaining-time img {
         height: 25px;
         vertical-align: middle;
         margin-right: 10px;
     }
+
     .sidebar .remaining-time span {
         vertical-align: middle;
     }
@@ -276,6 +297,8 @@ ul {
     border-radius: 5px;
     background: #2b7bde;
     color: #fff;
+    top: 70px;
+    left: 350px;
 }
 
     .contacts-tooltip::before {
@@ -290,12 +313,14 @@ ul {
         border-right: inherit;
         background: inherit;
     }
+
     .contacts-tooltip .close-button {
         position: absolute;
         top: 0;
         right: 0;
         margin: 5px;
     }
+
         .contacts-tooltip .close-button img {
             height: 20px;
         }
@@ -324,6 +349,7 @@ ul {
     .contact-link:hover {
         text-decoration: underline;
     }
+
     .contact-link img {
         height: 20px;
         vertical-align: middle;
@@ -500,12 +526,14 @@ ul {
     border-radius: 3px;
     margin: 20px;
 }
+
     .modal-window .close-button {
         flex: none;
     }
-    .modal-window .close-button img {
-        height: 20px;
-    }
+
+        .modal-window .close-button img {
+            height: 20px;
+        }
 
 .modal-header {
     flex: none;
@@ -537,7 +565,7 @@ ul {
 }
 
 @media screen and (max-width: 767px) {
-    .sidebar, .moscow-time, .button-block {
+    .sidebar, .moscow-time, .right-button {
         display: none;
     }
 
@@ -550,14 +578,15 @@ ul {
         max-width: 100%;
     }
 
-    .side-button {
-        display: block;
-    }
-
-    .header .title span{
+    .header .title span {
         display: none;
     }
+
     .header .title::after {
         content: "Онлайн консультации по апелляциям";
+    }
+
+    #sideMenuButton {
+        display: block;
     }
 }
