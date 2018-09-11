@@ -12,5 +12,10 @@ namespace Tpr.Chat.Web.Controllers
         {
             return PartialView("ChangeExpertWait");
         }
+
+        public IActionResult Contacts()
+        {
+            return PartialView("Contacts");
+        }
     }
 }

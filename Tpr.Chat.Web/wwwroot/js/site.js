@@ -189,6 +189,8 @@ $(document).ready(() => {
 
     $('#appealSidemenuLink').on('click', () => $('#modal').showModal('ajax/appealinfo', { appealId }));
 
+    $('#contactsSidemenuLink').on('click', () => $('#modal').showModal('modal/contacts'));
+
     $('.sidemenu-item').on('click', () => switchSideMenu(false));
 });
 

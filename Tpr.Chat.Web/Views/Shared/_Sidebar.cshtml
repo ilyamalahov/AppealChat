@@ -16,7 +16,10 @@
             <ul class="appeal-info">
                 <li style="font-weight: bold;">Сведения об аппеляции</li>
                 <li><div class="appeal-caption">Начало онлайн консультации</div><div class="appeal-value">@chatSession.StartTime.ToString("g")</div></li>
-                @*<li><div class="appeal-caption">Завершение онлайн консультации</div><div class="appeal-value">@chatSession.FinishTime</div></li>*@
+                @if (!Model.IsInRange)
+                {
+                    <li><div class="appeal-caption">Завершение онлайн консультации</div><div class="appeal-value">@chatSession.FinishTime.ToString("g")</div></li>
+                }
                 <li><div class="appeal-caption">Номер апелляции</div><div class="appeal-value">@chatSession.AppealNumber от @chatSession.RegistrationDate.ToShortDateString()</div></li>
                 <li><div class="appeal-caption">Предмет</div><div class="appeal-value">@chatSession.SubjectName</div></li>
                 <li><div class="appeal-caption">Дата экзамена</div><div class="appeal-value">@chatSession.ExamDate.ToShortDateString()</div></li>
