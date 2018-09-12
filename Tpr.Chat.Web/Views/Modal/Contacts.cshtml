@@ -1,40 +1,88 @@
-﻿<div class="modal-window">
+﻿<style>
+    .modal-contacts-list {
+        color: #777;
+    }
+
+        .modal-contacts-list li {
+            padding: 15px 0;
+            border-bottom: 1px solid #ccc;
+        }
+
+            .modal-contacts-list li:last-child {
+                border: none;
+            }
+
+    .contacts-header {
+        margin-bottom: 10px;
+    }
+
+        .contacts-header strong {
+            color: #000;
+        }
+
+    .contacts-content {
+        display: flex;
+        align-items: center;
+    }
+
+        .contacts-content img {
+            height: 20px;
+            margin-right: 20px;
+        }
+
+    .contacts-highlight {
+        color: #000;
+        font-weight: bold;
+        font-size: 20px;
+    }
+</style>
+<div class="modal-window">
     <div class="modal-header">
-        <div class="modal-title">Сведения об аппеляции</div>
+        <div class="modal-title">Справочная служба конфликтной комиссии г. Москвы</div>
         <button id="closeModalButton" class="custom-button close-button"><img src="~/images/modal-close.png" /></button>
     </div>
-    <div class="modal-content" style="padding: 15px">
-        <ul>
-            <li style="margin-bottom: 15px; border-bottom: 1px solid #ccc;">
-                <div style="margin-bottom: 10px;"><b>«Горячая линия» конфликтных комиссий</b> при проведении государственной итоговой аттестации по образовательным программам <b>основного общего и среднего общего образования:</b></div>
-                <div style="display: flex; align-items: center;">
-                    <img src="~/images/contacts-modal/phone.svg" alt="Телефон" style="height: 30px; margin-right: 10px;" />
+    <div class="modal-content">
+        <ul class="modal-contacts-list">
+            <li>
+                <div class="contacts-header"><strong>«Горячая линия» конфликтных комиссий</strong> при проведении государственной итоговой аттестации по образовательным программам <strong>основного общего и среднего общего образования:</strong></div>
+                <div class="contacts-content">
+                    <img src="~/images/contacts-modal/phone.svg" alt="Телефон" />
                     <div>
-                        <a href="tel:+74996535191">+7 (499) 653-51-91</a>
+                        <a href="tel:+74996535191" class="contacts-highlight">+7 (499) 653-51-91</a>
                         <div>Время работы: пн - сб с 9:00 до 19:00,<br />выходные - воскресенье и праздничные дни</div>
                     </div>
                 </div>
             </li>
-            <li style="margin-bottom: 15px; border-bottom: 1px solid #ccc;">
-                <div style="margin-bottom: 10px;">Официальный <b>электронный адрес конфликтной комиссии</b> при проведении государственной итоговой аттестации по образовательным программам <b>среднего общего образования</b>:</div>
-                <div style="display: flex; align-items: center;">
-                    <img src="~/images/contacts-modal/envelope.svg" alt="Электронная почта" style="height: 30px;" />
-                    <div><a href="mailto:kk77@mcko.ru">kk77@mcko.ru</a></div>
+            <li>
+                <div class="contacts-header">Официальный <strong>электронный адрес конфликтной комиссии</strong> при проведении государственной итоговой аттестации по образовательным программам <strong>среднего общего образования</strong>:</div>
+                <div class="contacts-content">
+                    <img src="~/images/contacts-modal/envelope.svg" alt="Электронная почта" />
+                    <div><a href="mailto:kk77@mcko.ru" class="contacts-highlight">kk77@mcko.ru</a></div>
                 </div>
             </li>
-            <li style="margin-bottom: 15px; border-bottom: 1px solid #ccc;">
-                <div style="margin-bottom: 10px;">Официальный <b>электронный адрес конфликтной комиссии</b> при проведении государственной итоговой аттестации по образовательным программам <b>общего общего образования</b>:</div>
-                <div style="display: flex; align-items: center;">
-                    <img src="~/images/contacts-modal/envelope.svg" alt="Электронная почта" style="height: 30px;" />
-                    <div><a href="mailto:kkgia9@mcko.ru">kkgia9@mcko.ru</a></div>
+            <li>
+                <div class="contacts-header">Официальный <strong>электронный адрес конфликтной комиссии</strong> при проведении государственной итоговой аттестации по образовательным программам <strong>основного общего образования</strong>:</div>
+                <div class="contacts-content">
+                    <img src="~/images/contacts-modal/envelope.svg" alt="Электронная почта" />
+                    <div><a href="mailto:kkgia9@mcko.ru" class="contacts-highlight">kkgia9@mcko.ru</a></div>
                 </div>
             </li>
-            <li style="margin-bottom: 15px; border-bottom: 1px solid #ccc;">
-                <div style="margin-bottom: 10px;">Информационно-консультационный центр регионального центра обработки информации города Москвы:</div>
-                <div style="display: flex; align-items: center;">
-                    <img src="~/images/contacts-modal/envelope.svg" alt="Электронная почта" style="height: 30px;" />
+            <li>
+                <div class="contacts-header">Информационно-консультационный центр регионального центра обработки информации города Москвы:</div>
+                <div class="contacts-content">
+                    <img src="~/images/contacts-modal/envelope.svg" alt="Электронная почта" />
                     <div>
-                        <a href="tel:+74953660692">+7 (495) 366-06-92</a>
+                        <a href="tel:+74953660692" class="contacts-highlight">+7 (495) 366-06-92</a>
+                        <div>График работы: понедельник - пятница с 9:00 до 18:00.</div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="contacts-header">Общественная приемная регионального центра обработки информации города Москвы:</div>
+                <div class="contacts-content">
+                    <img src="~/images/contacts-modal/envelope.svg" alt="Электронная почта" style="height: 20px; margin-right: 20px;" />
+                    <div>
+                        <div class="contacts-highlight">г. Москва, Семеновская пл., д.4</div>
                         <div>График работы: понедельник - пятница с 9:00 до 18:00.</div>
                     </div>
                 </div>

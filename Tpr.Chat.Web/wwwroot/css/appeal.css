@@ -122,3 +122,9 @@
 
 @media screen and (min-width: 768px) {
 }
+
+@media screen and (max-height: 500px) {
+    .main-header {
+        display: none;
+    }
+}

@@ -22,5 +22,10 @@ namespace Tpr.Chat.Core.Repositories
 
         // Experts
         IEnumerable<QuickReply> GetQuickReplies();
+
+        // Member replacements
+        bool AddMemberReplacement(MemberReplacement replacement);
+        MemberReplacement GetMemberReplacement(Guid appealId);
+        MemberReplacement GetMemberReplacement(Guid appealId, string expertKey);
     }
 }

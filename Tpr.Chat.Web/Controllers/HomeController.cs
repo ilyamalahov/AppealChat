@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Tpr.Chat.Core.Models;
 using Tpr.Chat.Core.Repositories;
 using Tpr.Chat.Web.Hubs;
 using Tpr.Chat.Web.Models;
@@ -139,31 +140,34 @@ namespace Tpr.Chat.Web.Controllers
         }
 
         [HttpPost("expert/change")]
-        public async Task<IActionResult> ChangeExpert(Guid appealId)
+        public IActionResult ChangeExpert(Guid appealId, int oldExpertKey)
         {
-            await Task.Delay(5000);
+            var checkReplacement = chatRepository.GetMemberReplacement(appealId);
 
-            var chatSession = chatRepository.GetChatSession(appealId);
-
-            if(chatSession.IsExpertChanged)
+            if(checkReplacement != null)
             {
-                return BadRequest("Консультант уже был заменен");
+                return BadRequest("Замена консультанта уже была произведена");
             }
 
-            chatSession.IsExpertChanged = true;
-
-            var isUpdated = chatRepository.UpdateSession(chatSession);
-
-            if (!isUpdated)
+            // Insert new replacement
+            var replacement = new MemberReplacement
             {
-                return BadRequest("Ошибка обновления сессии чата");
+                AppealId = appealId,
+                RequestTime = DateTime.Now,
+                OldMember = oldExpertKey
+            };
+
+            var isInserted = chatRepository.AddMemberReplacement(replacement);
+
+            if(!isInserted)
+            {
+                return BadRequest("Не удалось вставить запись в таблицу MemberReplacement");
             }
 
-            var expertKey = new Random().Next(100, 10000);
+            // Send change expert request to external system
 
-            var response = new { expertKey };
-
-            return Ok(response);
+            // Return Success result to client
+            return Ok();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

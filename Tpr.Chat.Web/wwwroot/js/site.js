@@ -114,6 +114,21 @@ jQuery.fn.highlightText = function (match) {
     return this;
 };
 
+// Expand textarea rows by content length
+jQuery.fn.expandRows = function (textarea) {
+    var currentRows = $(this).data('minRows') | 1;
+
+    $(this).attr('rows', currentRows);
+
+    const rowsCount = Math.ceil(($(this).prop('scrollHeight') - $(this).innerHeight()) / 16);
+
+    currentRows += Math.max(0, Math.min(rowsCount, 4));
+
+    $(this).attr('rows', currentRows);
+
+    return this;
+};
+
 // Show modal window
 jQuery.fn.showModal = function (url, data) {
     $.get(url, data, (response) => $(this).html(response).fadeIn(300));
@@ -143,34 +158,23 @@ const changeExpert = (appeal) => {
     });
 };
 
-// Calculate textarea rows by content length
-const calculateExpandRows = (textarea) => {
-    const minRows = textarea.dataset.minRows | 1;
-
-    textarea.rows = minRows;
-
-    const currentRowCount = Math.ceil((textarea.scrollHeight - textarea.clientHeight) / 16);
-
-    return Math.max(0, Math.min(currentRowCount, 4));
-};
-
 // 
 var helpInfoIsVisible = false;
 
 const switchHelpInfo = function (isVisible) {
     helpInfoIsVisible = isVisible;
 
-    var offset = { top: 0, left: 0 };
+    //var offset = { top: 0, left: 0 };
 
-    if (isVisible) {
-        const parent = $('#contactsTooltip').parent();
+    //if (isVisible) {
+    //    const parent = $('#contactsTooltip').parent();
 
-        const tooltipTop = parent.position().top + parent.outerHeight() - $('#contactsTooltip').outerHeight();
+    //    const tooltipTop = parent.position().top + parent.outerHeight() - $('#contactsTooltip').outerHeight();
 
-        const tooltipLeft = parent.position().left + parent.outerWidth() + 20;
+    //    const tooltipLeft = parent.position().left + parent.outerWidth() + 20;
 
-        offset = { top: tooltipTop, left: tooltipLeft };
-    }
+    //    offset = { top: tooltipTop, left: tooltipLeft };
+    //}
 
     $('#contactsTooltip').toggle(isVisible);
 };
@@ -187,7 +191,7 @@ $(document).ready(() => {
 
     $('#closeSideButton').on('click', () => switchSideMenu(false));
 
-    $('#appealSidemenuLink').on('click', () => $('#modal').showModal('ajax/appealinfo', { appealId }));
+    $('#appealSidemenuLink').on('click', () => $('#modal').showModal('modal/appealinfo', { appealId }));
 
     $('#contactsSidemenuLink').on('click', () => $('#modal').showModal('modal/contacts'));
 

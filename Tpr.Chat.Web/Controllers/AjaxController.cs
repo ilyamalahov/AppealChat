@@ -28,19 +28,5 @@ namespace Tpr.Chat.Web.Controllers
         {
             return PartialView("_ChangeExpertModal");
         }
-
-        [HttpGet("appealinfo")]
-        public IActionResult AppealInfo(Guid appealId)
-        {
-            // Check if chat session is exists
-            var chatSession = chatRepository.GetChatSession(appealId);
-
-            if (chatSession == null)
-            {
-                return BadRequest("Сессии по данному ID апеллянта не существует");
-            }
-
-            return PartialView("_AppealInfoModal", chatSession);
-        }
     }
 }

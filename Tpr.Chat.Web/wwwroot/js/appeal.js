@@ -97,16 +97,12 @@
 
         // Textarea auto rows count
         $('#messageText').on('input', function (e) {
-            const textarea = e.target;
-
-            const rows = calculateExpandRows(textarea);
-
-            textarea.rows += rows;
+            $(this).expandRows();
 
             // 
-            const isButtonEnabled = $(this).val().length > 0;
+            const isDisabled = $(this).val().length === 0;
 
-            $('#sendButton').prop('disabled', !isButtonEnabled);
+            $('#sendButton').prop('disabled', isDisabled);
         });
 
         // Message textarea keyup event
@@ -129,8 +125,8 @@
 
         // Send message
         const sendMessage = (message) => {
-            chatConnection.invoke('SendMessage', message)
-                .catch(error => console.error(error.error));
+            chatConnection.send('SendMessage', message)
+                .catch(error => console.error(error.toString()));
 
             // 
             $('#messageText').val('').trigger('input');
@@ -156,6 +152,22 @@
             // Change online circle status
             $('#onlineStatus').toggleClass('online', isOnline);
         };
+
+        const blockAccess = () => {
+            $('#changeExpertButton').prop('disabled', true);
+
+            $('#messageForm').hide();
+
+            chatConnection.close();
+        }
+
+        const unblockAccess = () => {
+            $('#changeExpertButton').prop('disabled', false);
+
+            $('#messageForm').show();
+
+            chatConnection.start();
+        }
 
         // 
         const updateInfo = () => infoConnection.invoke("MainUpdate", appealId);

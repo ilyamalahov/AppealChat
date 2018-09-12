@@ -151,6 +151,8 @@ const onChatReady = () => {
 
     //
     $('#messageText').on('input', function (e) {
+        $(this).expandRows();
+
         const isDisabled = $(this).val().length === 0;
 
         $('#sendButton').prop('disabled', isDisabled);

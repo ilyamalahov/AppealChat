@@ -150,5 +150,66 @@ namespace Tpr.Chat.Core.Repositories
         }
 
         #endregion
+
+        #region Member Replacements
+
+        public bool AddMemberReplacement(MemberReplacement replacement)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    return connection.Insert(replacement) > 0;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public MemberReplacement GetMemberReplacement(Guid appealId)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    return connection.Get<MemberReplacement>(appealId);
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
+
+                return null;
+            }
+        }
+
+        public MemberReplacement GetMemberReplacement(Guid appealId, string expertKey)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string sql = "SELECT * FROM dbo.MemberReplacement WHERE AppealId = @appealId AND OldMember = @expertKey";
+
+                    return connection.QuerySingle<MemberReplacement>(sql, new { appealId, expertKey });
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
+
+                return null;
+            }
+        }
+
+        #endregion
     }
 }

@@ -12,13 +12,16 @@ ul {
     padding: 0;
 }
 
-/* Shared classes */
-.link-button {
-    display: block;
+a {
+    color: #000;
     text-decoration: none;
 }
 
+    a:hover {
+        text-decoration: underline;
+    }
 
+/* Shared classes */
 .custom-button {
     background: none;
     border: none;
@@ -34,7 +37,7 @@ ul {
         cursor: default;
     }
 
-#sideMenuButton {
+.side-button {
     display: none;
 }
 
@@ -161,37 +164,38 @@ ul {
     color: #8c8c8c;
 }
 
-.button-block {
-    display: flex;
-}
-
-.appeal-info {
+.appeal-list {
     color: #000;
 }
 
-    .appeal-info li {
+    .appeal-list .title {
+        font-weight: bold;
+    }
+
+    .appeal-list li {
         padding: 20px 0;
         border-bottom: 1px solid #dddddd
     }
 
-        .appeal-info li:last-child {
+        .appeal-list li:last-child {
             border: none;
         }
 
-        .appeal-info li div {
+        .appeal-list li div {
             display: inline-block;
             vertical-align: middle;
         }
 
-.appeal-caption {
-    width: 150px;
-    font-size: 14px;
-    color: #959595;
-}
+    .appeal-list .label {
+        width: 40%;
+        font-size: 14px;
+        color: #959595;
+        margin-right: 10px;
+    }
 
-.appeal-value {
-    font-weight: bold;
-}
+    .appeal-list .value {
+        font-weight: bold;
+    }
 
 .content {
     flex: auto;
@@ -221,7 +225,7 @@ ul {
     margin-bottom: 15px;
 }
 
-    .sidebar-block .appeal-info {
+    .sidebar-block .appeal-list {
         padding: 0 15px;
     }
 
@@ -345,10 +349,6 @@ ul {
     text-decoration: none;
     font-weight: bold;
 }
-
-    .contact-link:hover {
-        text-decoration: underline;
-    }
 
     .contact-link img {
         height: 20px;
@@ -508,23 +508,34 @@ ul {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    bottom: 0;
+    right: 0;
     background: #333333;
     background: rgba(0, 0, 0, 0.6);
     z-index: 1;
 }
 
+.modal-overlay {
+    /*display: flex;*/
+    /*padding: 15px;*/
+}
+
 .modal-window {
+    /*display: flex;
+    flex-flow: column;
+    max-width: 700px;
+    max-height: 700px;*/
+    /*background: #fff;*/
+    /*border-radius: 3px;*/
+    /*margin: auto;*/
+    /*padding: 15px;*/
     display: flex;
     flex-flow: column;
-    max-width: 900px;
-    max-height: 700px;
-    overflow-y: auto;
-    overflow-x: hidden;
     background: #fff;
-    border-radius: 3px;
-    margin: 20px;
+    padding: 15px;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
 }
 
     .modal-window .close-button {
@@ -540,8 +551,7 @@ ul {
     display: flex;
     align-items: center;
     border-bottom: 1px solid #ccc;
-    padding: 15px 0;
-    margin: 0 20px;
+    padding-bottom: 15px;
 }
 
 .modal-title {
@@ -551,17 +561,14 @@ ul {
 }
 
 .modal-content {
-    flex: auto
+    flex: auto;
+    overflow-y: auto;
 }
 
 .modal-footer {
     flex: none;
     display: flex;
     justify-content: space-between
-}
-
-.modal-content .appeal-info {
-    margin: 0 20px;
 }
 
 @media screen and (max-width: 767px) {
@@ -586,7 +593,7 @@ ul {
         content: "Онлайн консультации по апелляциям";
     }
 
-    #sideMenuButton {
+    .side-button {
         display: block;
     }
 }
