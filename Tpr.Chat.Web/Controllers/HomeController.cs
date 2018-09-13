@@ -45,21 +45,21 @@ namespace Tpr.Chat.Web.Controllers
             }
 
             //
-            var isEarly = DateTime.Now < chatSession.StartTime;
+            var isBefore = DateTime.Now < chatSession.StartTime;
 
             //
-            var isCompleted = DateTime.Now > chatSession.FinishTime;
+            var isAfter = DateTime.Now > chatSession.FinishTime;
 
             // 
             var model = new IndexViewModel
             {
-                ExpertKey = key,
                 ChatSession = chatSession,
-                IsInRange = !isEarly && !isCompleted
+                IsAfter = isAfter,
+                IsBefore = isBefore
             };
 
             // Check if current date less than chat start time
-            if (isEarly)
+            if (isBefore)
             {
                 return View("Before", model);
             }
@@ -70,27 +70,80 @@ namespace Tpr.Chat.Web.Controllers
             // Expert checkings
             if (connectionType == ContextType.Expert)
             {
-                model.Messages = chatRepository.GetChatMessages(appealId);
+                model.ExpertKey = key;
 
                 model.QuickReplies = chatRepository.GetQuickReplies();
+
+                // Member replacement check
+                var replacement = chatRepository.GetMemberReplacement(appealId);
+
+                if (replacement == null)
+                {
+                    chatSession.CurrentExpertKey = key;
+
+                    var isSessionUpdated = chatRepository.UpdateSession(chatSession);
+
+                    if (!isSessionUpdated)
+                    {
+                        return BadRequest("Не удалось обновить запись бд");
+                    }
+                }
+                else if (replacement.OldMember == key)
+                {
+                    // Block ability to send messages
+                    model.IsReadOnly = true;
+
+                    model.Messages = chatRepository.GetChatMessages(appealId);
+                }
+                else if (!replacement.NewMember.HasValue)
+                {
+                    replacement.ReplaceTime = DateTime.Now;
+                    replacement.NewMember = key;
+
+                    var isReplacementUpdated = chatRepository.UpdateMemberReplacement(replacement);
+
+                    if (!isReplacementUpdated)
+                    {
+                        return BadRequest("Не удалось обновить запись бд");
+                    }
+
+                    chatSession.FinishTime = replacement.ReplaceTime.Value + (replacement.RequestTime - chatSession.StartTime);
+                    chatSession.CurrentExpertKey = key;
+
+                    var isSessionUpdated = chatRepository.UpdateSession(chatSession);
+
+                    if (!isSessionUpdated)
+                    {
+                        return BadRequest("Не удалось обновить запись бд");
+                    }
+                }
+                else
+                {
+                    model.Messages = chatRepository.GetChatMessages(appealId);
+                }
 
                 return View("Expert", model);
             }
             else if (connectionType == ContextType.Appeal)
             {
                 // Check if current date more than chat finish time
-                if (isCompleted)
+                if (isAfter)
                 {
                     return View("After", model);
                 }
 
-                // 
-                var connectionId = connectionService.GetConnectionId(appealId);
+                // Member replacement check
+                var replacement = chatRepository.GetMemberReplacement(appealId);
 
-                if (!string.IsNullOrEmpty(connectionId))
-                {
-                    return BadRequest("Сессия все еще запущена на другом устройстве");
-                }
+                model.IsReadOnly = replacement != null && replacement.NewMember == null;
+
+                // 
+                //var connectionId = connectionService.GetConnectionId(appealId);
+
+                //if (!string.IsNullOrEmpty(connectionId))
+                //{
+                //    return BadRequest("Сессия все еще запущена на другом устройстве");
+                //}
 
                 model.Messages = chatRepository.GetChatMessages(appealId);
 
@@ -98,6 +151,20 @@ namespace Tpr.Chat.Web.Controllers
             }
 
             return BadRequest();
+        }
+
+        private IActionResult FirstExpertConnection(IndexViewModel model, int expertKey)
+        {
+            model.ChatSession.CurrentExpertKey = expertKey;
+
+            var isUpdated = chatRepository.UpdateSession(model.ChatSession);
+
+            if (!isUpdated)
+            {
+                return BadRequest("Не удалось обновить сессию");
+            }
+
+            return View("Expert", model);
         }
 
         [Produces("application/json")]
@@ -140,28 +207,43 @@ namespace Tpr.Chat.Web.Controllers
         }
 
         [HttpPost("expert/change")]
-        public IActionResult ChangeExpert(Guid appealId, int oldExpertKey)
+        public IActionResult ChangeExpert(Guid appealId)
         {
+            // Member replacement
             var checkReplacement = chatRepository.GetMemberReplacement(appealId);
 
-            if(checkReplacement != null)
+            if (checkReplacement != null)
             {
                 return BadRequest("Замена консультанта уже была произведена");
             }
 
-            // Insert new replacement
-            var replacement = new MemberReplacement
+            // Chat session
+            var chatSession = chatRepository.GetChatSession(appealId);
+
+            if (chatSession == null)
+            {
+                return BadRequest("Сессия для данного апеллянта не найдена");
+            }
+
+            // Current expert
+            if (!chatSession.CurrentExpertKey.HasValue)
+            {
+                return BadRequest("Консультант еще не подключился к чату");
+            }
+
+            // Insert new member replacement
+            var newReplacement = new MemberReplacement
             {
                 AppealId = appealId,
                 RequestTime = DateTime.Now,
-                OldMember = oldExpertKey
+                OldMember = chatSession.CurrentExpertKey.Value
             };
 
-            var isInserted = chatRepository.AddMemberReplacement(replacement);
+            var isInserted = chatRepository.AddMemberReplacement(newReplacement);
 
-            if(!isInserted)
+            if (!isInserted)
             {
-                return BadRequest("Не удалось вставить запись в таблицу MemberReplacement");
+                return BadRequest("Не удалось вставить запись в таблицу");
             }
 
             // Send change expert request to external system

@@ -13,9 +13,8 @@
     <script>
         var appealId = "@Model.ChatSession.AppealId";
         var expertKey = "@Model.ExpertKey";
-        var inRange = "@Model.IsInRange"
     </script>
-    <script type="text/javascript" src="~/js/expert.js"></script>
+    <script src="~/js/expert.js"></script>
 }
 
 <div class="main">
@@ -66,7 +65,7 @@
                 }
             }
         </ul>
-        @if (Model.IsInRange)
+        @if (!Model.IsReadOnly)
         {
             <div id="quickReply" class="overlay" style="display:none;">
                 <div class="quick-reply">
@@ -81,7 +80,7 @@
             </div>
         }
     </div>
-    @if (Model.IsInRange)
+    @if (Model.IsReadOnly)
     {
         <div class="main-footer">
             <button id="quickReplyButton" class="custom-button reply-button"><img src="~/images/chat/quick-reply.svg" style="height: 20px;" alt="QuickReply" /></button>

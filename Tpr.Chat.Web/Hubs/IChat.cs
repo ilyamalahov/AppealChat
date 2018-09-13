@@ -16,5 +16,6 @@ namespace Tpr.Chat.Web.Hubs
         // Expert send methods
         Task ChangeExpert(string nickname);
         Task FirstJoinExpert(string nickname);
+        Task ToggleChat(bool isBlocked);
     }
 }

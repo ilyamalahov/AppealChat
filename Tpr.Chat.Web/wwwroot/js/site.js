@@ -1,19 +1,21 @@
 ﻿// Get JWT access token
-const getAccessToken = () => {
+const getAccessToken = (appeal, expert) => {
     return new Promise((resolve, reject) => {
         const accessToken = sessionStorage.getItem('access_token');
 
-        if (accessToken) {
-            return resolve(accessToken);
-        }
+        if (accessToken) { return resolve(accessToken); }
 
-        $.post("token", { appealId: appealId, key: expertKey })
-            .done(function (response) {
+        $.ajax({
+            method: "post",
+            url: "token",
+            data: { appealId: appeal, key: expert },
+            success: (response) => {
                 sessionStorage.setItem("access_token", response.accessToken);
 
                 return resolve(response.accessToken);
-            })
-            .fail(reject);
+            },
+            error: reject
+        });
     });
 };
 
@@ -144,24 +146,10 @@ jQuery.expr.filters.icontains = function (elem, i, m) {
     return (elem.innerText || elem.textContent || "").toLowerCase().indexOf(m[3].toLowerCase()) > -1;
 };
 
-const changeExpert = (appeal) => {
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            method: "POST",
-            url: "expert/change",
-            data: { appealId: appeal },
-            beforeSend: () => $('#modal').showModal('modal/changeexpertwait'),
-            success: resolve,
-            error: reject,
-            complete: () => $('#modal').hideModal()
-        });
-    });
-};
-
 // 
 var helpInfoIsVisible = false;
 
-const switchHelpInfo = function (isVisible) {
+const switchHelpInfo = (isVisible) => {
     helpInfoIsVisible = isVisible;
 
     //var offset = { top: 0, left: 0 };

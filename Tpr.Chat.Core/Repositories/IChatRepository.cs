@@ -25,6 +25,7 @@ namespace Tpr.Chat.Core.Repositories
 
         // Member replacements
         bool AddMemberReplacement(MemberReplacement replacement);
+        bool UpdateMemberReplacement(MemberReplacement replacement);
         MemberReplacement GetMemberReplacement(Guid appealId);
         MemberReplacement GetMemberReplacement(Guid appealId, string expertKey);
     }

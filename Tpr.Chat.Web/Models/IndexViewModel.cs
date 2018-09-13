@@ -17,6 +17,10 @@ namespace Tpr.Chat.Web.Models
 
         public IEnumerable<QuickReply> QuickReplies { get; set; }
 
-        public bool IsInRange { get; set; }
+        public bool IsBefore { get; set; }
+
+        public bool IsAfter { get; set; }
+
+        public bool IsReadOnly { get; set; }
     }
 }

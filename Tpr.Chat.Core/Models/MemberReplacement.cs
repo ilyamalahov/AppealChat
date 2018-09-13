@@ -16,8 +16,8 @@ namespace Tpr.Chat.Core.Models
 
         public int OldMember { get; set; }
 
-        public DateTime ReplaceTime { get; set; }
+        public DateTime? ReplaceTime { get; set; }
 
-        public int NewMember { get; set; }
+        public int? NewMember { get; set; }
     }
 }

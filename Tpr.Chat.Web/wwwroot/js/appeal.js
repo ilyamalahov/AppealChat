@@ -1,5 +1,5 @@
-﻿$(document).ready(function () {
-    getAccessToken().then((accessToken) => {
+﻿$(document).ready(() => {
+    getAccessToken(appealId).then((accessToken) => {
         // Update intreval
         const interval = 10000;
 
@@ -7,6 +7,47 @@
         const infoConnection = new signalR.HubConnectionBuilder()
             .withUrl("/info")
             .build();
+
+        // Chat hub connection
+        const chatConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/chat", { accessTokenFactory: () => accessToken })
+            .build();
+
+        // Send message
+        const sendMessage = (message) => {
+            chatConnection.send('SendMessage', message);
+
+            // 
+            $('#messageText').val('').trigger('input');
+        };
+
+        // 
+        const setExpert = (onlineExpertKey) => {
+            const isOnline = onlineExpertKey !== null;
+
+            // Set expert text
+            const expertText = isOnline ? '№' + onlineExpertKey : 'отсутствует';
+
+            $('#expertNumber').text(expertText);
+
+            // Change online circle status
+            $('#onlineStatus').toggleClass('online', isOnline);
+        };
+
+        // Change expert functionality
+        const changeExpert = (appeal) => {
+            $.ajax({
+                method: "post",
+                url: "expert/change",
+                data: { appealId: appeal },
+                beforeSend: () => chatConnection.send("BlockChat", true),
+                success: () => $('#modal').showModal("modal/changewait"),
+                error: () => chatConnection.send("BlockChat", false)
+            });
+        };
+
+        // 
+        const updateInfo = () => infoConnection.send("MainUpdate", appealId);
 
         // Receive information response event
         infoConnection.on("ReceiveInfo", (currentDate, remainingTime, isAlarm, isFinished) => {
@@ -42,11 +83,6 @@
 
             setTimeout(updateInfo, interval);
         });
-
-        // Chat hub connection
-        const chatConnection = new signalR.HubConnectionBuilder()
-            .withUrl("/chat", { accessTokenFactory: () => accessToken })
-            .build();
 
         // Receiving message from user
         chatConnection.on("Receive", (message) => {
@@ -92,7 +128,17 @@
             $("#messagesList").append(li).scrollTo(li);
         });
 
-        // Sending message
+        // 
+        chatConnection.on("ToggleChat", (isBlocked) => {
+            $('#changeExpertButton').prop('disabled', isBlocked);
+
+            $('#messageForm').toggle(!isBlocked);
+
+            //if (isBlocked) { chatConnection.stop(); }
+            //else { chatConnection.start(); }
+        });
+
+        // Send message
         $('#sendButton').on('click', () => sendMessage($('#messageText').val()));
 
         // Textarea auto rows count
@@ -110,67 +156,15 @@
             if (e.keyCode === 13 && !e.shiftKey) {
                 e.preventDefault();
 
-                if ($(this).val().length > 0) sendMessage($(this).val());
+                if ($(this).val().length > 0) { sendMessage($(this).val()); }
             }
         });
 
         // 
-        $('#emojiButton').on('click', () => $('#emojiGrid').toggle());
-
-        // 
-        $('#changeExpertButton').on('click', () => changeExpert(appealId).then(changeSuccess).catch(changeError));
+        $('#changeExpertButton').on('click', () => changeExpert(appealId));
 
         // 
         $('#completeButton').on('click', () => $('#modal').showModal('ajax/completechat'));
-
-        // Send message
-        const sendMessage = (message) => {
-            chatConnection.send('SendMessage', message)
-                .catch(error => console.error(error.toString()));
-
-            // 
-            $('#messageText').val('').trigger('input');
-        };
-
-        //
-        const changeSuccess = (data) => {
-            console.log(data.expertKey);
-        }
-        const changeError = (error) => {
-            console.log(error.responseText);
-        };
-
-        // 
-        const setExpert = (onlineExpertKey) => {
-            const isOnline = onlineExpertKey !== null;
-
-            // Set expert text
-            const expertText = isOnline ? '№' + onlineExpertKey : 'отсутствует';
-
-            $('#expertNumber').text(expertText);
-
-            // Change online circle status
-            $('#onlineStatus').toggleClass('online', isOnline);
-        };
-
-        const blockAccess = () => {
-            $('#changeExpertButton').prop('disabled', true);
-
-            $('#messageForm').hide();
-
-            chatConnection.close();
-        }
-
-        const unblockAccess = () => {
-            $('#changeExpertButton').prop('disabled', false);
-
-            $('#messageForm').show();
-
-            chatConnection.start();
-        }
-
-        // 
-        const updateInfo = () => infoConnection.invoke("MainUpdate", appealId);
 
         // 
         $('#messageText').trigger('input');
@@ -183,15 +177,5 @@
         infoConnection.start()
             .then(updateInfo)
             .catch((error) => console.error(error.toString()));
-
-        // Modal change button click
-        //$(this).on('click', '#changeOkButton', (e) => {
-        //    changeExpert(accessToken, () => { closeModal(); switchLoader(true); })
-        //        .then(response => {
-        //            $('#expertNumber').val(response.expertKey);
-        //            switchLoader(false);
-        //        })
-        //        .catch((error) => { alert(error.error); switchLoader(false); });
-        //});
     });
 });

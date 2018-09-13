@@ -238,5 +238,15 @@ namespace Tpr.Chat.Web.Hubs
             // Send message to user clients
             await Clients.User(Context.UserIdentifier).ChangeExpert(nickName);
         }
+
+        public async Task BlockChat(bool isBlocked)
+        {
+            // Appeal ID from JWT token
+            Guid appealId;
+
+            if (!Guid.TryParse(Context.User.Identity.Name, out appealId)) return;
+
+            await Clients.User(Context.UserIdentifier).ToggleChat(isBlocked);
+        }
     }
 }

@@ -112,6 +112,11 @@ const onFirstJoinExpert = (nickname) => {
     $("#messagesList").append(li).scrollTo(li);
 };
 
+const blockChat = () => {
+    $('#messageForm').remove();
+    $('#quickReply').remove();
+}
+
 // JQuery document ready (if in range) callback
 const onChatReady = () => {
     // 
@@ -174,7 +179,7 @@ if (inRange) {
     infoConnection.on("ReceiveInfo", onReceiveInfo);
 
     // 
-    getAccessToken().then(accessToken => {
+    getAccessToken(appealId, expertKey).then(accessToken => {
         // Create new chat hub connection
         chatConnection = new signalR.HubConnectionBuilder()
             .withUrl("/chat", { accessTokenFactory: () => accessToken })

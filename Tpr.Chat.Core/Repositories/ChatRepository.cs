@@ -151,24 +151,7 @@ namespace Tpr.Chat.Core.Repositories
 
         #endregion
 
-        #region Member Replacements
-
-        public bool AddMemberReplacement(MemberReplacement replacement)
-        {
-            try
-            {
-                using (var connection = new SqlConnection(_connectionString))
-                {
-                    connection.Open();
-
-                    return connection.Insert(replacement) > 0;
-                }
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
+        #region Member Replacement
 
         public MemberReplacement GetMemberReplacement(Guid appealId)
         {
@@ -188,7 +171,6 @@ namespace Tpr.Chat.Core.Repositories
                 return null;
             }
         }
-
         public MemberReplacement GetMemberReplacement(Guid appealId, string expertKey)
         {
             try
@@ -207,6 +189,33 @@ namespace Tpr.Chat.Core.Repositories
                 Console.WriteLine(exception.Message);
 
                 return null;
+            }
+        }
+
+        public bool AddMemberReplacement(MemberReplacement replacement)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    return connection.Insert(replacement) > 0;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateMemberReplacement(MemberReplacement replacement)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                return connection.Update(replacement);
             }
         }
 
