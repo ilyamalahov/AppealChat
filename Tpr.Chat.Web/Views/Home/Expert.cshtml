@@ -80,7 +80,7 @@
             </div>
         }
     </div>
-    @if (Model.IsReadOnly)
+    @if (!Model.IsReadOnly)
     {
         <div class="main-footer">
             <button id="quickReplyButton" class="custom-button reply-button"><img src="~/images/chat/quick-reply.svg" style="height: 20px;" alt="QuickReply" /></button>

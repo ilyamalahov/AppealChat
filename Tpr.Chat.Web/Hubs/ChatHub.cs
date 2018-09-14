@@ -56,7 +56,7 @@ namespace Tpr.Chat.Web.Hubs
                 };
 
                 // Write message to database
-                if (chatRepository.WriteChatMessage(chatMessage) == 0) return;
+                if (!chatRepository.WriteChatMessage(chatMessage)) return;
                 
                 // Send message to user clients
                 await Clients.User(Context.UserIdentifier).Receive(chatMessage);
@@ -94,7 +94,8 @@ namespace Tpr.Chat.Web.Hubs
                 if (senderType == ContextType.Expert)
                 {
                     // Get expert messages (not status)
-                    var messagesCount = chatRepository.GetExpertMessagesCount(appealId, nickName);
+                    //var messagesCount = chatRepository.GetExpertMessagesCount(appealId, nickName);
+                    var messagesCount = 0;
 
                     // If count of expert messages is null
                     if (messagesCount == 0)
@@ -130,7 +131,7 @@ namespace Tpr.Chat.Web.Hubs
             };
 
             // Write message to database
-            if (chatRepository.WriteChatMessage(chatMessage) == 0) return;
+            if (!chatRepository.WriteChatMessage(chatMessage)) return;
 
             // Check if appeal is online
             var isAppealOnline = connectionService.isOnline(appealId, ContextType.Appeal);
@@ -154,10 +155,10 @@ namespace Tpr.Chat.Web.Hubs
             };
 
             // Write message to database
-            if (chatRepository.WriteChatMessage(message) == 0) return;
+            if (!chatRepository.WriteChatMessage(message)) return;
 
             // Send message to user clients
-            await Clients.User(Context.UserIdentifier).FirstJoinExpert(nickName);
+            //await Clients.User(Context.UserIdentifier).FirstJoinExpert(ex);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
@@ -192,7 +193,7 @@ namespace Tpr.Chat.Web.Hubs
                 };
 
                 // Write message to database
-                if (chatRepository.WriteChatMessage(chatMessage) == 0) return;
+                if (!chatRepository.WriteChatMessage(chatMessage)) return;
                 
                 // Get online expert key
                 var onlineExpertKey = connectionService.GetOnlineExpertKey(appealId, expertKey);
@@ -233,20 +234,10 @@ namespace Tpr.Chat.Web.Hubs
             };
 
             // Write message to database
-            if (chatRepository.WriteChatMessage(message) == 0) return;
+            if (!chatRepository.WriteChatMessage(message)) return;
 
             // Send message to user clients
-            await Clients.User(Context.UserIdentifier).ChangeExpert(nickName);
-        }
-
-        public async Task BlockChat(bool isBlocked)
-        {
-            // Appeal ID from JWT token
-            Guid appealId;
-
-            if (!Guid.TryParse(Context.User.Identity.Name, out appealId)) return;
-
-            await Clients.User(Context.UserIdentifier).ToggleChat(isBlocked);
+            //await Clients.User(Context.UserIdentifier).ChangeExpert(expertKey);
         }
     }
 }

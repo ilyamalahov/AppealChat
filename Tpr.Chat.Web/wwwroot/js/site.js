@@ -28,7 +28,7 @@ const receiveMessage = (message, isSender) => {
 
     const messageInfo = nickName + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
 
-    return addMessage(messageBubble + messageInfo, false, isSender);
+    return addMessage(messageBubble + messageInfo, isSender, false);
 };
 
 // Return new "Join user" message
@@ -39,7 +39,7 @@ const joinMessage = (message, isSender) => {
 
     const html = messageText + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
 
-    return addMessage(html, true, isSender);
+    return addMessage(html, isSender);
 };
 
 // Return new "Leave user" message
@@ -50,21 +50,25 @@ const leaveMessage = (message, isSender) => {
 
     const html = messageText + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
 
-    return addMessage(html, true, isSender);
+    return addMessage(html, isSender);
 };
 
 // 
-const firstJoinExpertMessage = (nickname, isSender) => {
-    const messageText = nickname + ' подключился к консультации. Вы можете задать ему свои вопросы';
+const firstExpertMessage = (expertKey, isSender) => {
+    const messageText = 'Член КК № ' + expertKey + ' подключился к консультации. Вы можете задать ему свои вопросы';
 
-    return addMessage(messageText, true, isSender);
+    return addMessage(messageText, isSender);
 };
 
 // 
-const changeExpertMessage = (messageText) => addMessage(messageText, true, true);
+const changeExpertMessage = (expertKey) => {
+    const messageText = 'Произведена замена члена КК № ' + expertKey;
+
+    return addMessage(expertKey, true);
+};
 
 // Return new list item
-const addMessage = (html, isStatusMessage, isSender) => {
+const addMessage = (html, isSender, isStatusMessage = true) => {
     const div = $('<div class="message ' + (isSender ? 'place-left' : 'place-right') + '"></div>').html(html);
 
     var liElement = $('<li></li>');
@@ -147,43 +151,29 @@ jQuery.expr.filters.icontains = function (elem, i, m) {
 };
 
 // 
-var helpInfoIsVisible = false;
+var contactsInfoIsVisible = false;
 
-const switchHelpInfo = (isVisible) => {
-    helpInfoIsVisible = isVisible;
-
-    //var offset = { top: 0, left: 0 };
-
-    //if (isVisible) {
-    //    const parent = $('#contactsTooltip').parent();
-
-    //    const tooltipTop = parent.position().top + parent.outerHeight() - $('#contactsTooltip').outerHeight();
-
-    //    const tooltipLeft = parent.position().left + parent.outerWidth() + 20;
-
-    //    offset = { top: tooltipTop, left: tooltipLeft };
-    //}
+const toggleHelpInfo = (isVisible) => {
+    contactsInfoIsVisible = isVisible;
 
     $('#contactsTooltip').toggle(isVisible);
 };
 
-const switchSideMenu = (isVisible) => $('#sideMenu').toggle(isVisible);
+const toggleSideMenu = (isVisible) => $('#sideMenu').toggle(isVisible);
 
 // 
 $(document).ready(() => {
-    $('#contactsButton').on('click', () => switchHelpInfo(!helpInfoIsVisible));
+    $('#contactsButton').on('click', () => toggleHelpInfo(!contactsInfoIsVisible));
+    $('#closeHelpButton').on('click', () => toggleHelpInfo(false));
 
-    $('#closeHelpButton').on('click', () => switchHelpInfo(false));
+    $('#sideMenuButton').on('click', () => toggleSideMenu(true));
+    $('#closeSideButton').on('click', () => toggleSideMenu(false));
 
-    $('#sideMenuButton').on('click', () => switchSideMenu(true));
+    $('#appealInfoLink').on('click', () => $('#modal').showModal('modal/appealinfo', { appealId }));
 
-    $('#closeSideButton').on('click', () => switchSideMenu(false));
+    $('#contactsLink').on('click', () => $('#modal').showModal('modal/contacts'));
 
-    $('#appealSidemenuLink').on('click', () => $('#modal').showModal('modal/appealinfo', { appealId }));
-
-    $('#contactsSidemenuLink').on('click', () => $('#modal').showModal('modal/contacts'));
-
-    $('.sidemenu-item').on('click', () => switchSideMenu(false));
+    $('.sidemenu-item').on('click', () => toggleSideMenu(false));
 });
 
 $(document).on('click', '#closeModalButton', () => $('#modal').hideModal());

@@ -14,8 +14,7 @@ namespace Tpr.Chat.Web.Hubs
         Task Leave(ChatMessage message, string onlineExpertKey);
 
         // Expert send methods
-        Task ChangeExpert(string nickname);
-        Task FirstJoinExpert(string nickname);
-        Task ToggleChat(bool isBlocked);
+        Task ChangeExpert(int expertKey);
+        Task FirstJoinExpert(int expertKey);
     }
 }

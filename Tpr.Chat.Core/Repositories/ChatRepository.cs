@@ -18,7 +18,7 @@ namespace Tpr.Chat.Core.Repositories
         }
 
         #region Session
-        
+
         public ChatSession GetChatSession(Guid appealId)
         {
             using (var connection = new SqlConnection(_connectionString))
@@ -40,7 +40,7 @@ namespace Tpr.Chat.Core.Repositories
         }
 
         #endregion
-        
+
         #region Messages
 
         public IList<ChatMessage> GetChatMessages(Guid appealId)
@@ -49,43 +49,31 @@ namespace Tpr.Chat.Core.Repositories
             {
                 connection.Open();
                 string sql = "SELECT * FROM dbo.ChatMessages WHERE AppealId = @AppealId";
-                return connection.Query<ChatMessage>(sql, new {appealId}).ToList();
+                return connection.Query<ChatMessage>(sql, new { appealId }).ToList();
             }
         }
 
-        public int GetExpertMessagesCount(Guid appealId, string nickName)
+        public bool WriteMessage(Guid appealId, string nickName, string messageText)
         {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string sql = "SELECT COUNT(id) FROM dbo.ChatMessages WHERE AppealId = @appealId AND NickName = @nickName";
-
-                return connection.ExecuteScalar<int>(sql, new { appealId, nickName });
-            }
+            return WriteChatMessage(appealId, nickName, messageText, ChatMessageTypes.Message);
         }
 
-        public long WriteMessage(Guid appealId, string nickName, string messageString)
-        {
-            return WriteChatMessage(appealId, nickName, messageString, ChatMessageTypes.Message);
-        }
-
-        public long WriteJoined(Guid appealId, string nickName)
+        public bool WriteJoined(Guid appealId, string nickName)
         {
             return WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Joined);
         }
 
-        public long WriteLeave(Guid appealId, string nickName)
+        public bool WriteLeave(Guid appealId, string nickName)
         {
             return WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Leave);
         }
 
-        long WriteChatMessage(Guid appealId, string nickName, string messageString, ChatMessageTypes chatMessageType)
+        public bool WriteChatMessage(Guid appealId, string nickName, string messageString, ChatMessageTypes messageType)
         {
             var chatMessage = new ChatMessage()
             {
                 AppealId = appealId,
-                ChatMessageTypeId = chatMessageType,
+                ChatMessageTypeId = messageType,
                 CreateDate = DateTime.Now,
                 NickName = nickName,
                 MessageString = messageString
@@ -94,7 +82,12 @@ namespace Tpr.Chat.Core.Repositories
             return WriteChatMessage(chatMessage);
         }
 
-        public long WriteChatMessage(ChatMessage message)
+        public bool AddStatusMessage(Guid appealId, string nickName, ChatMessageTypes messageType)
+        {
+            return WriteChatMessage(appealId, nickName, null, messageType);
+        }
+
+        public bool WriteChatMessage(ChatMessage message)
         {
             try
             {
@@ -102,15 +95,17 @@ namespace Tpr.Chat.Core.Repositories
                 {
                     connection.Open();
 
-                    return connection.Insert(message);
+                    return connection.Insert(message) > 0;
                 }
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-                return 0;
+                Console.WriteLine(exception.Message);
+
+                return false;
             }
         }
-        
+
         #endregion
 
         #region Quick Reply
@@ -192,6 +187,18 @@ namespace Tpr.Chat.Core.Repositories
             }
         }
 
+        public bool AddMemberReplacement(Guid appealId, int expertKey)
+        {
+            var replacement = new MemberReplacement
+            {
+                AppealId = appealId,
+                RequestTime = DateTime.Now,
+                OldMember = expertKey
+            };
+
+            return AddMemberReplacement(replacement);
+        }
+
         public bool AddMemberReplacement(MemberReplacement replacement)
         {
             try
@@ -203,19 +210,30 @@ namespace Tpr.Chat.Core.Repositories
                     return connection.Insert(replacement) > 0;
                 }
             }
-            catch (Exception)
+            catch (Exception exception)
             {
+                Console.WriteLine(exception.Message);
+
                 return false;
             }
         }
 
         public bool UpdateMemberReplacement(MemberReplacement replacement)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            try
             {
-                connection.Open();
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
 
-                return connection.Update(replacement);
+                    return connection.Update(replacement);
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
+
+                return false;
             }
         }
 

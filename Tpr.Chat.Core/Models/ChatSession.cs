@@ -3,7 +3,6 @@ using Dapper.Contrib.Extensions;
 
 namespace Tpr.Chat.Core.Models
 {
-    [Table("ChatSessions")]
     public class ChatSession
     {
         [ExplicitKey]
