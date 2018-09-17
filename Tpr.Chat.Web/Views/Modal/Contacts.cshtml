@@ -1,14 +1,18 @@
 ﻿<style>
-    .modal-contacts-list {
+    .contacts-window {
+        padding: 15px;
+        height: 100%;
+    }
+    .contacts-window ul {
         color: #777;
     }
 
-        .modal-contacts-list li {
+        .contacts-window ul li {
             padding: 15px 0;
             border-bottom: 1px solid #ccc;
         }
 
-            .modal-contacts-list li:last-child {
+            .contacts-window ul li:last-child {
                 border: none;
             }
 
@@ -36,13 +40,13 @@
         font-size: 20px;
     }
 </style>
-<div class="modal-window">
+<div class="modal-window contacts-window">
     <div class="modal-header">
         <div class="modal-title">Справочная служба конфликтной комиссии г. Москвы</div>
         <button id="closeModalButton" class="custom-button close-button"><img src="~/images/modal-close.png" /></button>
     </div>
     <div class="modal-content">
-        <ul class="modal-contacts-list">
+        <ul>
             <li>
                 <div class="contacts-header"><strong>«Горячая линия» конфликтных комиссий</strong> при проведении государственной итоговой аттестации по образовательным программам <strong>основного общего и среднего общего образования:</strong></div>
                 <div class="contacts-content">

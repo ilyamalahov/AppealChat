@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using Dapper;
@@ -156,7 +157,9 @@ namespace Tpr.Chat.Core.Repositories
                 {
                     connection.Open();
 
-                    return connection.Get<MemberReplacement>(appealId);
+                    var sql = "SELECT * FROM dbo.MemberReplacements WHERE AppealId = @appealId";
+
+                    return connection.QuerySingle<MemberReplacement>(sql, new { appealId });
                 }
             }
             catch (Exception exception)
@@ -174,7 +177,7 @@ namespace Tpr.Chat.Core.Repositories
                 {
                     connection.Open();
 
-                    string sql = "SELECT * FROM dbo.MemberReplacement WHERE AppealId = @appealId AND OldMember = @expertKey";
+                    var sql = "SELECT * FROM dbo.MemberReplacements WHERE AppealId = @appealId AND OldMember = @expertKey";
 
                     return connection.QuerySingle<MemberReplacement>(sql, new { appealId, expertKey });
                 }

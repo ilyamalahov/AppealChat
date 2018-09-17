@@ -13,8 +13,8 @@
 
 @section Scripts {
     <script>
-        var appealId = "@Model.ChatSession.AppealId";
-        var isReadonly = "@Model.IsReadOnly";
+        var appealId = @Json.Serialize(Model.ChatSession.AppealId);
+        var isReadonly = @Json.Serialize(Model.IsReadOnly);
     </script>
     <script src="~/js/appeal.js"></script>
 }

@@ -10,6 +10,9 @@ namespace Tpr.Chat.Core.Models
     public class MemberReplacement
     {
         [Key]
+        public int Id { get; set; }
+
+        [ExplicitKey]
         public Guid AppealId { get; set; }
 
         public DateTime RequestTime { get; set; }
