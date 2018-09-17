@@ -54,9 +54,10 @@ namespace Tpr.Chat.Web.Controllers
             var isAfter = DateTime.Now > chatSession.FinishTime;
 
             // 
-            var model = new IndexViewModel
+            var sessionModel = new IndexViewModel
             {
-                ChatSession = chatSession,
+                AppealId = appealId,
+                Session = chatSession,
                 IsAfter = isAfter,
                 IsBefore = isBefore
             };
@@ -64,7 +65,7 @@ namespace Tpr.Chat.Web.Controllers
             // Check if current date less than chat start time
             if (isBefore)
             {
-                return View("Before", model);
+                return View("Before", sessionModel);
             }
 
             // 
@@ -73,6 +74,10 @@ namespace Tpr.Chat.Web.Controllers
             // Expert checkings
             if (connectionType == ContextType.Expert)
             {
+                sessionModel.ExpertKey = key;
+
+                sessionModel.QuickReplies = chatRepository.GetQuickReplies();
+
                 // Member replacement check
                 var replacement = chatRepository.GetMemberReplacement(appealId);
 
@@ -104,7 +109,7 @@ namespace Tpr.Chat.Web.Controllers
                 else if (replacement.OldMember == key)
                 {
                     // Block ability to send messages
-                    model.IsReadOnly = true;
+                    sessionModel.IsExpertChanged = true;
                 }
                 else if (!replacement.NewMember.HasValue)
                 {
@@ -141,33 +146,40 @@ namespace Tpr.Chat.Web.Controllers
                     }
 
                     // 
+                    //var appealConnection = connectionService.GetConnectionId(appealId);
+
+                    //chatContext.Clients.Client(appealConnection).CompleteChange(key);
+
+                    // 
                     chatContext.Clients.User(appealId.ToString()).FirstJoinExpert(key);
                 }
                 else if(replacement.NewMember != key)
                 {
-                    model.IsReadOnly = true;
+                    sessionModel.IsExpertChanged = true;
                 }
 
-                model.ExpertKey = key;
+                sessionModel.Messages = chatRepository.GetChatMessages(appealId);
 
-                model.QuickReplies = chatRepository.GetQuickReplies();
-
-                model.Messages = chatRepository.GetChatMessages(appealId);
-
-                return View("Expert", model);
+                return View("Expert", sessionModel);
             }
             else if (connectionType == ContextType.Appeal)
             {
                 // Check if current date more than chat finish time
                 if (isAfter)
                 {
-                    return View("After", model);
+                    return View("After", sessionModel);
                 }
 
-                // Member replacement check
-                var replacement = chatRepository.GetMemberReplacement(appealId);
+                sessionModel.Messages = chatRepository.GetChatMessages(appealId);
 
-                model.IsReadOnly = replacement != null && replacement.NewMember == null;
+                // Member replacement check
+                var replacement = chatRepository.GetMemberReplacement(appealId);;
+
+                if (replacement != null)
+                {
+                    sessionModel.IsWaiting = replacement.NewMember == null;
+                    sessionModel.IsExpertChanged = replacement.OldMember != 0;
+                }
 
                 // 
                 //var connectionId = connectionService.GetConnectionId(appealId);
@@ -177,26 +189,10 @@ namespace Tpr.Chat.Web.Controllers
                 //    return BadRequest("Сессия все еще запущена на другом устройстве");
                 //}
 
-                model.Messages = chatRepository.GetChatMessages(appealId);
-
-                return View("Appeal", model);
+                return View("Appeal", sessionModel);
             }
 
             return BadRequest();
-        }
-
-        private IActionResult FirstExpertConnection(IndexViewModel model, int expertKey)
-        {
-            model.ChatSession.CurrentExpertKey = expertKey;
-
-            var isUpdated = chatRepository.UpdateSession(model.ChatSession);
-
-            if (!isUpdated)
-            {
-                return BadRequest("Не удалось обновить сессию");
-            }
-
-            return View("Expert", model);
         }
 
         [Produces("application/json")]

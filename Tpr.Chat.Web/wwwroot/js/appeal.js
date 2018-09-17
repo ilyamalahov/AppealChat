@@ -44,8 +44,10 @@ const onLeaveUser = (message, onlineExpertKey) => {
 
 // 
 const onFirstExpert = (expertKey) => {
+    waitChange(false);
+
     // Expert text
-    const expertText = '№' + onlineExpertKey;
+    const expertText = '№' + expertKey;
 
     $('#expertNumber').text(expertText);
 
@@ -58,10 +60,8 @@ const onFirstExpert = (expertKey) => {
 };
 
 // 
-const onChangeExpert = (expertKey) => {
-    waitChange(true);
-
-    const li = changeExpertMessage(expertKey);
+const onChangeExpert = (messageText) => {
+    const li = changeExpertMessage(messageText);
 
     $('#messagesList').append(li).scrollTo(li);
 };
@@ -209,5 +209,5 @@ $(document).ready(() => {
     // 
     $('#messageText').trigger('input');
 
-    waitChange(isReadonly);
+    waitChange(isWaiting);
 });

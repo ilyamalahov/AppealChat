@@ -118,10 +118,10 @@ const onFirstExpert = (expertKey) => {
     $("#messagesList").append(li).scrollTo(li);
 };
 
-const onChangeExpert = (expertKey) => {
+const onChangeExpert = (messageText) => {
     $('#messageForm, #quickReply').remove();
 
-    const li = changeExpertMessage(expertKey);
+    const li = changeExpertMessage(messageText);
 
     $('#messagesList').append(li).scrollTo(li);
 };

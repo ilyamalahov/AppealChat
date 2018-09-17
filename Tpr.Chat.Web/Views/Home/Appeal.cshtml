@@ -4,7 +4,7 @@
 @{
     ViewData["Title"] = "Home Page";
 
-    var currentExpert = Model.ChatSession.CurrentExpertKey;
+    var currentExpert = Model.Session.CurrentExpertKey;
 }
 
 @section Styles {
@@ -13,8 +13,8 @@
 
 @section Scripts {
     <script>
-        var appealId = @Json.Serialize(Model.ChatSession.AppealId);
-        var isReadonly = @Json.Serialize(Model.IsReadOnly);
+        var appealId = @Json.Serialize(Model.AppealId);
+        var isWaiting = @Json.Serialize(Model.IsWaiting);
     </script>
     <script src="~/js/appeal.js"></script>
 }
