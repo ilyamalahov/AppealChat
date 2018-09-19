@@ -1,0 +1,66 @@
+﻿@model IndexViewModel
+@{
+    var chatSession = @Model.Session;
+}
+
+<div class="sidebar">
+    <div class="sidebar-content">
+        @if (!Model.IsAfter && !Model.IsBefore)
+        {
+            <div class="switch-expert">
+                <button id="changeButton" class="custom-button expert-button" @(Model.IsExpertChanged ? "disabled" : "")><img src="~/images/sidebar/switch.svg" alt="Сменить собеседника" /><span>Сменить собеседника</span></button>
+            </div>
+            <div class="sidebar-block remaining-time"><img src="~/images/sidebar/stopwatch.svg" alt="Оставшееся время" /><span><b id="remainingTime" class="remaining-value">00</b> минуты осталось</span></div>
+        }
+        <div class="sidebar-block">
+            <ul class="appeal-list">
+                <li class="title">Сведения об аппеляции</li>
+                <li><div class="label">Начало онлайн консультации</div><div class="value">@chatSession.StartTime.ToString("g")</div></li>
+                @if (Model.IsBefore)
+                {
+                    <li><div class="label">Завершение онлайн консультации</div><div class="value">@chatSession.FinishTime.ToString("g")</div></li>
+                }
+                <li><div class="label">Номер апелляции</div><div class="value">@chatSession.AppealNumber от @chatSession.RegistrationDate.ToShortDateString()</div></li>
+                <li><div class="label">Предмет</div><div class="value">@chatSession.SubjectName</div></li>
+                <li><div class="label">Дата экзамена</div><div class="value">@chatSession.ExamDate.ToShortDateString()</div></li>
+                @*<li><div class="label">Зарегистрирована</div><div class="value">@chatSession.RegistrationDate</div></li>*@
+                @*<li><div class="label">Подано заявление</div><div class="value">@chatSession.ApplicationDate</div></li>*@
+            </ul>
+        </div>
+        <div class="sidebar-block contacts-info">
+            <div id="contactsButton" class="contacts-button">
+                <b style="flex: auto;">Контакты</b>
+                <img id="contactsChevron" src="~/images/sidebar/right-chevron.svg" class="arrow-chevron" alt="Back" />
+            </div>
+            <div id="contactsTooltip" class="contacts-tooltip">
+                <button id="closeHelpButton" class="custom-button close-button"><img src="~/images/sidebar/close.svg" /></button>
+                <ul class="contacts-list">
+                    <li>
+                        <div class="contact-title">«Горячая линия» конфликтных комиссий при проведении государственной итоговой аттестации по образовательным программам основного общего и среднего общего образования:</div>
+                        <a class="contact-link" href="tel:+74996535191"><img src="~/images/sidebar/phone.svg" alt="Телефон" />+7 (499) 653-51-91</a>
+                        <div>Время работы: пн - сб с 9:00 до 19:00,<br />выходные - воскресенье и праздничные дни</div>
+                    </li>
+                    <li>
+                        <div class="contact-title">Официальный <b>электронный адрес конфликтной комиссии</b> при проведении государственной итоговой аттестации по образовательным программам <b>среднего общего образования</b>:</div>
+                        <a class="contact-link" href="mailto:kk77@mcko.ru"><img src="~/images/sidebar/envelope.svg" alt="Электронная почта" />kk77@mcko.ru</a>
+                    </li>
+                    <li>
+                        <div class="contact-title">Официальный <b>электронный адрес конфликтной комиссии</b> при проведении государственной итоговой аттестации по образовательным программам <b>общего общего образования</b>:</div>
+                        <a class="contact-link" href="mailto:kkgia9@mcko.ru"><img src="~/images/sidebar/envelope.svg" alt="Электронная почта" />kkgia9@mcko.ru</a>
+                    </li>
+                    <li>
+                        <div class="contact-title">Информационно-консультационный центр регионального центра обработки информации города Москвы:</div>
+                        <a class="contact-link" href="tel:+74953660692"><img src="~/images/sidebar/phone.svg" alt="Телефон" />+7 (495) 366-06-92</a>
+                        <div>График работы: понедельник - пятница с 9:00 до 18:00.</div>
+</li>
+                    <li>
+                        <div class="contact-title">Общественная приемная регионального центра обработки информации города Москвы:</div>
+                        <div>г. Москва, Семеновская пл., д.4</div>
+                        <div>График работы: понедельник - пятница с 9:00 до 18:00.</div>                       
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="sidebar-footer">2018 (C) Конфликтная комиссия города Москвы</div>
+</div>

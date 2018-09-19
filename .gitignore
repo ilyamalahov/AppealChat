@@ -259,3 +259,5 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/Tpr.Chat.Web/appsettings.Development.json
+/Tpr.Chat.Web/Properties/PublishProfiles/10.126.77.2 - Production.pubxml

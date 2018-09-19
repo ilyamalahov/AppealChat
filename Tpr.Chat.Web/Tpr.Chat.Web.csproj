@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <UserSecretsId>05beb2be-4456-4723-befd-f6988b3061d5</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -151,6 +152,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Tpr.Chat.Core\Tpr.Chat.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\files\" />
   </ItemGroup>
 
 </Project>

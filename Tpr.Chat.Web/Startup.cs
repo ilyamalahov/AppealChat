@@ -32,13 +32,13 @@ namespace Tpr.Chat.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectionString = Configuration.GetConnectionString("LocalConnection");
+            string connectionString = Configuration.GetConnectionString("DefaultConnection");
 
             // Chat repository
             services.AddTransient<IChatRepository, ChatRepository>(repository => new ChatRepository(connectionString));
 
-            services.AddHostedService<QueuedHostedService>();
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            //services.AddHostedService<QueuedHostedService>();
+            //services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
             // Common service
             services.AddTransient<ICommonService, CommonService>();
@@ -57,7 +57,11 @@ namespace Tpr.Chat.Web
             );
 
             // SignalR
-            services.AddSignalR(options => options.EnableDetailedErrors = true).AddJsonProtocol();
+            services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = true;
+                //options.KeepAliveInterval = TimeSpan.FromMinutes(5);
+            }).AddJsonProtocol();
 
             services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 

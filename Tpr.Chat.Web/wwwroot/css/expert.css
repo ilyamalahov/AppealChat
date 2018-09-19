@@ -1,81 +1,92 @@
-﻿.content {
+﻿.main {
     display: flex;
     flex-flow: column;
+    height: 100%;
 }
 
-.block {
-    margin: 5px;
-    position: relative;
+.main-header {
+    flex: none;
+    display: flex;
+    align-items: center;
+    border-radius: 5px 5px 0 0;
+    padding: 15px;
+    background: #4d97e2;
+    color: #fff;
 }
+    .main-header .title {
+        flex: auto;
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .status-block {
+        display: flex;
+    }
 
-.appeal-info {
-    position: relative;
-    border: 1px solid #ccc;
-    padding: 5px;
-    text-align: center;
-    font-size: 18px;
-}
-
-.close-button {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 5px;
-}
-
-.message-history {
-    border: 1px solid #ccc;
+.main-footer {
+    flex: none;
+    display: flex;
+    align-items: center;
+    background: #fff;
 }
 
 .message-text {
-    width: 100%;
+    flex: auto;
+    padding: 10px 15px;
+    border: none;
     resize: none;
-    padding: 5px;
+    outline: none;
 }
 
-.buttons {
-    flex: none;
-    display: flex;
-    justify-content: space-between;
+/* Expert only */
+
+.reply-button {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 50%;
+    background: #e8e8e8;
 }
-.form-button {
-    background: #fff;
-    border: 1px solid #476cd4;
-    border-radius: 5px;
-    padding: 8px;
-}
-    .form-button:hover {
-        background: #3054b9;
-        border-color: #3054b9;
-        color: #fff;
-        cursor: pointer;
-    }
-    .form-button:disabled {
+    .reply-button:hover {
         background: #d4d4d4;
-        border-color: #d4d4d4;
-        color: #b3b3b3;
-        cursor: default;
     }
-    .send-button {
-        background: #476cd4;
-        color: #fff;
+    .reply-button:disabled {
+        background: #c7c7c7;
     }
 
 .quick-reply {
-    background: #ccc;
     position: absolute;
     bottom: 0;
     width: 100%;
-    border: 1px solid #8c8c8c;
-    box-sizing: border-box;
+    background: #f1f1f1;
 }
-    .quick-reply .list-item {
-        border: 1px solid #777;
-        margin: 10px;
-        padding: 5px;
+
+.filter-block {
+    background: #fff;
+    padding: 15px;
+    box-shadow: 0 5px 5px 0 #dfe8ef;
+}
+.filter-text {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    outline: none;
+}
+
+.reply-list {
+    overflow-y: auto;
+    max-height: 250px;
+    padding: 0 15px;
+}
+    .reply-list li {
         background: #fff;
+        border-radius: 5px;
+        padding: 15px;
+        margin: 15px 0;
+        box-shadow: 0 0 5px 0 #dfe8ef;
     }
-    .quick-reply .list-item:hover {
-        background: #d3d3d3;
-        cursor: pointer;
-    }
+        .reply-list li:hover {
+            background: #f7f7f7;
+            cursor: pointer;
+        }
+        .reply-list li strong {
+            color: #33ddb6;
+        }

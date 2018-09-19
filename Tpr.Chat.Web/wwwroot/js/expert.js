@@ -1,182 +1,216 @@
-﻿$(document).ready(function () {
-    getAccessToken().then(function (accessToken) {
-        // Update info hub connection
-        const infoConnection = new signalR.HubConnectionBuilder()
-            .withUrl("/info")
-            .build();
+﻿// Variables
 
-        // Receive information response event
-        infoConnection.on("ReceiveInfo", (currentDate, remainingTime, isAlarm, isFinished) => {
-            // Finish consultation
-            if (isFinished) completeConsultation();
+// Quick reply block is visible?
+var quickReplyIsVisible = false;
 
-            // Luxon remaining duration
-            var remainingDuration = luxon.Duration.fromMillis(remainingTime);
+// Update time interval in milliseconds
+const updateInterval = 1000;
 
-            // Remaining minutes
-            var remainingMinutes = remainingDuration.as('minutes');
+// Objects
 
-            if (remainingMinutes < 1) {
-                var remainingText = 'меньше минуты';
-            } else {
-                var remainingText = remainingDuration.toFormat('m минут(-ы)');
-            }
+// Update info hub connection
+var infoConnection;
 
-            // 
-            $('#remainingTime').text(remainingText);
+// Chat hub connection
+var chatConnection;
 
-            // Alarm
-            if (isAlarm) {
-                var alarmText = 'До окончания консультации осталось ' + remainingText;
+// Functions
 
-                $('#alarm').text(alarmText).show();
-            }
+// Update time info
+const updateInfo = () => infoConnection.invoke("MainUpdate", appealId);
 
-            // Timer
-            timeoutId = setTimeout(updateInfo, interval);
-        });
+// Receive info callback
+const onReceiveInfo = (currentDate, remainingTime, isAlarm, isFinished) => {
+    // Finish consultation
+    if (isFinished) {
+        // Stop info hub connection
+        infoConnection.stop();
 
-        var timeoutId;
+        // Stop chat hub connection
+        chatConnection.stop();
 
-        // Initializing SignalR connection
-        const chatConnection = new signalR.HubConnectionBuilder()
-            .withUrl("/chat", { accessTokenFactory: () => accessToken })
-            .build();
+        // Hide alarm
+        $('#alarm').hide();
 
-        // Receiving message from user
-        chatConnection.on("Receive", (message, sender) => {
-            const li = receiveMessage(message, sender === "expert");
+        return;
+    }
 
-            $('#messagesList').append(li).scrollTo(li);
-        });
+    // Alarm
+    if (isAlarm) {
+        const alarmText = 'До окончания консультации осталось ' + remainingText;
 
-        // Joining user to chat
-        chatConnection.on("Join", (message, sender, isAppealOnline, expertKey) => {
-            const li = joinMessage(message, sender === "expert");
+        $('#alarm').text(alarmText).show();
+    }
 
-            $("#messagesList").append(li).scrollTo(li);
+    // Timer
+    setTimeout(updateInfo, updateInterval);
+};
 
-            changeStatus(isAppealOnline);
-        });
+// Toggle quick replies block
+const toggleQuickReply = (isVisible) => {
+    quickReplyIsVisible = isVisible;
 
-        // Leave user from chat
-        chatConnection.on("Leave", (message, sender) => {
-            const li = leaveMessage(message, sender === "expert");
+    // 
+    if (isVisible) {
+        $('#quickReplyButton img').attr('src', 'images/chat/down-chevron.svg');
+        $('#quickReply').fadeIn('fast');
+        $('#quickReply .quick-reply').slideDown('fast', () => $('#filterText').focus());
+    } else {
+        $('#quickReplyButton img').attr('src', 'images/chat/quick-reply.svg');
+        $('#quickReply').fadeOut('fast');
+        $('#quickReply .quick-reply').slideUp('fast', () => $('#filterText').val('').trigger('input'));
+    }
+};
 
-            $("#messagesList").append(li).scrollTo(li);
+const chatError = (error) => {
+    console.error(error.toString());
 
-            changeStatus(false);
-        });
+    $('#messageForm, #quickReply').remove();
+};
 
-        // 
-        $('#sendButton').on('click', () => sendMessage($("#messageText").val()));
+// Change online status
+const changeStatus = (isOnline) => $('#onlineStatus').toggleClass('online', isOnline);
 
-        // 
-        var isQuickReplyVisible = false;
+// Send message
+const sendMessage = (message) => {
+    chatConnection.send('SendMessage', message);
 
-        // 
-        $('#quickReplyButton').on('click', () => {
-            isQuickReplyVisible = !isQuickReplyVisible;
+    $('#messageText').val('').trigger('input');
+};
 
-            toggleQuickReplyBlock(isQuickReplyVisible);
-        });
+// Receive message callback
+const onReceiveMessage = (message) => {
+    const isSender = message.nickName === 'Член КК № ' + expertKey;
 
-        // 
-        $('.list-item').on('click', function (e) {
-            isQuickReplyVisible = false;
+    const li = receiveMessage(message, isSender);
 
-            toggleQuickReplyBlock(isQuickReplyVisible);
+    $('#messagesList').append(li).scrollTo(li);
+};
 
-            $('#messageText').insertAtCursor($(this).text())
-                .focus()
-                .trigger('input');
-        });
+// Join user to chat callback
+const onJoinUser = (messageDate, nickName, isFirstJoined, isAppealOnline, isExpertOnline) => {
+    changeStatus(isAppealOnline);
 
-        //
-        $('#filterText').on('input', function (e) {
-            var value = $(this).val();
+    const isSender = nickName === 'Член КК № ' + expertKey;
 
-            $(".list-item").each(function () {
-                const isContains = $(this).is(":icontains('" + value + "')");
+    const li = joinMessage(messageDate, nickName, isFirstJoined, isSender);
 
-                $(this).toggle(isContains);
-            });
-        });
+    $("#messagesList").append(li).scrollTo(li);
+};
 
-        //
-        $('#messageText').on('keyup', function (e) {
-            if (e.keyCode === 13 && !e.shiftKey) {
-                e.preventDefault();
+// Leave user from chat callback
+const onLeaveUser = (message) => {
+    changeStatus(false);
 
-                if ($(this).val().length > 0) sendMessage($(this).val());
-            }
-        });
+    const isSender = message.nickName === 'Член КК № ' + expertKey;
 
-        //
-        $('#messageText').on('input', function (e) {
-            const isEnabled = $(this).val().length > 0;
+    const li = leaveMessage(message, isSender);
 
-            $('#sendButton').prop('disabled', !isEnabled);
-        });
+    $("#messagesList").append(li).scrollTo(li);
+};
 
-        // 
-        $('#messageText').trigger('input');
+// First join expert to chat callback
+//const onFirstExpert = (expertKey) => {
+//    const isSender = nickname !== 'Апеллянт';
 
-        // Quick reply block toggle
-        const toggleQuickReplyBlock = (isVisibled) => {
-            // 
-            $('#quickReplyBlock').slideToggle(isVisibled);
+//    const li = firstJoinMessage(expertKey, isSender);
 
-            //
-            $('#quickReplyButton').toggleClass('send-button', isVisibled);
+//    $("#messagesList").append(li).scrollTo(li);
+//};
 
-            // 
-            const replyText = isVisibled ? 'Убрать' : 'Быстрый ответ';
+const onInitializeChange = (messageText) => {
+    $('#messageForm, #quickReply').remove();
 
-            $('#quickReplyButton').text(replyText);
+    const li = changeExpertMessage(messageText);
 
-            // 
-            $('#filterText').val('').trigger('input');
+    $('#messagesList').append(li).scrollTo(li);
+};
 
-            // 
-            if (isVisibled) { $('#filterText').focus(); }
-        };
+// JQuery document ready (if in range) callback
+const onChatReady = () => {
+    // 
+    $('#sendButton').on('click', () => sendMessage($("#messageText").val()));
 
-        // Send message
-        const sendMessage = (message) => {
-            chatConnection.invoke('SendMessage', message)
-                .catch(error => console.error(error.error));
+    // 
+    $('#quickReplyButton').on('click', () => toggleQuickReply(!quickReplyIsVisible));
 
-            // 
-            $('#messageText').val('').trigger('input');
-        };
+    // 
+    $('#replyList').on('click', 'li', function (e) {
+        toggleQuickReply(false);
 
-        // Change online status
-        const changeStatus = (isOnline) => {
-            const statusText = isOnline ? 'Подключен к чату' : 'Отключен от чата';
+        $('#messageText').insertAtCursor($(this).text())
+            .focus()
+            .trigger('input');
+    });
 
-            $('#onlineStatus').text(statusText);
-        };
+    //
+    $('#filterText').on('input', function (e) {
+        var value = $(this).val();
 
-        const completeConsultation = () => {
-            clearTimeout(timeoutId);
+        $("#replyList li")
+            .hide()
+            .filter(":icontains('" + value + "')")
+            .show()
+            .each((index, element) => $(element).highlightText(value));
+    });
 
-            $('#interactiveBlock').hide();
-        };
+    //
+    $('#messageText').on('keyup', function (e) {
+        if (e.keyCode === 13 && !e.shiftKey) {
+            e.preventDefault();
 
-        // Update time information
-        const interval = 10000;
+            if ($(this).val().length > 0) sendMessage($(this).val());
+        }
+    });
 
-        // 
-        const updateInfo = () => infoConnection.invoke("MainUpdate", appealId);
+    //
+    $('#messageText').on('input', function (e) {
+        $(this).expandRows();
 
-        // Start Chat connection
-        chatConnection.start()
-            .catch((error) => console.error(error.toString()));
+        const isDisabled = $(this).val().length === 0;
 
-        // Start Info connection
-        infoConnection.start()
-            .then(updateInfo)
-            .catch((error) => console.error(error.toString()));
-    }).catch((error) => alert(error.error));
-});
+        $('#sendButton').prop('disabled', isDisabled);
+    });
+
+    // 
+    $('#messageText').trigger('input');
+};
+
+// Create new info hub connection
+infoConnection = new signalR.HubConnectionBuilder()
+    .withUrl("/info")
+    .build();
+
+// Receive information event handler
+infoConnection.on("ReceiveInfo", onReceiveInfo);
+
+// JQuery document ready handler
+$(document).ready(onChatReady);
+
+// Start info connection
+infoConnection.start().then(updateInfo);
+
+// 
+getAccessToken(appealId, expertKey).then(accessToken => {
+    // Create new chat hub connection
+    chatConnection = new signalR.HubConnectionBuilder()
+        .withUrl("/chat", { accessTokenFactory: () => accessToken })
+        .build();
+
+    // Event handlers
+
+    // Receive message from user handler
+    chatConnection.on("Receive", onReceiveMessage);
+
+    // Join user to chat handler
+    chatConnection.on("Join", onJoinUser);
+
+    // Leave user from chat handler
+    chatConnection.on("Leave", onLeaveUser);
+
+    // First join expert on chat handler
+    chatConnection.on("InitializeChange", onInitializeChange);
+
+    // Start chat hub connection
+    chatConnection.start();
+}).catch(chatError);

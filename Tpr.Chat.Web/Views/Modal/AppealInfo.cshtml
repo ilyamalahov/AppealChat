@@ -1,0 +1,18 @@
+﻿@using Tpr.Chat.Core.Models
+@model ChatSession
+
+<div class="modal-window" style="padding: 15px;">
+    <div class="modal-header">
+        <div class="modal-title">Сведения об аппеляции</div>
+        <button id="closeModalButton" class="custom-button close-button"><img src="~/images/modal-close.png" /></button>
+    </div>
+    <div class="modal-content">
+        <ul class="appeal-list">
+            <li><div class="label">Номер апелляции</div><div class="value">@Model.AppealNumber от @Model.RegistrationDate.ToShortDateString()</div></li>
+            <li><div class="label">Предмет</div><div class="value">@Model.SubjectName</div></li>
+            <li><div class="label">Дата экзамена</div><div class="value">@Model.ExamDate.ToShortDateString()</div></li>
+            @*<li><div class="label">Зарегистрирована</div><div class="value">@Model.RegistrationDate</div></li>*@
+            @*<li><div class="label">Подано заявление</div><div class="value">@Model.ApplicationDate</div></li>*@
+        </ul>
+    </div>
+</div>

@@ -1,4 +1,15 @@
-﻿<header>
-    <div class="subtitle">Конфликтная комиссия города Москвы</div>
-    <div class="title">Онлайн консультации по результатам рассмотрения апелляций о несогласии с выставленными баллами ГИА</div>
-</header>
+﻿@model IndexViewModel
+
+<div class="header">
+    <a id="sideMenuButton" class="side-button" href="#" title="Боковое меню"><img src="~/images/header/three-dots.svg" alt="Боковое меню" /></a>
+    <div class="moscow-time">
+        <img src="~/images/header/clock.svg" alt="Московское время" /><span id="moscowTime" class="moscow-value">00:00</span>
+        <div class="moscow-caption">Московское время</div>
+    </div>
+    <div class="title"></div>
+    <a class="right-button" title="Инструкция по работе с чатом" href="~/files/manual.pdf" target="_blank"><img src="~/images/header/help.svg" alt="Помощь" /></a>
+    @if (!Model.IsBefore && !Model.IsAfter)
+    {
+        <a id="completeButton" class="right-button" title="Завершение консультации" href="#"><img src="~/images/header/login.svg" alt="Завершение консультации" /></a>
+    }
+</div>

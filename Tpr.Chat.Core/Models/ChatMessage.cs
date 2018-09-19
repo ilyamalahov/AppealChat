@@ -3,7 +3,6 @@ using Dapper.Contrib.Extensions;
 
 namespace Tpr.Chat.Core.Models
 {
-    [Table("ChatMessages")]
     public class ChatMessage
     {
         [Key]
@@ -19,6 +18,8 @@ namespace Tpr.Chat.Core.Models
     {
         Joined = 1,
         Message = 2,
-        Leave = 3
+        Leave = 3,
+        ChangeExpert = 4,
+        FirstExpert = 5
     }
 }
