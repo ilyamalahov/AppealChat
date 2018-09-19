@@ -243,7 +243,8 @@ namespace Tpr.Chat.Core.Repositories
                 {
                     connection.Open();
 
-                    return connection.Insert(replacement) > 0;
+                    connection.Insert(replacement);
+                    return true;
                 }
             }
             catch (Exception exception)
