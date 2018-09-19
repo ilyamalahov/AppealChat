@@ -68,7 +68,7 @@ const onReceiveInfo = (currentDate, remainingTime, isAlarm, isFinished) => {
     var remainingDuration = luxon.Duration.fromMillis(remainingTime);
 
     // Remaining time text
-    var remainingText = remainingDuration.toFormat('hh:mm:ss');
+    var remainingText = remainingDuration.toFormat('mm:ss');
 
     // Remaining format minutes
     var remainingMinutes = remainingDuration.as("minutes");

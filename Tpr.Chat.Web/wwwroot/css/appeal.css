@@ -135,8 +135,21 @@
             display: block;
         }
 }
+@media screen and (max-width: 558px) {
+    .main-header .title {
+        font-size: 12px;
+    }
 
-/*@media screen and (max-height: 500px) {
+    .main-header .remaining-value {
+        font-size: 12px;
+    }
+
+    .main-header .remaining-caption {
+        font-size: 10px;
+    }
+}
+
+    /*@media screen and (max-height: 500px) {
     .main-header {
         display: none;
     }
