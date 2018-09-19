@@ -7,6 +7,9 @@ var chatConnection;
 // Update intreval
 const interval = 10000;
 
+// Original window height
+const originalHeight = $(window).height();
+
 // 
 const onReceiveMessage = (message) => {
     const isSender = message.nickName === 'Апеллянт';
@@ -100,6 +103,16 @@ const sendMessage = (message) => {
     $('#messageText').val('').trigger('input');
 };
 
+const scrollToLast = function () {
+    const targetHeight = $(this).height();
+
+    if (targetHeight !== originalHeight) {
+        const lastItem = $('#messagesList').children(':last-child');
+
+        $('#messagesList').scrollTo(lastItem);
+    }
+}
+
 // 
 const changeStatus = (isOnline) => $('#onlineStatus').toggleClass('online', isOnline);
 
@@ -171,6 +184,8 @@ getAccessToken(appealId).then(accessToken => {
 });
 
 $(document).ready(() => {
+    $(window).on('resize', scrollToLast);
+
     // Send message
     $('#sendButton').on('click', () => sendMessage($('#messageText').val()));
 
