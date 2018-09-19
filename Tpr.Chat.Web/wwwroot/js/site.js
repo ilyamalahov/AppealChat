@@ -38,9 +38,9 @@ const joinMessage = (messageDate, nickName, isFirstJoined, isSender) => {
 
     var messageText = "";
 
-    if (isSender)               messageText = 'Вы подключились к консультации';
-    else if (isFirstJoined)     messageText = nickName + ' подключился к консультации. Вы можете задать свои вопросы здесь.';
-    else                        messageText = nickName + ' подключился к консультации';
+    if (isSender) messageText = 'Вы подключились к консультации';
+    else if (isFirstJoined) messageText = nickName + ' подключился к консультации. Вы можете задать свои вопросы здесь.';
+    else messageText = nickName + ' подключился к консультации';
 
     const html = messageText + ' <b class="message-date">' + messageDateObj.toFormat("tt") + '</b>';
 
@@ -165,7 +165,18 @@ var contactsInfoIsVisible = false;
 const toggleHelpInfo = (isVisible) => {
     contactsInfoIsVisible = isVisible;
 
-    $('#contactsTooltip').toggle(isVisible);
+    var bottomPosition = 0;
+
+    if (isVisible) {
+        const topPosition = $(window).height() - ($('#contactsButton').offset().top + $('#contactsButton').innerHeight());
+        console.log(topPosition);
+        $('#contactsTooltip').css('bottom', topPosition);
+
+        bottomPosition = $('#contactsButton').offset().top + $('#contactsButton').innerHeight();
+        console.log($('#contactsButton').offset(), $('#contactsButton').innerHeight(), bottomPosition);
+    }
+
+    $('#contactsTooltip').toggle(isVisible)/*.css('bottom', bottomPosition)*/;
 };
 
 const toggleSideMenu = (isVisible) => $('#sideMenu').toggle(isVisible);

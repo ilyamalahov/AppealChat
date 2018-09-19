@@ -292,17 +292,22 @@ a {
     cursor: pointer;
 }
 
-.contacts-tooltip {
-    display: none;
-    position: absolute;
-    z-index: 1;
-    padding: 15px;
-    width: 400px;
+.tooltip {
+    position: fixed;
     border-radius: 5px;
+    z-index: 1;
+}
+
+.contacts-tooltip {
+    display: flex;
+    flex-flow: column;
+    top: 100px;
+    bottom: 10px;
+    left: 370px;
+    width: 400px;
+    max-height: 650px;
     background: #2b7bde;
     color: #fff;
-    top: 70px;
-    left: 350px;
 }
 
     .contacts-tooltip::before {
@@ -318,33 +323,35 @@ a {
         background: inherit;
     }
 
-    .contacts-tooltip .close-button {
-        position: absolute;
-        top: 0;
-        right: 0;
-        margin: 5px;
+    .contacts-tooltip .tooltip-header {
+        text-align: right;
+        padding: 5px;
     }
 
-        .contacts-tooltip .close-button img {
-            height: 20px;
-        }
-
-.contacts-list {
-    margin-top: 10px;
-    line-height: 1;
-}
-
-    .contacts-list li {
-        padding: 10px 0;
-        border-bottom: 1px solid #6ba8eb;
+    .contacts-tooltip .tooltip-content {
+        padding: 0 15px;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
 
-        .contacts-list li:last-child {
-            border: none;
+    .contacts-tooltip .close-button img {
+        height: 20px;
+    }
+
+    .contacts-tooltip ul {
+        line-height: 1;
+    }
+
+        .contacts-tooltip ul li {
+            padding: 10px 0;
+            border-bottom: 1px solid #6ba8eb;
         }
+
+            .contacts-tooltip ul li:last-child {
+                border: none;
+            }
 
 .contact-link {
-    display: block;
     color: #fff;
     text-decoration: none;
     font-weight: bold;
