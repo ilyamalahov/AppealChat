@@ -28,7 +28,7 @@
         <div class="main">
             <div class="main-header">
                 <button id="sideMobileButton" class="custom-button side-button" title="Меню">
-                    <img src="~/images/header/three-dots.svg" alt="Меню" />
+                    <img src="~/images/chat/three-dots.svg" alt="Меню" />
                 </button>
                 <div class="title-status">
                     <div class="title">Член КК <span id="expertNumber">@(currentExpert.HasValue ? "№ " + currentExpert : "отсутствует")</span></div>
@@ -41,7 +41,7 @@
                     <div id="mobileRemainingTime" class="remaining-value">00:00</div>
                     <div class="remaining-caption">минуты осталось</div>
                 </div>
-                <button id="mobileSwitchButton" class="custom-button switch-button"><img src="~/images/chat/switch.png" alt="Сменить консультанта" /></button>
+                <button id="mobileSwitchButton" class="custom-button switch-button" title="Сменить консультанта" @(Model.IsExpertChanged ? "disabled" : "")><img src="~/images/chat/businessman.png" alt="Сменить консультанта" /></button>
             </div>
             <div style="flex: auto; display: flex; min-height: 0;">
                 <ul id="messagesList" class="message-history">

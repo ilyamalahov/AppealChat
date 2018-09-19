@@ -176,8 +176,9 @@ $(document).ready(() => {
 
     // 
     $('#changeButton, #mobileSwitchButton').on('click', () => $('#modal').showModal('modal/changeexpert'));
+
     // 
-    //$('#completeButton').on('click', () => $('#modal').showModal('ajax/completechat'));
+    $('#sideMobileButton').on('click', () => toggleSideMenu(true));
 
     // Textarea auto rows count
     $('#messageText').on('input', function (e) {

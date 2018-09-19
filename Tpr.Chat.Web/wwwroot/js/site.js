@@ -74,9 +74,9 @@ const changeExpertMessage = (expertKey) => {
 
 // Return new list item
 const addMessage = (html, isSender, isStatusMessage = true) => {
-    const div = $('<div class="message ' + (isSender ? 'place-left' : 'place-right') + '"></div>').html(html);
+    const div = $('<div class="message ' + (isSender ? 'place-left' : 'place-right') + '">').html(html);
 
-    var liElement = $('<li></li>');
+    var liElement = $('<li>');
 
     if (isStatusMessage) liElement.addClass('message-status');
 
@@ -92,13 +92,17 @@ jQuery.fn.scrollTo = function (element) {
 
 // 
 jQuery.fn.insertAtCursor = function (value) {
-    if ($(this).prop('selectionStart') || $(this).prop('selectionStart') === '0') {
-        var startSubstring = $(this).val().substring(0, $(this).prop('selectionStart'));
-        var endSubstring = $(this).val().substring($(this).prop('selectionEnd'), $(this).val().length);
+    const selectionStart = $(this).prop('selectionStart');
+    const selectionEnd = $(this).prop('selectionEnd');
+    const currentValue = $(this).val();
+
+    if (selectionStart || selectionStart === '0') {
+        var startSubstring = currentValue.substring(0, selectionStart);
+        var endSubstring = currentValue.substring(selectionEnd, currentValue.length);
 
         $(this).val(startSubstring + value + endSubstring);
     } else {
-        $(this).val($(this).val() + value);
+        $(this).val(currentValue + value);
     }
 
     return this;
