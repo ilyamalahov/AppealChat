@@ -1,4 +1,102 @@
-﻿<div class="modal-window">
+﻿<div class="modal-window change-window">
     <div class="modal-content">
+        <div class="change-title">Сменить члена конфликтной комиссии?</div>
+        <div class="change-buttons">
+            <button id="okChangeButton" class="custom-button btn-action btn-complete">Да</button>
+            <button id="cancelButton" class="custom-button btn-action">Нет</button>
+        </div>
+        <div class="change-notice">Вы можете один раз сменить члена КК, который вас консультирует.</div>
+        <div class="change-sub-notice" style="margin-bottom: 10px;">В случае замены оставшееся время на консультацию и возможность отправки сообщений приостанавливается до момента подключения нового члена конфликтной комиссии.</div>
+        <div class="change-sub-notice">Ожидание подключения нового члена конфликтной комиссии может занять продолжительное время.</div>
     </div>
+    <div class="modal-footer">
+        <button id="okChangeMobileButton" class="custom-button btn-action btn-complete">Да</button>
+        <button id="cancelMobileButton" class="custom-button btn-action">Нет</button>
+    </div>
+    <style>
+        .btn-action {
+            font-size: 16px;
+            font-weight: bold;
+            color: #3688db;
+        }
+
+            .btn-action:hover {
+                background: #2a67a5;
+                color: #fff;
+                border-color: #2a67a5;
+            }
+
+        .btn-complete {
+            color: #fff;
+            background: #3688db;
+        }
+
+        .change-window .modal-content {
+            display: flex;
+            flex-flow: column;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .change-window .modal-footer {
+            border-top: 1px solid #ccc;
+        }
+
+        .modal-content .btn-action {
+            padding: 12px;
+            width: 170px;
+            border: 1px solid #3688db;
+            border-radius: 3px;
+        }
+
+        .modal-content .btn-complete {
+            margin-right: 15px;
+        }
+
+        .modal-footer .btn-action {
+            width: 100%;
+            padding: 20px;
+        }
+
+        .change-title {
+            font-weight: bold;
+            font-size: 18px;
+            order: 0;
+        }
+
+        .change-buttons {
+            margin: 20px;
+        }
+
+        .change-notice {
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .change-sub-notice {
+            color: #9b9b9b;
+            font-size: 12px;
+        }
+
+        @@media screen and (max-width: 767px) {
+            .change-title {
+                margin-top: 20px;
+                order: 1;
+            }
+
+            .change-buttons {
+                display: none;
+            }
+
+            .change-notice, .change-sub-notice {
+                font-size: 14px;
+            }
+        }
+        @@media screen and (min-width: 768px) {
+            .change-window .modal-footer {
+                display: none;
+            }
+        }
+    </style>
 </div>

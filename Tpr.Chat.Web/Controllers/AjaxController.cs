@@ -76,7 +76,7 @@ namespace Tpr.Chat.Web.Controllers
                 return BadRequest("Не удалось вставить запись в таблицу");
             }
 
-            chatContext.Clients.User(appealId.ToString()).ChangeExpert(messageText);
+            chatContext.Clients.User(appealId.ToString()).InitializeChange(messageText);
 
             // Send change expert request to external system
 

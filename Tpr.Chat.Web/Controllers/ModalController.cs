@@ -15,6 +15,11 @@ namespace Tpr.Chat.Web.Controllers
         {
             this.chatRepository = chatRepository;
         }
+        
+        public IActionResult ChangeExpert()
+        {
+            return PartialView("ChangeExpert");
+        }
 
         public IActionResult WaitChange(Guid appealId)
         {

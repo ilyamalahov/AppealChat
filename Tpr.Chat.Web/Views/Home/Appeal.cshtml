@@ -27,16 +27,19 @@
         <partial name="_Sidebar" />
         <div class="main">
             <div class="main-header">
-                <div class="remaining-time">
-                    <div id="mobileRemainingTime" class="remaining-value">00:00</div>
-                    <div class="remaining-caption">минуты осталось</div>
-                </div>
+                <button id="sideMobileButton" class="custom-button side-button" title="Меню">
+                    <img src="~/images/header/three-dots.svg" alt="Меню" />
+                </button>
                 <div class="title-status">
-                    <div class="title">Член конфликтной комиссии <span id="expertNumber">@(currentExpert.HasValue ? "№ " + currentExpert : "отсутствует")</span></div>
+                    <div class="title">Член КК <span id="expertNumber">@(currentExpert.HasValue ? "№ " + currentExpert : "отсутствует")</span></div>
                     <div class="status-block">
                         <div class="online-status" id="onlineStatus"></div>
                         <div class="write-status" id="writeStatus">Печатает...</div>
                     </div>
+                </div>
+                <div class="remaining-time">
+                    <div id="mobileRemainingTime" class="remaining-value">00:00</div>
+                    <div class="remaining-caption">минуты осталось</div>
                 </div>
                 <button id="mobileSwitchButton" class="custom-button switch-button"><img src="~/images/chat/switch.png" alt="Сменить консультанта" /></button>
             </div>

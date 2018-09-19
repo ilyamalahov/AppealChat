@@ -9,7 +9,7 @@ namespace Tpr.Chat.Web.Service
     {
         private Dictionary<Guid, ChatConnection> connections = new Dictionary<Guid, ChatConnection>();
 
-        public void AddConnectionId(Guid appealId, string connectionId, ContextType connectionType = ContextType.Appeal, string expertKey = null)
+        public void AddConnectionId(Guid appealId, string connectionId, ContextType connectionType = ContextType.Appeal)
         {
             ChatConnection connection;
 
@@ -18,8 +18,11 @@ namespace Tpr.Chat.Web.Service
                 lock (connections)
                 {
                     connection = new ChatConnection();
-
-                    if (!connections.TryAdd(appealId, connection)) return;
+                    
+                    if (!connections.TryAdd(appealId, connection))
+                    {
+                        return;
+                    }
                 }
             }
 
@@ -29,12 +32,12 @@ namespace Tpr.Chat.Web.Service
                     connection.AppealConnectionId = connectionId;
                     break;
                 case ContextType.Expert:
-                    connection.ExpertConnections.Add(expertKey, connectionId);
+                    connection.ExpertConnectionId = connectionId;
                     break;
             }
         }
 
-        public string GetConnectionId(Guid appealId, ContextType connectionType = ContextType.Appeal, string expertKey = null)
+        public string GetConnectionId(Guid appealId, ContextType connectionType = ContextType.Appeal)
         {
             ChatConnection connection;
 
@@ -48,13 +51,13 @@ namespace Tpr.Chat.Web.Service
                 case ContextType.Appeal:
                     return connection.AppealConnectionId;
                 case ContextType.Expert:
-                    return connection.ExpertConnections[expertKey];
+                    return connection.ExpertConnectionId;
             }
 
             return null;
         }
 
-        public void RemoveConnectionId(Guid appealId, ContextType connectionType = ContextType.Appeal, string expertKey = null)
+        public void RemoveConnectionId(Guid appealId, ContextType connectionType = ContextType.Appeal)
         {
             ChatConnection connection;
 
@@ -69,12 +72,12 @@ namespace Tpr.Chat.Web.Service
                     connection.AppealConnectionId = null;
                     break;
                 case ContextType.Expert:
-                    connection.ExpertConnections.Remove(expertKey);
+                    connection.ExpertConnectionId = null;
                     break;
             }
         }
 
-        public bool isOnline(Guid appealId, ContextType connectionType = ContextType.Appeal, string expertKey = null)
+        public bool isOnline(Guid appealId, ContextType connectionType = ContextType.Appeal)
         {
             ChatConnection connection;
 
@@ -91,11 +94,10 @@ namespace Tpr.Chat.Web.Service
                     connectionId = connection.AppealConnectionId;
                     break;
                 case ContextType.Expert:
-                    connectionId = connection.ExpertConnections[expertKey];
+                    connectionId = connection.ExpertConnectionId;
                     break;
                 default:
-                    connectionId = null;
-                    break;
+                    return false;
             }
 
             return !string.IsNullOrEmpty(connectionId);
@@ -103,26 +105,30 @@ namespace Tpr.Chat.Web.Service
 
         public IEnumerable<string> GetExpertKeys(Guid appealId)
         {
-            ChatConnection connection;
+            //ChatConnection connection;
 
-            if (!connections.TryGetValue(appealId, out connection))
-            {
-                return null;
-            }
+            //if (!connections.TryGetValue(appealId, out connection))
+            //{
+            //    return null;
+            //}
 
-            return connection.ExpertConnections.Keys;
+            //return connection.ExpertConnections.Keys;
+
+            return null;
         }
 
         public string GetOnlineExpertKey(Guid appealId, string expertKey)
         {
-            ChatConnection connection;
+            //ChatConnection connection;
 
-            if (!connections.TryGetValue(appealId, out connection))
-            {
-                return null;
-            }
+            //if (!connections.TryGetValue(appealId, out connection))
+            //{
+            //    return null;
+            //}
 
-            return connection.ExpertConnections.Select(ec => ec.Key).FirstOrDefault(key => key != expertKey);
+            //return connection.ExpertConnections.Select(ec => ec.Key).FirstOrDefault(key => key != expertKey);
+
+            return null;
         }
     }
 }

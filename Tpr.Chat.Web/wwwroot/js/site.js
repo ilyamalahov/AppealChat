@@ -22,6 +22,7 @@ const getAccessToken = (appeal, expert) => {
 // Return new "Receive" message
 const receiveMessage = (message, isSender) => {
     const nickName = isSender ? 'Вы' : message.nickName;
+
     const messageDate = luxon.DateTime.fromISO(message.createDate);
 
     const messageBubble = '<div class="message-bubble">' + message.messageString + '</div>';
@@ -32,12 +33,16 @@ const receiveMessage = (message, isSender) => {
 };
 
 // Return new "Join user" message
-const joinMessage = (message, isSender) => {
-    const messageDate = luxon.DateTime.fromISO(message.createDate);
+const joinMessage = (messageDate, nickName, isFirstJoined, isSender) => {
+    const messageDateObj = luxon.DateTime.fromISO(messageDate);
 
-    const messageText = isSender ? 'Вы подключились к консультации' : message.nickName + ' подключился к консультации';
+    var messageText = "";
 
-    const html = messageText + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
+    if (isSender)               messageText = 'Вы подключились к консультации';
+    else if (isFirstJoined)     messageText = nickName + ' подключился к консультации. Вы можете задать свои вопросы здесь.';
+    else                        messageText = nickName + ' подключился к консультации';
+
+    const html = messageText + ' <b class="message-date">' + messageDateObj.toFormat("tt") + '</b>';
 
     return addMessage(html, isSender);
 };
@@ -54,7 +59,7 @@ const leaveMessage = (message, isSender) => {
 };
 
 // 
-const firstExpertMessage = (expertKey, isSender) => {
+const firstJoinMessage = (expertKey, isSender) => {
     const messageText = 'Член КК № ' + expertKey + ' подключился к консультации. Вы можете задать ему свои вопросы';
 
     return addMessage(messageText, isSender);
@@ -176,4 +181,4 @@ $(document).ready(() => {
     $('.sidemenu-item').on('click', () => toggleSideMenu(false));
 });
 
-$(document).on('click', '#closeModalButton', () => $('#modal').hideModal());
+$(document).on('click', '#closeModalButton, #cancelButton, #cancelMobileButton', () => $('#modal').hideModal());

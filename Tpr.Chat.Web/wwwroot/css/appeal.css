@@ -27,6 +27,15 @@
 }
 
     /* Appeal only */
+    .main-header .side-button {
+        margin: 10px;
+        padding: 10px;
+        border-right: 1px solid #fff;
+    }
+        .main-header .side-button img {
+            height: 30px;
+        }
+
     .main-header .remaining-time {
         flex: none;
         display: none;
@@ -97,7 +106,7 @@
 
 @media screen and (max-width: 767px) {
     .header {
-        margin: 0;
+        display: none;
     }
 
     .main {
@@ -134,8 +143,8 @@
         }
 }
 
-@media screen and (max-height: 500px) {
+/*@media screen and (max-height: 500px) {
     .main-header {
         display: none;
     }
-}
+}*/

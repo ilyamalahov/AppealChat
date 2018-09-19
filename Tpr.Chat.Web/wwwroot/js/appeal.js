@@ -17,20 +17,27 @@ const onReceiveMessage = (message) => {
 };
 
 // 
-const onJoinUser = (message, isAppealOnline, onlineExpertKey) => {
-    changeStatus(onlineExpertKey !== null);
+const onJoinUser = (messageDate, nickName, isFirstJoined, isAppealOnline, isExpertOnline) => {
+    changeStatus(isExpertOnline);
 
-    const isSender = message.nickName === 'Апеллянт';
+    const isSender = nickName === 'Апеллянт';
 
-    if (!isSender) return;
+    // Expert text
+    if (isFirstJoined) {
+        const expertText = '№' + expertKey;
 
-    const li = joinMessage(message, isSender);
+        $('#expertNumber').text(expertText);
+    }
+
+    if (!isFirstJoined && !isSender) { return; }
+
+    const li = joinMessage(messageDate, nickName, isFirstJoined, isSender);
 
     $("#messagesList").append(li).scrollTo(li);
 };
 
 // 
-const onLeaveUser = (message, onlineExpertKey) => {
+const onLeaveUser = (message) => {
     changeStatus(false);
 
     const isSender = message.nickName === 'Апеллянт';
@@ -43,24 +50,10 @@ const onLeaveUser = (message, onlineExpertKey) => {
 };
 
 // 
-const onFirstExpert = (expertKey) => {
-    waitChange(false);
-
-    // Expert text
-    const expertText = '№' + expertKey;
-
-    $('#expertNumber').text(expertText);
-
-    // 
-    const isSender = nickname === 'Апеллянт';
-
-    const li = firstExpertMessage(expertKey, isSender);
-
-    $("#messagesList").append(li).scrollTo(li);
-};
+const onCompleteChange = (expertKey) => waitChange(false);
 
 // 
-const onChangeExpert = (messageText) => {
+const onInitalizeChange = (messageText) => {
     const li = changeExpertMessage(messageText);
 
     $('#messagesList').append(li).scrollTo(li);
@@ -116,12 +109,12 @@ const changeExpert = (appeal) => {
         method: "POST",
         url: "ajax/expert/change",
         data: { appealId: appeal },
-        beforeSend: () => $('#changeButton').prop('disabled', true),
+        beforeSend: () => $('#changeButton, #changeMobileButton').prop('disabled', true),
         success: () => waitChange(true),
         error: (error) => {
             alert(error.responseText);
 
-            $('#changeButton').prop('disabled', false);
+            $('#changeButton, #changeMobileButton').prop('disabled', false);
         }
     });
 };
@@ -164,11 +157,11 @@ getAccessToken(appealId).then(accessToken => {
     // Leave user from chat
     chatConnection.on("Leave", onLeaveUser);
 
-    // First join of expert
-    chatConnection.on("FirstJoinExpert", onFirstExpert);
+    // Initialize change expert
+    chatConnection.on("InitializeChange", onInitalizeChange);
 
-    // Change expert
-    chatConnection.on("ChangeExpert", onChangeExpert);
+    // Complete change expert
+    chatConnection.on("CompleteChange", onCompleteChange);
 
     // Start chat connection
     chatConnection.start().catch((error) => console.error(error.toString()));
@@ -182,8 +175,7 @@ $(document).ready(() => {
     $('#sendButton').on('click', () => sendMessage($('#messageText').val()));
 
     // 
-    $('#changeButton, #mobileSwitchButton').on('click', () => changeExpert(appealId));
-
+    $('#changeButton, #mobileSwitchButton').on('click', () => $('#modal').showModal('modal/changeexpert'));
     // 
     //$('#completeButton').on('click', () => $('#modal').showModal('ajax/completechat'));
 
@@ -211,3 +203,5 @@ $(document).ready(() => {
 
     waitChange(isWaiting);
 });
+
+$(document).on('click', '#okChangeButton, #okChangeMobileButton', () => { $('#modal').hideModal(); changeExpert(appealId); });

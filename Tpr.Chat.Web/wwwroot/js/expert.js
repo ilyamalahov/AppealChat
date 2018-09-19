@@ -88,12 +88,12 @@ const onReceiveMessage = (message) => {
 };
 
 // Join user to chat callback
-const onJoinUser = (message, isAppealOnline, onlineExpertKey) => {
+const onJoinUser = (messageDate, nickName, isFirstJoined, isAppealOnline, isExpertOnline) => {
     changeStatus(isAppealOnline);
 
-    const isSender = message.nickName === 'Член КК № ' + expertKey;
+    const isSender = nickName === 'Член КК № ' + expertKey;
 
-    const li = joinMessage(message, isSender);
+    const li = joinMessage(messageDate, nickName, isFirstJoined, isSender);
 
     $("#messagesList").append(li).scrollTo(li);
 };
@@ -110,15 +110,15 @@ const onLeaveUser = (message) => {
 };
 
 // First join expert to chat callback
-const onFirstExpert = (expertKey) => {
-    const isSender = nickname !== 'Апеллянт';
+//const onFirstExpert = (expertKey) => {
+//    const isSender = nickname !== 'Апеллянт';
 
-    const li = firstExpertMessage(expertKey, isSender);
+//    const li = firstJoinMessage(expertKey, isSender);
 
-    $("#messagesList").append(li).scrollTo(li);
-};
+//    $("#messagesList").append(li).scrollTo(li);
+//};
 
-const onChangeExpert = (messageText) => {
+const onInitializeChange = (messageText) => {
     $('#messageForm, #quickReply').remove();
 
     const li = changeExpertMessage(messageText);
@@ -209,10 +209,7 @@ getAccessToken(appealId, expertKey).then(accessToken => {
     chatConnection.on("Leave", onLeaveUser);
 
     // First join expert on chat handler
-    chatConnection.on("FirstJoinExpert", onFirstExpert);
-
-    // First join expert on chat handler
-    chatConnection.on("ChangeExpert", onChangeExpert);
+    chatConnection.on("InitializeChange", onInitializeChange);
 
     // Start chat hub connection
     chatConnection.start();

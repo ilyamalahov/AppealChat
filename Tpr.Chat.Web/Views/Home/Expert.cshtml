@@ -82,7 +82,7 @@
     </div>
     @if (!Model.IsExpertChanged)
     {
-        <div class="main-footer">
+        <div id="messageForm" class="main-footer">
             <button id="quickReplyButton" class="custom-button reply-button"><img src="~/images/chat/quick-reply.svg" style="height: 20px;" alt="QuickReply" /></button>
             <textarea id="messageText" class="message-text" data-min-rows="1" rows="1" autocomplete="off" maxlength="500" placeholder="Введите сообщение..."></textarea>
             <button id="sendButton" class="custom-button send-button"><img src="~/images/chat/send.svg" style="height: 20px;" alt="Send" /></button>

@@ -12,6 +12,7 @@ namespace Tpr.Chat.Core.Repositories
 
         // Messages
         IList<ChatMessage> GetChatMessages(Guid appealId);
+        ChatMessage GetWelcomeMessage(Guid appealId, string expertKey);
 
         bool WriteMessage(Guid appealId, string nickName, string messageString);
         bool WriteJoined(Guid appealId, string nickName);

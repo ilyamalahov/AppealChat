@@ -94,17 +94,17 @@ namespace Tpr.Chat.Web.Controllers
                     }
 
                     // 
-                    var nickname = "Член КК № " + key;
+                    //var nickname = "Член КК № " + key;
 
-                    var isInserted = chatRepository.WriteChatMessage(appealId, nickname, null, ChatMessageTypes.FirstExpert);
+                    //var isInserted = chatRepository.WriteChatMessage(appealId, nickname, null, ChatMessageTypes.FirstExpert);
 
-                    if(!isInserted)
-                    {
-                        return BadRequest("Не удалось добавить запись бд");
-                    }
+                    //if(!isInserted)
+                    //{
+                    //    return BadRequest("Не удалось добавить запись бд");
+                    //}
 
                     // 
-                    chatContext.Clients.User(appealId.ToString()).FirstJoinExpert(key);
+                    //chatContext.Clients.User(appealId.ToString()).FirstJoinExpert(key);
                 }
                 else if (replacement.OldMember == key)
                 {
@@ -136,22 +136,22 @@ namespace Tpr.Chat.Web.Controllers
                     }
 
                     // 
-                    var nickname = "Член КК № " + key;
+                    //var connectionId = connectionService.GetConnectionId(appealId);
 
-                    var isInserted = chatRepository.WriteChatMessage(appealId, nickname, null, ChatMessageTypes.FirstExpert);
-
-                    if (!isInserted)
-                    {
-                        return BadRequest("Не удалось добавить запись бд");
-                    }
+                    chatContext.Clients.User(appealId.ToString()).CompleteChange(key);
 
                     // 
-                    //var appealConnection = connectionService.GetConnectionId(appealId);
+                    //var nickname = "Член КК № " + key;
 
-                    //chatContext.Clients.Client(appealConnection).CompleteChange(key);
+                    //var isInserted = chatRepository.WriteChatMessage(appealId, nickname, null, ChatMessageTypes.FirstExpert);
 
-                    // 
-                    chatContext.Clients.User(appealId.ToString()).FirstJoinExpert(key);
+                    //if (!isInserted)
+                    //{
+                    //    return BadRequest("Не удалось добавить запись бд");
+                    //}
+
+                    //// 
+                    //chatContext.Clients.User(appealId.ToString()).FirstJoinExpert(key);
                 }
                 else if(replacement.NewMember != key)
                 {
@@ -173,7 +173,7 @@ namespace Tpr.Chat.Web.Controllers
                 sessionModel.Messages = chatRepository.GetChatMessages(appealId);
 
                 // Member replacement check
-                var replacement = chatRepository.GetMemberReplacement(appealId);;
+                var replacement = chatRepository.GetMemberReplacement(appealId);
 
                 if (replacement != null)
                 {

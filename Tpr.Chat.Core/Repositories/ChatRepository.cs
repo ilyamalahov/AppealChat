@@ -44,13 +44,46 @@ namespace Tpr.Chat.Core.Repositories
 
         #region Messages
 
+        public ChatMessage GetWelcomeMessage(Guid appealId, string expertKey)
+        {
+            var nickname = "Член КК № " + expertKey;
+            var messageType = (int)ChatMessageTypes.FirstExpert;
+
+            string sql = "SELECT * FROM dbo.ChatMessages WHERE AppealId = @appealId AND NickName = @nickname AND ChatMessageTypeId = @messageType";
+
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    return connection.QuerySingle<ChatMessage>(sql, new { appealId, nickname, messageType });
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
+
+                return null;
+            }
+        }
+
         public IList<ChatMessage> GetChatMessages(Guid appealId)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            try
             {
-                connection.Open();
-                string sql = "SELECT * FROM dbo.ChatMessages WHERE AppealId = @AppealId";
-                return connection.Query<ChatMessage>(sql, new { appealId }).ToList();
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    string sql = "SELECT * FROM dbo.ChatMessages WHERE AppealId = @AppealId";
+                    return connection.Query<ChatMessage>(sql, new { appealId }).ToList();
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
+
+                return null;
             }
         }
 

@@ -60,7 +60,7 @@ namespace Tpr.Chat.Web
             services.AddSignalR(options =>
             {
                 options.EnableDetailedErrors = true;
-                options.KeepAliveInterval = TimeSpan.FromMinutes(5);
+                //options.KeepAliveInterval = TimeSpan.FromMinutes(5);
             }).AddJsonProtocol();
 
             services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
