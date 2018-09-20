@@ -1,11 +1,6 @@
-﻿@model IndexViewModel
-@{
-    var chatSession = @Model.Session;
-}
-
-<div class="sidebar">
+﻿<div class="sidebar">
     <div class="sidebar-content">
-        @if (!Model.IsAfter && !Model.IsBefore)
+        @if (ViewBag.IsActive)
         {
             <div class="switch-expert">
                 <button id="changeButton" class="custom-button expert-button" @(Model.IsExpertChanged ? "disabled" : "")><img src="~/images/sidebar/switch.svg" alt="Сменить собеседника" /><span>Сменить собеседника</span></button>
@@ -15,16 +10,14 @@
         <div class="sidebar-block">
             <ul class="appeal-list">
                 <li class="title">Сведения об аппеляции</li>
-                <li><div class="label">Начало онлайн консультации</div><div class="value">@chatSession.StartTime.ToString("g")</div></li>
+                <li><div class="label">Начало онлайн консультации</div><div class="value">@Model.Session.StartTime.ToString("g")</div></li>
                 @if (Model.IsBefore)
                 {
-                    <li><div class="label">Завершение онлайн консультации</div><div class="value">@chatSession.FinishTime.ToString("g")</div></li>
+                    <li><div class="label">Завершение онлайн консультации</div><div class="value">@Model.Session.FinishTime.ToString("g")</div></li>
                 }
-                <li><div class="label">Апелляция</div><div class="value">@chatSession.AppealNumber от @chatSession.RegistrationDate.ToShortDateString()</div></li>
-                <li><div class="label">Предмет</div><div class="value">@chatSession.SubjectName</div></li>
-                <li><div class="label">Дата экзамена</div><div class="value">@chatSession.ExamDate.ToShortDateString()</div></li>
-                @*<li><div class="label">Зарегистрирована</div><div class="value">@chatSession.RegistrationDate</div></li>*@
-                @*<li><div class="label">Подано заявление</div><div class="value">@chatSession.ApplicationDate</div></li>*@
+                <li><div class="label">Апелляция</div><div class="value">@Model.Session.AppealNumber от @Model.Session.RegistrationDate.ToShortDateString()</div></li>
+                <li><div class="label">Предмет</div><div class="value">@Model.Session.SubjectName</div></li>
+                <li><div class="label">Дата экзамена</div><div class="value">@Model.Session.ExamDate.ToShortDateString()</div></li>
             </ul>
         </div>
         <div class="sidebar-block contacts-info">
@@ -33,6 +26,7 @@
                 <img id="contactsChevron" src="~/images/sidebar/right-chevron.svg" class="arrow-chevron" alt="Back" />
             </div>
             <div id="contactsTooltip" class="tooltip contacts-tooltip" style="display: none;">
+                <div id="contactsArrow" class="arrow"></div>
                 <div class="tooltip-header"><button id="closeHelpButton" class="custom-button close-button"><img src="~/images/sidebar/close.svg" /></button></div>
                 <div class="tooltip-content">
                     <ul>

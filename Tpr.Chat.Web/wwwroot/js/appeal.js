@@ -132,15 +132,42 @@ const changeExpert = (appeal) => {
     });
 };
 
+const completeChat = (appeal) => {
+    $.ajax({
+        method: "POST",
+        url: "ajax/chat/complete",
+        data: { appealId: appeal },
+        beforeSend: () => $('#completeButton, #completeMobileButton').prop('disabled', true),
+        success: () => location.reload(),
+        error: (error) => {
+            alert(error.responseText);
+
+            $('#completeButton, #completeMobileButton').prop('disabled', false);
+        }
+    });
+}
+
 const waitChange = (isWait) => {
     if (isWait) {
         $('#messageForm').hide();
 
         $('#modal').showModal('modal/waitchange');
+
+        // Stop chat connection
+        chatConnection.stop();
+
+        // Stop info connection
+        infoConnection.stop();
     } else {
         $('#messageForm').show();
 
         $('#modal').hideModal();
+
+        // Start chat connection
+        chatConnection.start().catch(error => console.error(error.toString()));
+
+        // Start info connection
+        infoConnection.start().then(updateInfo).catch(error => console.error(error.toString()));
     }
 };
 
@@ -181,6 +208,8 @@ getAccessToken(appealId).then(accessToken => {
 
     // Start info connection
     infoConnection.start().then(updateInfo).catch((error) => console.error(error.toString()));
+
+    waitChange(isWaiting);
 });
 
 $(document).ready(() => {
@@ -216,8 +245,6 @@ $(document).ready(() => {
 
     // 
     $('#messageText').trigger('input');
-
-    waitChange(isWaiting);
 });
 
 $(document).on('click', '#okChangeButton, #okChangeMobileButton', () => { $('#modal').hideModal(); changeExpert(appealId); });

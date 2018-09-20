@@ -65,7 +65,7 @@ const toggleQuickReply = (isVisible) => {
 const chatError = (error) => {
     console.error(error.toString());
 
-    $('#messageForm, #quickReply').remove();
+    blockChat();
 };
 
 // Change online status
@@ -119,12 +119,14 @@ const onLeaveUser = (message) => {
 //};
 
 const onInitializeChange = (messageText) => {
-    $('#messageForm, #quickReply').remove();
+    blockChat();
 
     const li = changeExpertMessage(messageText);
 
     $('#messagesList').append(li).scrollTo(li);
 };
+
+const blockChat = () => $('#messageForm, #quickReply').remove();
 
 // JQuery document ready (if in range) callback
 const onChatReady = () => {
@@ -210,6 +212,9 @@ getAccessToken(appealId, expertKey).then(accessToken => {
 
     // First join expert on chat handler
     chatConnection.on("InitializeChange", onInitializeChange);
+
+    // Complete chat
+    chatConnection.on("CompleteChat", blockChat);
 
     // Start chat hub connection
     chatConnection.start();

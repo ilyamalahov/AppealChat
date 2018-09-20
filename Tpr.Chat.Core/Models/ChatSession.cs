@@ -5,6 +5,7 @@ namespace Tpr.Chat.Core.Models
 {
     public class ChatSession
     {
+        // Session
         [ExplicitKey]
         public Guid AppealId { get; set; }
 
@@ -15,7 +16,6 @@ namespace Tpr.Chat.Core.Models
         public int? CurrentExpertKey { get; set; }
 
         // Appeal info
-
         public int AppealNumber { get; set; }
 
         public DateTime ApplicationDate { get; set; }
@@ -27,11 +27,15 @@ namespace Tpr.Chat.Core.Models
         public DateTime ExamDate { get; set; }
 
         // Commission info
-
         public DateTime CommissionStartTime { get; set; }
 
         public DateTime CommissionFinishTime { get; set; }
 
         public string CommissionLink { get; set; }
+
+        // Early completion
+        public bool IsCompleted { get; set; }
+
+        public DateTime CompleteTime { get; set; }
     }
 }

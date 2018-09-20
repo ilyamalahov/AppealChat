@@ -1,6 +1,6 @@
 ﻿<div class="modal-window wait-window">
     <div class="modal-content">
-        <div class="wait-loader"><img src="~/images/switch-loader.png" alt="Загрузка" /></div>
+        <div class="wait-loader"><img src="~/images/loading.svg" alt="Загрузка" /></div>
         <div class="wait-title">Подключение нового члена КК может занять некоторое время.</div>
         <div class="wait-subtitle">Время ожидания подключения другого члена КК также засчитывается как время консультации.</div>
     </div>
@@ -9,16 +9,21 @@
         .wait-window {
             text-align: center;
             padding: 40px;
-            /*height: auto;*/
         }
+
             .wait-window .modal-content {
                 margin: auto;
             }
+
         .wait-loader {
             margin-bottom: 40px;
         }
+
             .wait-loader img {
                 height: 80px;
+                -webkit-animation: spin 4s linear infinite;
+                -moz-animation: spin 4s linear infinite;
+                animation: spin 4s linear infinite;
             }
 
         .wait-title {
@@ -26,8 +31,28 @@
             font-weight: bold;
             margin-bottom: 20px;
         }
+
         .wait-subtitle {
             color: #ccc;
+        }
+
+        @@-moz-keyframes spin {
+            100% {
+                -moz-transform: rotate(360deg);
+            }
+        }
+
+        @@-webkit-keyframes spin {
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @@keyframes spin {
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
         }
     </style>
 </div>

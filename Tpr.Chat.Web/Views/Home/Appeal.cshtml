@@ -19,7 +19,7 @@
     <script src="~/js/appeal.js"></script>
 }
 
-<partial name="_SideMenu" />
+<partial name="_SideMenu" model="@(!Model.IsAfter && !Model.IsBefore)" />
 
 <div class="container">
     <partial name="_Header" />

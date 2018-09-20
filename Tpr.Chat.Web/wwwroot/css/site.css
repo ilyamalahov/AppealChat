@@ -84,6 +84,14 @@ a {
     margin-left: 5px;
 }
 
+.flipped {
+    transform: scale(-1, 1);
+    -moz-transform: scale(-1, 1);
+    -webkit-transform: scale(-1, 1);
+    -o-transform: scale(-1, 1);
+    -ms-transform: scale(-1, 1);
+}
+
 /* */
 .container {
     display: flex;
@@ -303,14 +311,27 @@ a {
     flex-flow: column;
     top: 100px;
     bottom: 10px;
-    left: 370px;
+    /*left: 370px;*/
     width: 400px;
-    max-height: 650px;
+    max-height: 660px;
     background: #2b7bde;
     color: #fff;
+    border-radius: 5px;
+    z-index: 1;
 }
 
-    .contacts-tooltip::before {
+    .contacts-tooltip .arrow {
+        position: absolute;
+        left: -5px;
+        height: 15px;
+        width: 15px;
+        transform: rotate(45deg);
+        border-bottom: inherit;
+        border-right: inherit;
+        background: inherit;
+    }
+
+    /*.contacts-tooltip::before {
         content: "";
         position: absolute;
         left: -5px;
@@ -321,7 +342,7 @@ a {
         border-bottom: inherit;
         border-right: inherit;
         background: inherit;
-    }
+    }*/
 
     .contacts-tooltip .tooltip-header {
         text-align: right;

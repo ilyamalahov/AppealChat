@@ -165,18 +165,23 @@ var contactsInfoIsVisible = false;
 const toggleHelpInfo = (isVisible) => {
     contactsInfoIsVisible = isVisible;
 
-    var bottomPosition = 0;
+    // 
+    $('#contactsButton img').toggleClass('flipped', isVisible);
+
+    var arrowPosition = 0;
 
     if (isVisible) {
-        const topPosition = $(window).height() - ($('#contactsButton').offset().top + $('#contactsButton').innerHeight());
-        console.log(topPosition);
-        $('#contactsTooltip').css('bottom', topPosition);
+        const arrowOffset = $('#contactsButton img').offset();
 
-        bottomPosition = $('#contactsButton').offset().top + $('#contactsButton').innerHeight();
-        console.log($('#contactsButton').offset(), $('#contactsButton').innerHeight(), bottomPosition);
+        arrowPosition = $(window).height() - (arrowOffset.top + $('#contactsButton img').innerHeight()) - 10;
     }
 
-    $('#contactsTooltip').toggle(isVisible)/*.css('bottom', bottomPosition)*/;
+    $('#contactsArrow').css({ bottom: arrowPosition });
+
+    const leftPosition = $('#contactsButton').outerWidth() + 10;
+
+    //
+    $('#contactsTooltip').toggle(isVisible).css('left', leftPosition);
 };
 
 const toggleSideMenu = (isVisible) => $('#sideMenu').toggle(isVisible);
