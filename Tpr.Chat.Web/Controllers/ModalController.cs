@@ -25,6 +25,11 @@ namespace Tpr.Chat.Web.Controllers
         {
             return PartialView("WaitChange");
         }
+        
+        public IActionResult CompleteChat(Guid appealId)
+        {
+            return PartialView("CompleteChat");
+        }
 
         public IActionResult Contacts()
         {

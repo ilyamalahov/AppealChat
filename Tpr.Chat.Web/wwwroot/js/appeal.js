@@ -103,6 +103,7 @@ const sendMessage = (message) => {
     $('#messageText').val('').trigger('input');
 };
 
+// 
 const scrollToLast = function () {
     const targetHeight = $(this).height();
 
@@ -132,6 +133,7 @@ const changeExpert = (appeal) => {
     });
 };
 
+// 
 const completeChat = (appeal) => {
     $.ajax({
         method: "POST",
@@ -147,6 +149,7 @@ const completeChat = (appeal) => {
     });
 }
 
+// 
 const waitChange = (isWait) => {
     if (isWait) {
         $('#messageForm').hide();
@@ -174,6 +177,7 @@ const waitChange = (isWait) => {
 // 
 const updateInfo = () => infoConnection.send("MainUpdate", appealId);
 
+// 
 getAccessToken(appealId).then(accessToken => {
     // Update info hub connection
     infoConnection = new signalR.HubConnectionBuilder()
@@ -212,6 +216,7 @@ getAccessToken(appealId).then(accessToken => {
     waitChange(isWaiting);
 });
 
+// 
 $(document).ready(() => {
     $(window).on('resize', scrollToLast);
 
@@ -219,10 +224,13 @@ $(document).ready(() => {
     $('#sendButton').on('click', () => sendMessage($('#messageText').val()));
 
     // 
-    $('#changeButton, #mobileSwitchButton').on('click', () => $('#modal').showModal('modal/changeexpert'));
+    $('#sideMobileButton').on('click', () => toggleSideMenu(true));
 
     // 
-    $('#sideMobileButton').on('click', () => toggleSideMenu(true));
+    $('#changeButton, #mobileChangeButton').on('click', () => $('#modal').showModal('modal/changeexpert'));
+
+    //
+    $('#completeButton, #completeMobileButton').on('click', () => $('#modal').showModal('modal/completechat'));
 
     // Textarea auto rows count
     $('#messageText').on('input', function (e) {
@@ -247,4 +255,8 @@ $(document).ready(() => {
     $('#messageText').trigger('input');
 });
 
+//
 $(document).on('click', '#okChangeButton, #okChangeMobileButton', () => { $('#modal').hideModal(); changeExpert(appealId); });
+
+//
+$(document).on('click', '#okCompleteButton, #okCompleteMobileButton', () => { $('#modal').hideModal(); completeChat(appealId); });

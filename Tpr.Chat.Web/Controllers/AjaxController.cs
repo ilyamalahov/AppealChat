@@ -84,6 +84,7 @@ namespace Tpr.Chat.Web.Controllers
             return Ok();
         }
 
+        [HttpPost("chat/complete")]
         public IActionResult CompleteChat(Guid appealId)
         {
             // Chat session
@@ -95,10 +96,10 @@ namespace Tpr.Chat.Web.Controllers
             }
 
             //
-            chatSession.IsCompleted = true;
+            chatSession.IsEarlyCompleted = true;
 
             //
-            chatSession.CompleteTime = DateTime.Now;
+            chatSession.EarlyCompleteTime = DateTime.Now;
 
             var updateResult = chatRepository.UpdateSession(chatSession);
 

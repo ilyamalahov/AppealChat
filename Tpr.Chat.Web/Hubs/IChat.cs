@@ -18,6 +18,6 @@ namespace Tpr.Chat.Web.Hubs
         Task CompleteChange(int expertKey);
 
         Task FirstJoinExpert(int expertKey);
-        void CompleteChat();
+        Task CompleteChat();
     }
 }

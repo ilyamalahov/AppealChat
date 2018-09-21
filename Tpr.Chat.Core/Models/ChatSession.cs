@@ -34,8 +34,8 @@ namespace Tpr.Chat.Core.Models
         public string CommissionLink { get; set; }
 
         // Early completion
-        public bool IsCompleted { get; set; }
+        public bool IsEarlyCompleted { get; set; }
 
-        public DateTime CompleteTime { get; set; }
+        public DateTime? EarlyCompleteTime { get; set; }
     }
 }

@@ -23,12 +23,6 @@ const updateInfo = () => infoConnection.invoke("MainUpdate", appealId);
 const onReceiveInfo = (currentDate, remainingTime, isAlarm, isFinished) => {
     // Finish consultation
     if (isFinished) {
-        // Stop info hub connection
-        infoConnection.stop();
-
-        // Stop chat hub connection
-        chatConnection.stop();
-
         // Hide alarm
         $('#alarm').hide();
 
@@ -126,7 +120,16 @@ const onInitializeChange = (messageText) => {
     $('#messagesList').append(li).scrollTo(li);
 };
 
-const blockChat = () => $('#messageForm, #quickReply').remove();
+const blockChat = () => {
+    // Stop info hub connection
+    infoConnection.stop();
+
+    // Stop chat hub connection
+    chatConnection.stop();
+
+    // 
+    $('#messageForm, #quickReply').remove();
+};
 
 // JQuery document ready (if in range) callback
 const onChatReady = () => {

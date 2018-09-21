@@ -1,18 +1,14 @@
-﻿<div class="modal-window change-window">
+﻿<div class="modal-window complete-window">
     <div class="modal-content">
-        <div class="title">Сменить члена конфликтной комиссии?</div>
+        <div class="title">Завершить консультацию?</div>
         <div class="button-box">
-            <button id="okChangeButton" class="custom-button btn-action btn-complete">Да</button>
+            <button id="okCompleteButton" class="custom-button btn-action btn-complete">Да</button>
             <button id="cancelButton" class="custom-button btn-action">Нет</button>
         </div>
-        <div class="notice-box">
-            <div class="notice">Вы можете один раз сменить члена КК, который вас консультирует.</div>
-            <div class="sub-notice" style="margin-bottom: 10px;">В случае замены оставшееся время на консультацию и возможность отправки сообщений приостанавливается до момента подключения нового члена конфликтной комиссии.</div>
-            <div class="sub-notice">Ожидание подключения нового члена конфликтной комиссии может занять продолжительное время.</div>
-        </div>
+        <div class="notice">Вернуться к консультации после ее завершения будет невозможно.</div>
     </div>
     <div class="modal-footer">
-        <button id="okChangeMobileButton" class="custom-button btn-action btn-complete">Да</button>
+        <button id="okCompleteMobileButton" class="custom-button btn-action btn-complete">Да</button>
         <button id="cancelMobileButton" class="custom-button btn-action">Нет</button>
     </div>
     <style>
@@ -33,14 +29,14 @@
             background: #3688db;
         }
 
-        .change-window .modal-content {
+        .complete-window .modal-content {
             display: flex;
             flex-flow: column;
             text-align: center;
             padding: 20px;
         }
 
-        .change-window .modal-footer {
+        .complete-window .modal-footer {
             border-top: 1px solid #ccc;
         }
 
@@ -57,7 +53,7 @@
 
         .modal-content .title {
             font-weight: bold;
-            font-size: 18px;
+            font-size: 20px;
             order: 0;
         }
 
@@ -65,20 +61,15 @@
             margin: 20px;
         }
 
-        .notice-box .notice {
-            font-weight: bold;
-            font-size: 12px;
-            margin-bottom: 10px;
-        }
-
-        .notice-box .sub-notice {
-            color: #9b9b9b;
-            font-size: 12px;
-        }
-
         .modal-footer .btn-action {
             width: 100%;
             padding: 20px;
+        }
+
+        .modal-content .notice {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 10px;
         }
 
         @@media screen and (max-width: 767px) {
@@ -90,13 +81,10 @@
             .modal-content .button-box {
                 display: none;
             }
-
-            .notice-box .notice, .notice-box .sub-notice {
-                font-size: 14px;
-            }
         }
+
         @@media screen and (min-width: 768px) {
-            .change-window .modal-footer {
+            .complete-window .modal-footer {
                 display: none;
             }
         }

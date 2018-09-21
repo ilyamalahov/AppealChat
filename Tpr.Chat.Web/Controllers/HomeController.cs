@@ -63,7 +63,7 @@ namespace Tpr.Chat.Web.Controllers
             };
 
             // 
-            ViewBag.IsActive = !isBefore && !isAfter;
+            ViewBag.IsActive = !isBefore && !isAfter && !chatSession.IsEarlyCompleted;
             
             // Check if current date less than chat start time
             if (isBefore)
@@ -168,7 +168,7 @@ namespace Tpr.Chat.Web.Controllers
             else if (connectionType == ContextType.Appeal)
             {
                 // Check if current date more than chat finish time
-                if (chatSession.IsCompleted || isAfter)
+                if (chatSession.IsEarlyCompleted || isAfter)
                 {
                     return View("After", model);
                 }
