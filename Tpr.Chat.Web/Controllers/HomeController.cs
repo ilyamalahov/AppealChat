@@ -104,7 +104,7 @@ namespace Tpr.Chat.Web.Controllers
                     // Block ability to send messages
                     isExpertChanged = true;
                 }
-                else if (!replacement.NewMember.HasValue)
+                else if (!replacement.NewMember.HasValue || replacement.NewMember == key)
                 {
                     // 
                     replacement.ReplaceTime = DateTime.Now;
