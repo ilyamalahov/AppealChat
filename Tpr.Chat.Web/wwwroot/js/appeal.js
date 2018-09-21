@@ -5,7 +5,7 @@ var infoConnection;
 var chatConnection;
 
 // Update intreval
-const interval = 1000;
+const interval = 10000;
 
 // Original window height
 const originalHeight = $(window).height();
