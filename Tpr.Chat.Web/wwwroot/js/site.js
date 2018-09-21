@@ -38,9 +38,9 @@ const joinMessage = (messageDate, nickName, isFirstJoined, isSender) => {
 
     var messageText = "";
 
-    if (isSender)               messageText = 'Вы подключились к консультации';
-    else if (isFirstJoined)     messageText = nickName + ' подключился к консультации. Вы можете задать свои вопросы здесь.';
-    else                        messageText = nickName + ' подключился к консультации';
+    if (isSender) messageText = 'Вы подключились к консультации';
+    else if (isFirstJoined) messageText = nickName + ' подключился к консультации. Вы можете задать свои вопросы здесь.';
+    else messageText = nickName + ' подключился к консультации';
 
     const html = messageText + ' <b class="message-date">' + messageDateObj.toFormat("tt") + '</b>';
 
@@ -124,7 +124,7 @@ jQuery.fn.highlightText = function (match) {
     // 
     var afterMatch = value.slice(matchEnd);
 
-    $(this).html(beforeMatch + "<strong>" + matchText + "</strong>" + afterMatch);
+    $(this).html(beforeMatch + "<em>" + matchText + "</em>" + afterMatch);
 
     return this;
 };
@@ -165,7 +165,23 @@ var contactsInfoIsVisible = false;
 const toggleHelpInfo = (isVisible) => {
     contactsInfoIsVisible = isVisible;
 
-    $('#contactsTooltip').toggle(isVisible);
+    // 
+    $('#contactsButton img').toggleClass('flipped', isVisible);
+
+    var arrowPosition = 0;
+
+    if (isVisible) {
+        const arrowOffset = $('#contactsButton img').offset();
+
+        arrowPosition = $(window).height() - (arrowOffset.top + $('#contactsButton img').innerHeight()) - 10;
+    }
+
+    $('#contactsArrow').css({ bottom: arrowPosition });
+
+    const leftPosition = $('#contactsButton').outerWidth() + 10;
+
+    //
+    $('#contactsTooltip').toggle(isVisible).css('left', leftPosition);
 };
 
 const toggleSideMenu = (isVisible) => $('#sideMenu').toggle(isVisible);

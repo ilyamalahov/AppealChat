@@ -41,7 +41,7 @@
                     <div id="mobileRemainingTime" class="remaining-value">00:00</div>
                     <div class="remaining-caption">минуты осталось</div>
                 </div>
-                <button id="mobileSwitchButton" class="custom-button switch-button" title="Сменить консультанта" @(Model.IsExpertChanged ? "disabled" : "")><img src="~/images/chat/businessman.png" alt="Сменить консультанта" /></button>
+                <button id="mobileChangeButton" class="custom-button switch-button" title="Сменить консультанта" @(Model.IsExpertChanged ? "disabled" : "")><img src="~/images/chat/businessman.png" alt="Сменить консультанта" /></button>
             </div>
             <div style="flex: auto; display: flex; min-height: 0;">
                 <ul id="messagesList" class="message-history">

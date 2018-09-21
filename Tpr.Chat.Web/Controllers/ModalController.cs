@@ -25,6 +25,11 @@ namespace Tpr.Chat.Web.Controllers
         {
             return PartialView("WaitChange");
         }
+        
+        public IActionResult CompleteChat(Guid appealId)
+        {
+            return PartialView("CompleteChat");
+        }
 
         public IActionResult Contacts()
         {
@@ -40,7 +45,11 @@ namespace Tpr.Chat.Web.Controllers
                 return BadRequest("Сессии по данному ID апеллянта не существует");
             }
 
-            return PartialView("AppealInfo", chatSession);
+            ViewBag.IsBefore = DateTime.Now < chatSession.StartTime;
+
+            ViewBag.Session = chatSession;
+
+            return PartialView();
         }
 
     }

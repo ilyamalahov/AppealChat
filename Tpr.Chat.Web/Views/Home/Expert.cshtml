@@ -1,8 +1,8 @@
 ﻿@using Tpr.Chat.Core.Models
 @model Tpr.Chat.Web.Models.IndexViewModel
 
-@{
-    ViewData["Title"] = "Expert";
+@{ 
+    var isActive = ViewBag.IsActive && !Model.IsExpertChanged;
 }
 
 @section Styles {
@@ -11,8 +11,8 @@
 
 @section Scripts {
     <script>
-        var appealId = "@Model.AppealId";
-        var expertKey = "@Model.ExpertKey";
+        var appealId = @Json.Serialize(Model.AppealId);
+        var expertKey = @Json.Serialize(Model.ExpertKey);
     </script>
     <script src="~/js/expert.js"></script>
 }
@@ -65,7 +65,7 @@
                 }
             }
         </ul>
-        @if (!Model.IsExpertChanged)
+        @if (isActive)
         {
             <div id="quickReply" class="overlay" style="display:none;">
                 <div class="quick-reply">
@@ -73,14 +73,14 @@
                     <ul id="replyList" class="reply-list">
                         @foreach (var reply in Model.QuickReplies)
                         {
-                            <li>@reply.MessageText</li>
+                            <li class="reply-item">@reply.MessageText</li>
                         }
                     </ul>
                 </div>
             </div>
         }
     </div>
-    @if (!Model.IsExpertChanged)
+    @if (isActive)
     {
         <div id="messageForm" class="main-footer">
             <button id="quickReplyButton" class="custom-button reply-button"><img src="~/images/chat/quick-reply.svg" style="height: 20px;" alt="QuickReply" /></button>
