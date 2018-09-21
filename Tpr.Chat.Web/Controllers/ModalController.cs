@@ -15,10 +15,15 @@ namespace Tpr.Chat.Web.Controllers
         {
             this.chatRepository = chatRepository;
         }
-
-        public IActionResult ChangeExpertWait(Guid appealId)
+        
+        public IActionResult ChangeExpert()
         {
-            return PartialView("ChangeExpertWait");
+            return PartialView("ChangeExpert");
+        }
+
+        public IActionResult WaitChange(Guid appealId)
+        {
+            return PartialView("WaitChange");
         }
 
         public IActionResult Contacts()

@@ -11,11 +11,10 @@
 
 @section Scripts {
     <script>
-        var appealId = "@Model.ChatSession.AppealId";
+        var appealId = "@Model.AppealId";
         var expertKey = "@Model.ExpertKey";
-        var inRange = "@Model.IsInRange"
     </script>
-    <script type="text/javascript" src="~/js/expert.js"></script>
+    <script src="~/js/expert.js"></script>
 }
 
 <div class="main">
@@ -66,7 +65,7 @@
                 }
             }
         </ul>
-        @if (Model.IsInRange)
+        @if (!Model.IsExpertChanged)
         {
             <div id="quickReply" class="overlay" style="display:none;">
                 <div class="quick-reply">
@@ -81,9 +80,9 @@
             </div>
         }
     </div>
-    @if (Model.IsInRange)
+    @if (!Model.IsExpertChanged)
     {
-        <div class="main-footer">
+        <div id="messageForm" class="main-footer">
             <button id="quickReplyButton" class="custom-button reply-button"><img src="~/images/chat/quick-reply.svg" style="height: 20px;" alt="QuickReply" /></button>
             <textarea id="messageText" class="message-text" data-min-rows="1" rows="1" autocomplete="off" maxlength="500" placeholder="Введите сообщение..."></textarea>
             <button id="sendButton" class="custom-button send-button"><img src="~/images/chat/send.svg" style="height: 20px;" alt="Send" /></button>

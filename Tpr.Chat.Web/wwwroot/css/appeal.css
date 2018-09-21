@@ -27,23 +27,29 @@
 }
 
     /* Appeal only */
+    .main-header .side-button {
+        padding: 5px 10px;
+        margin-right: 10px;
+        border-right: 2px solid #7aafe4;
+    }
+        .main-header .side-button img {
+            height: 30px;
+        }
+
     .main-header .remaining-time {
         flex: none;
         display: none;
-        margin: 5px;
-        padding: 5px;
-        border-radius: 3px;
-        text-align: center;
-        background: #72ade7;
+        text-align: right;
     }
 
     .main-header .remaining-value {
-        font-size: 12px;
+        font-size: 16px;
+        font-weight: bold;
     }
 
     .main-header .remaining-caption {
         color: #aed3f0;
-        font-size: 10px;
+        font-size: 14px;
     }
 
     .main-header .title-status {
@@ -56,29 +62,25 @@
     .main-header .title {
         flex: auto;
         font-size: 18px;
+        font-weight: bold;
         line-height: 1;
     }
 
     .main-header .switch-button {
         display: none;
         flex: none;
-        margin: 5px;
-        padding: 5px;
-        background: #fff;
-        border-radius: 3px;
+        padding: 5px 10px;
+        margin-left: 10px;
+        border-left: 2px solid #7aafe4;
     }
 
         .main-header .switch-button img {
             height: 30px;
         }
 
-        .main-header .switch-button:hover {
+        /*.main-header .switch-button:hover {
             background: #e1e1e1;
-        }
-
-        .main-header .switch-button:disabled {
-            background: #c7c7c7;
-        }
+        }*/
 
 .main-footer {
     flex: none;
@@ -97,7 +99,7 @@
 
 @media screen and (max-width: 767px) {
     .header {
-        margin: 0;
+        display: none;
     }
 
     .main {
@@ -107,7 +109,7 @@
 
     .main-header {
         border-radius: 0;
-        padding: 0;
+        padding: 10px 5px;
     }
 
         .main-header .remaining-time {
@@ -115,9 +117,9 @@
         }
 
         .main-header .title {
-            margin-bottom: 5px;
             width: 100%;
-            font-size: 12px;
+            margin-bottom: 5px;
+            font-size: 16px;
         }
 
         .main-header .online-status {
@@ -126,7 +128,7 @@
         }
 
         .main-header .write-status {
-            font-size: 10px;
+            font-size: 14px;
         }
 
         .main-header .switch-button {
@@ -134,8 +136,8 @@
         }
 }
 
-@media screen and (max-height: 500px) {
+/*@media screen and (max-height: 500px) {
     .main-header {
         display: none;
     }
-}
+}*/

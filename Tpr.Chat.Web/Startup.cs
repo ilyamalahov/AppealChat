@@ -57,7 +57,11 @@ namespace Tpr.Chat.Web
             );
 
             // SignalR
-            services.AddSignalR(options => options.EnableDetailedErrors = true).AddJsonProtocol();
+            services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = true;
+                //options.KeepAliveInterval = TimeSpan.FromMinutes(5);
+            }).AddJsonProtocol();
 
             services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 

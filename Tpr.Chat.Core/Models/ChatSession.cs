@@ -3,7 +3,6 @@ using Dapper.Contrib.Extensions;
 
 namespace Tpr.Chat.Core.Models
 {
-    [Table("ChatSessions")]
     public class ChatSession
     {
         [ExplicitKey]
@@ -13,7 +12,7 @@ namespace Tpr.Chat.Core.Models
 
         public DateTime FinishTime { get; set; }
 
-        public int CurrentExpertKey { get; set; }
+        public int? CurrentExpertKey { get; set; }
 
         // Appeal info
 
@@ -34,8 +33,5 @@ namespace Tpr.Chat.Core.Models
         public DateTime CommissionFinishTime { get; set; }
 
         public string CommissionLink { get; set; }
-
-        // Test
-        public bool IsExpertChanged { get; set; }
     }
 }

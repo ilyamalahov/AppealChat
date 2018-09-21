@@ -33,8 +33,8 @@ const onReceiveInfo = (currentDate, remainingTime, isAlarm, isFinished) => {
         $('#alarm').hide();
 
         return;
-    }   
-    
+    }
+
     // Alarm
     if (isAlarm) {
         const alarmText = 'До окончания консультации осталось ' + remainingText;
@@ -62,6 +62,12 @@ const toggleQuickReply = (isVisible) => {
     }
 };
 
+const chatError = (error) => {
+    console.error(error.toString());
+
+    $('#messageForm, #quickReply').remove();
+};
+
 // Change online status
 const changeStatus = (isOnline) => $('#onlineStatus').toggleClass('online', isOnline);
 
@@ -82,12 +88,12 @@ const onReceiveMessage = (message) => {
 };
 
 // Join user to chat callback
-const onJoinUser = (message, isAppealOnline, onlineExpertKey) => {
+const onJoinUser = (messageDate, nickName, isFirstJoined, isAppealOnline, isExpertOnline) => {
     changeStatus(isAppealOnline);
 
-    const isSender = message.nickName === 'Член КК № ' + expertKey;
+    const isSender = nickName === 'Член КК № ' + expertKey;
 
-    const li = joinMessage(message, isSender);
+    const li = joinMessage(messageDate, nickName, isFirstJoined, isSender);
 
     $("#messagesList").append(li).scrollTo(li);
 };
@@ -104,12 +110,20 @@ const onLeaveUser = (message) => {
 };
 
 // First join expert to chat callback
-const onFirstJoinExpert = (nickname) => {
-    const isSender = nickname !== 'Апеллянт';
+//const onFirstExpert = (expertKey) => {
+//    const isSender = nickname !== 'Апеллянт';
 
-    const li = firstJoinExpertMessage(nickname, isSender);
+//    const li = firstJoinMessage(expertKey, isSender);
 
-    $("#messagesList").append(li).scrollTo(li);
+//    $("#messagesList").append(li).scrollTo(li);
+//};
+
+const onInitializeChange = (messageText) => {
+    $('#messageForm, #quickReply').remove();
+
+    const li = changeExpertMessage(messageText);
+
+    $('#messagesList').append(li).scrollTo(li);
 };
 
 // JQuery document ready (if in range) callback
@@ -162,45 +176,41 @@ const onChatReady = () => {
     $('#messageText').trigger('input');
 };
 
-// Action
+// Create new info hub connection
+infoConnection = new signalR.HubConnectionBuilder()
+    .withUrl("/info")
+    .build();
 
-if (inRange) {
-    // Create new info hub connection
-    infoConnection = new signalR.HubConnectionBuilder()
-        .withUrl("/info")
+// Receive information event handler
+infoConnection.on("ReceiveInfo", onReceiveInfo);
+
+// JQuery document ready handler
+$(document).ready(onChatReady);
+
+// Start info connection
+infoConnection.start().then(updateInfo);
+
+// 
+getAccessToken(appealId, expertKey).then(accessToken => {
+    // Create new chat hub connection
+    chatConnection = new signalR.HubConnectionBuilder()
+        .withUrl("/chat", { accessTokenFactory: () => accessToken })
         .build();
 
-    // Receive information event handler
-    infoConnection.on("ReceiveInfo", onReceiveInfo);
+    // Event handlers
 
-    // 
-    getAccessToken().then(accessToken => {
-        // Create new chat hub connection
-        chatConnection = new signalR.HubConnectionBuilder()
-            .withUrl("/chat", { accessTokenFactory: () => accessToken })
-            .build();
+    // Receive message from user handler
+    chatConnection.on("Receive", onReceiveMessage);
 
-        // Event handlers
+    // Join user to chat handler
+    chatConnection.on("Join", onJoinUser);
 
-        // Receive message from user handler
-        chatConnection.on("Receive", onReceiveMessage);
+    // Leave user from chat handler
+    chatConnection.on("Leave", onLeaveUser);
 
-        // Join user to chat handler
-        chatConnection.on("Join", onJoinUser);
+    // First join expert on chat handler
+    chatConnection.on("InitializeChange", onInitializeChange);
 
-        // Leave user from chat handler
-        chatConnection.on("Leave", onLeaveUser);
-
-        // First join expert on chat handler
-        chatConnection.on("FirstJoinExpert", onFirstJoinExpert);
-
-        // Start chat hub connection
-        chatConnection.start();
-    }).catch(error => console.error(error.toString()));
-
-    // JQuery document ready handler
-    $(document).ready(onChatReady);
-
-    // Start info connection
-    infoConnection.start().then(updateInfo);
-}
+    // Start chat hub connection
+    chatConnection.start();
+}).catch(chatError);

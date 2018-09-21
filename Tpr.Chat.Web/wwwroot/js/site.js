@@ -1,43 +1,50 @@
 ﻿// Get JWT access token
-const getAccessToken = () => {
+const getAccessToken = (appeal, expert) => {
     return new Promise((resolve, reject) => {
         const accessToken = sessionStorage.getItem('access_token');
 
-        if (accessToken) {
-            return resolve(accessToken);
-        }
+        if (accessToken) { return resolve(accessToken); }
 
-        $.post("token", { appealId: appealId, key: expertKey })
-            .done(function (response) {
+        $.ajax({
+            method: "post",
+            url: "token",
+            data: { appealId: appeal, key: expert },
+            success: (response) => {
                 sessionStorage.setItem("access_token", response.accessToken);
 
                 return resolve(response.accessToken);
-            })
-            .fail(reject);
+            },
+            error: reject
+        });
     });
 };
 
 // Return new "Receive" message
 const receiveMessage = (message, isSender) => {
     const nickName = isSender ? 'Вы' : message.nickName;
+
     const messageDate = luxon.DateTime.fromISO(message.createDate);
 
     const messageBubble = '<div class="message-bubble">' + message.messageString + '</div>';
 
     const messageInfo = nickName + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
 
-    return addMessage(messageBubble + messageInfo, false, isSender);
+    return addMessage(messageBubble + messageInfo, isSender, false);
 };
 
 // Return new "Join user" message
-const joinMessage = (message, isSender) => {
-    const messageDate = luxon.DateTime.fromISO(message.createDate);
+const joinMessage = (messageDate, nickName, isFirstJoined, isSender) => {
+    const messageDateObj = luxon.DateTime.fromISO(messageDate);
 
-    const messageText = isSender ? 'Вы подключились к консультации' : message.nickName + ' подключился к консультации';
+    var messageText = "";
 
-    const html = messageText + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
+    if (isSender)               messageText = 'Вы подключились к консультации';
+    else if (isFirstJoined)     messageText = nickName + ' подключился к консультации. Вы можете задать свои вопросы здесь.';
+    else                        messageText = nickName + ' подключился к консультации';
 
-    return addMessage(html, true, isSender);
+    const html = messageText + ' <b class="message-date">' + messageDateObj.toFormat("tt") + '</b>';
+
+    return addMessage(html, isSender);
 };
 
 // Return new "Leave user" message
@@ -48,24 +55,28 @@ const leaveMessage = (message, isSender) => {
 
     const html = messageText + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
 
-    return addMessage(html, true, isSender);
+    return addMessage(html, isSender);
 };
 
 // 
-const firstJoinExpertMessage = (nickname, isSender) => {
-    const messageText = nickname + ' подключился к консультации. Вы можете задать ему свои вопросы';
+const firstJoinMessage = (expertKey, isSender) => {
+    const messageText = 'Член КК № ' + expertKey + ' подключился к консультации. Вы можете задать ему свои вопросы';
 
-    return addMessage(messageText, true, isSender);
+    return addMessage(messageText, isSender);
 };
 
 // 
-const changeExpertMessage = (messageText) => addMessage(messageText, true, true);
+const changeExpertMessage = (expertKey) => {
+    const messageText = 'Произведена замена члена КК № ' + expertKey;
+
+    return addMessage(expertKey, true);
+};
 
 // Return new list item
-const addMessage = (html, isStatusMessage, isSender) => {
-    const div = $('<div class="message ' + (isSender ? 'place-left' : 'place-right') + '"></div>').html(html);
+const addMessage = (html, isSender, isStatusMessage = true) => {
+    const div = $('<div class="message ' + (isSender ? 'place-left' : 'place-right') + '">').html(html);
 
-    var liElement = $('<li></li>');
+    var liElement = $('<li>');
 
     if (isStatusMessage) liElement.addClass('message-status');
 
@@ -81,13 +92,17 @@ jQuery.fn.scrollTo = function (element) {
 
 // 
 jQuery.fn.insertAtCursor = function (value) {
-    if ($(this).prop('selectionStart') || $(this).prop('selectionStart') === '0') {
-        var startSubstring = $(this).val().substring(0, $(this).prop('selectionStart'));
-        var endSubstring = $(this).val().substring($(this).prop('selectionEnd'), $(this).val().length);
+    const selectionStart = $(this).prop('selectionStart');
+    const selectionEnd = $(this).prop('selectionEnd');
+    const currentValue = $(this).val();
+
+    if (selectionStart || selectionStart === '0') {
+        var startSubstring = currentValue.substring(0, selectionStart);
+        var endSubstring = currentValue.substring(selectionEnd, currentValue.length);
 
         $(this).val(startSubstring + value + endSubstring);
     } else {
-        $(this).val($(this).val() + value);
+        $(this).val(currentValue + value);
     }
 
     return this;
@@ -144,58 +159,30 @@ jQuery.expr.filters.icontains = function (elem, i, m) {
     return (elem.innerText || elem.textContent || "").toLowerCase().indexOf(m[3].toLowerCase()) > -1;
 };
 
-const changeExpert = (appeal) => {
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            method: "POST",
-            url: "expert/change",
-            data: { appealId: appeal },
-            beforeSend: () => $('#modal').showModal('modal/changeexpertwait'),
-            success: resolve,
-            error: reject,
-            complete: () => $('#modal').hideModal()
-        });
-    });
-};
-
 // 
-var helpInfoIsVisible = false;
+var contactsInfoIsVisible = false;
 
-const switchHelpInfo = function (isVisible) {
-    helpInfoIsVisible = isVisible;
-
-    //var offset = { top: 0, left: 0 };
-
-    //if (isVisible) {
-    //    const parent = $('#contactsTooltip').parent();
-
-    //    const tooltipTop = parent.position().top + parent.outerHeight() - $('#contactsTooltip').outerHeight();
-
-    //    const tooltipLeft = parent.position().left + parent.outerWidth() + 20;
-
-    //    offset = { top: tooltipTop, left: tooltipLeft };
-    //}
+const toggleHelpInfo = (isVisible) => {
+    contactsInfoIsVisible = isVisible;
 
     $('#contactsTooltip').toggle(isVisible);
 };
 
-const switchSideMenu = (isVisible) => $('#sideMenu').toggle(isVisible);
+const toggleSideMenu = (isVisible) => $('#sideMenu').toggle(isVisible);
 
 // 
 $(document).ready(() => {
-    $('#contactsButton').on('click', () => switchHelpInfo(!helpInfoIsVisible));
+    $('#contactsButton').on('click', () => toggleHelpInfo(!contactsInfoIsVisible));
+    $('#closeHelpButton').on('click', () => toggleHelpInfo(false));
 
-    $('#closeHelpButton').on('click', () => switchHelpInfo(false));
+    $('#sideMenuButton').on('click', () => toggleSideMenu(true));
+    $('#closeSideButton').on('click', () => toggleSideMenu(false));
 
-    $('#sideMenuButton').on('click', () => switchSideMenu(true));
+    $('#appealInfoLink').on('click', () => $('#modal').showModal('modal/appealinfo', { appealId }));
 
-    $('#closeSideButton').on('click', () => switchSideMenu(false));
+    $('#contactsLink').on('click', () => $('#modal').showModal('modal/contacts'));
 
-    $('#appealSidemenuLink').on('click', () => $('#modal').showModal('modal/appealinfo', { appealId }));
-
-    $('#contactsSidemenuLink').on('click', () => $('#modal').showModal('modal/contacts'));
-
-    $('.sidemenu-item').on('click', () => switchSideMenu(false));
+    $('.sidemenu-item').on('click', () => toggleSideMenu(false));
 });
 
-$(document).on('click', '#closeModalButton', () => $('#modal').hideModal());
+$(document).on('click', '#closeModalButton, #cancelButton, #cancelMobileButton', () => $('#modal').hideModal());

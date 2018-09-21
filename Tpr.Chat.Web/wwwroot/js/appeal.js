@@ -1,197 +1,208 @@
-﻿$(document).ready(function () {
-    getAccessToken().then((accessToken) => {
-        // Update intreval
-        const interval = 10000;
+﻿// 
+var infoConnection;
 
-        // Update info hub connection
-        const infoConnection = new signalR.HubConnectionBuilder()
-            .withUrl("/info")
-            .build();
+// 
+var chatConnection;
 
-        // Receive information response event
-        infoConnection.on("ReceiveInfo", (currentDate, remainingTime, isAlarm, isFinished) => {
-            // Redirect on consultation end
-            if (isFinished) location.reload();
+// Update intreval
+const interval = 10000;
 
-            // Remaining duration
-            var remainingDuration = luxon.Duration.fromMillis(remainingTime);
+// 
+const onReceiveMessage = (message) => {
+    const isSender = message.nickName === 'Апеллянт';
 
-            // Remaining time text
-            var remainingText = remainingDuration.toFormat('hh:mm:ss');
+    const li = receiveMessage(message, isSender);
 
-            // Remaining format minutes
-            var remainingMinutes = remainingDuration.as("minutes");
+    $('#messagesList').append(li).scrollTo(li);
+};
 
-            if (remainingMinutes < 1) {
-                remainingText = 'меньше';
-            }
+// 
+const onJoinUser = (messageDate, nickName, isFirstJoined, isAppealOnline, isExpertOnline) => {
+    changeStatus(isExpertOnline);
 
-            $('.remaining-value').text(remainingText);
+    const isSender = nickName === 'Апеллянт';
 
-            // Moscow date
-            var moscowDate = luxon.DateTime.fromISO(currentDate, { zone: 'utc+3' });
+    // Expert text
+    if (isFirstJoined) {
+        const expertText = '№' + expertKey;
 
-            $('#moscowTime').text(moscowDate.toFormat('t'));
+        $('#expertNumber').text(expertText);
+    }
 
-            // Alarm after minutes (5 minutes default)
-            if (isAlarm) {
-                var alarmText = 'До окончания консультации осталось ' + remainingText + ' минут(-ы)';
+    if (!isFirstJoined && !isSender) { return; }
 
-                $('#alarm').text(alarmText).show();
-            }
+    const li = joinMessage(messageDate, nickName, isFirstJoined, isSender);
 
-            setTimeout(updateInfo, interval);
-        });
+    $("#messagesList").append(li).scrollTo(li);
+};
 
-        // Chat hub connection
-        const chatConnection = new signalR.HubConnectionBuilder()
-            .withUrl("/chat", { accessTokenFactory: () => accessToken })
-            .build();
+// 
+const onLeaveUser = (message) => {
+    changeStatus(false);
 
-        // Receiving message from user
-        chatConnection.on("Receive", (message) => {
-            const isSender = message.nickName === 'Апеллянт';
+    const isSender = message.nickName === 'Апеллянт';
 
-            const li = receiveMessage(message, isSender);
+    if (!isSender) return;
 
-            $('#messagesList').append(li).scrollTo(li);
-        });
+    const li = leaveMessage(message, isSender);
 
-        // Joining user to chat
-        chatConnection.on("Join", (message, isAppealOnline, onlineExpertKey) => {
-            setExpert(onlineExpertKey);
+    $("#messagesList").append(li).scrollTo(li);
+};
 
-            const isSender = message.nickName === 'Апеллянт';
+// 
+const onCompleteChange = (expertKey) => waitChange(false);
 
-            if (!isSender) return;
+// 
+const onInitalizeChange = (messageText) => {
+    const li = changeExpertMessage(messageText);
 
-            const li = joinMessage(message, isSender);
+    $('#messagesList').append(li).scrollTo(li);
+};
 
-            $("#messagesList").append(li).scrollTo(li);
-        });
+// 
+const onReceiveInfo = (currentDate, remainingTime, isAlarm, isFinished) => {
+    // Redirect on consultation end
+    if (isFinished) location.reload();
 
-        // Leave user from chat
-        chatConnection.on("Leave", (message, onlineExpertKey) => {
-            setExpert(onlineExpertKey);
+    // Remaining duration
+    var remainingDuration = luxon.Duration.fromMillis(remainingTime);
 
-            const isSender = message.nickName === 'Апеллянт';
+    // Remaining time text
+    var remainingText = remainingDuration.toFormat('hh:mm:ss');
 
-            if (!isSender) return;
+    // Remaining format minutes
+    var remainingMinutes = remainingDuration.as("minutes");
 
-            const li = leaveMessage(message, isSender);
+    if (remainingMinutes < 1) { remainingText = 'меньше'; }
 
-            $("#messagesList").append(li).scrollTo(li);
-        });
+    $('#remainingTime, #mobileRemainingTime').text(remainingText);
 
-        // Leave user from chat
-        chatConnection.on("FirstJoinExpert", (nickname) => {
-            const isSender = nickname === 'Апеллянт';
+    // Moscow date
+    var moscowDate = luxon.DateTime.fromISO(currentDate, { zone: 'utc+3' });
 
-            const li = firstJoinExpertMessage(nickname, isSender);
+    $('#moscowTime').text(moscowDate.toFormat('t'));
 
-            $("#messagesList").append(li).scrollTo(li);
-        });
+    // Alarm after minutes (5 minutes default)
+    if (isAlarm) {
+        var alarmText = 'До окончания консультации осталось ' + remainingText + ' минут(-ы)';
 
-        // Sending message
-        $('#sendButton').on('click', () => sendMessage($('#messageText').val()));
+        $('#alarm').text(alarmText).show();
+    }
 
-        // Textarea auto rows count
-        $('#messageText').on('input', function (e) {
-            $(this).expandRows();
+    setTimeout(updateInfo, interval);
+};
 
-            // 
-            const isDisabled = $(this).val().length === 0;
+// Send message
+const sendMessage = (message) => {
+    chatConnection.send('SendMessage', message);
 
-            $('#sendButton').prop('disabled', isDisabled);
-        });
+    // 
+    $('#messageText').val('').trigger('input');
+};
 
-        // Message textarea keyup event
-        $('#messageText').on('keyup', function (e) {
-            if (e.keyCode === 13 && !e.shiftKey) {
-                e.preventDefault();
+// 
+const changeStatus = (isOnline) => $('#onlineStatus').toggleClass('online', isOnline);
 
-                if ($(this).val().length > 0) sendMessage($(this).val());
-            }
-        });
+// Change expert functionality
+const changeExpert = (appeal) => {
+    $.ajax({
+        method: "POST",
+        url: "ajax/expert/change",
+        data: { appealId: appeal },
+        beforeSend: () => $('#changeButton, #changeMobileButton').prop('disabled', true),
+        success: () => waitChange(true),
+        error: (error) => {
+            alert(error.responseText);
 
-        // 
-        $('#emojiButton').on('click', () => $('#emojiGrid').toggle());
-
-        // 
-        $('#changeExpertButton').on('click', () => changeExpert(appealId).then(changeSuccess).catch(changeError));
-
-        // 
-        $('#completeButton').on('click', () => $('#modal').showModal('ajax/completechat'));
-
-        // Send message
-        const sendMessage = (message) => {
-            chatConnection.send('SendMessage', message)
-                .catch(error => console.error(error.toString()));
-
-            // 
-            $('#messageText').val('').trigger('input');
-        };
-
-        //
-        const changeSuccess = (data) => {
-            console.log(data.expertKey);
+            $('#changeButton, #changeMobileButton').prop('disabled', false);
         }
-        const changeError = (error) => {
-            console.log(error.responseText);
-        };
-
-        // 
-        const setExpert = (onlineExpertKey) => {
-            const isOnline = onlineExpertKey !== null;
-
-            // Set expert text
-            const expertText = isOnline ? '№' + onlineExpertKey : 'отсутствует';
-
-            $('#expertNumber').text(expertText);
-
-            // Change online circle status
-            $('#onlineStatus').toggleClass('online', isOnline);
-        };
-
-        const blockAccess = () => {
-            $('#changeExpertButton').prop('disabled', true);
-
-            $('#messageForm').hide();
-
-            chatConnection.close();
-        }
-
-        const unblockAccess = () => {
-            $('#changeExpertButton').prop('disabled', false);
-
-            $('#messageForm').show();
-
-            chatConnection.start();
-        }
-
-        // 
-        const updateInfo = () => infoConnection.invoke("MainUpdate", appealId);
-
-        // 
-        $('#messageText').trigger('input');
-
-        // Start Chat connection
-        chatConnection.start()
-            .catch((error) => console.error(error.toString()));
-
-        // Start Info connection
-        infoConnection.start()
-            .then(updateInfo)
-            .catch((error) => console.error(error.toString()));
-
-        // Modal change button click
-        //$(this).on('click', '#changeOkButton', (e) => {
-        //    changeExpert(accessToken, () => { closeModal(); switchLoader(true); })
-        //        .then(response => {
-        //            $('#expertNumber').val(response.expertKey);
-        //            switchLoader(false);
-        //        })
-        //        .catch((error) => { alert(error.error); switchLoader(false); });
-        //});
     });
+};
+
+const waitChange = (isWait) => {
+    if (isWait) {
+        $('#messageForm').hide();
+
+        $('#modal').showModal('modal/waitchange');
+    } else {
+        $('#messageForm').show();
+
+        $('#modal').hideModal();
+    }
+};
+
+// 
+const updateInfo = () => infoConnection.send("MainUpdate", appealId);
+
+getAccessToken(appealId).then(accessToken => {
+    // Update info hub connection
+    infoConnection = new signalR.HubConnectionBuilder()
+        .withUrl("/info")
+        .build();
+
+    // Chat hub connection
+    chatConnection = new signalR.HubConnectionBuilder()
+        .withUrl("/chat", { accessTokenFactory: () => accessToken })
+        .build();
+
+    // Receive information response event
+    infoConnection.on("ReceiveInfo", onReceiveInfo);
+
+    // Receiving message from user
+    chatConnection.on("Receive", onReceiveMessage);
+
+    // Joining user to chat
+    chatConnection.on("Join", onJoinUser);
+
+    // Leave user from chat
+    chatConnection.on("Leave", onLeaveUser);
+
+    // Initialize change expert
+    chatConnection.on("InitializeChange", onInitalizeChange);
+
+    // Complete change expert
+    chatConnection.on("CompleteChange", onCompleteChange);
+
+    // Start chat connection
+    chatConnection.start().catch((error) => console.error(error.toString()));
+
+    // Start info connection
+    infoConnection.start().then(updateInfo).catch((error) => console.error(error.toString()));
 });
+
+$(document).ready(() => {
+    // Send message
+    $('#sendButton').on('click', () => sendMessage($('#messageText').val()));
+
+    // 
+    $('#changeButton, #mobileSwitchButton').on('click', () => $('#modal').showModal('modal/changeexpert'));
+
+    // 
+    $('#sideMobileButton').on('click', () => toggleSideMenu(true));
+
+    // Textarea auto rows count
+    $('#messageText').on('input', function (e) {
+        $(this).expandRows();
+
+        // 
+        const isDisabled = $(this).val().length === 0;
+
+        $('#sendButton').prop('disabled', isDisabled);
+    });
+
+    // Message textarea keyup event
+    $('#messageText').on('keyup', function (e) {
+        if (e.keyCode === 13 && !e.shiftKey) {
+            e.preventDefault();
+
+            if ($(this).val().length > 0) { sendMessage($(this).val()); }
+        }
+    });
+
+    // 
+    $('#messageText').trigger('input');
+
+    waitChange(isWaiting);
+});
+
+$(document).on('click', '#okChangeButton, #okChangeMobileButton', () => { $('#modal').hideModal(); changeExpert(appealId); });

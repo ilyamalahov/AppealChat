@@ -1,14 +1,14 @@
 ﻿@model IndexViewModel
 @{
-    var chatSession = @Model.ChatSession;
+    var chatSession = @Model.Session;
 }
 
 <div class="sidebar">
     <div class="sidebar-content">
-        @if (Model.IsInRange)
+        @if (!Model.IsAfter && !Model.IsBefore)
         {
             <div class="switch-expert">
-                <button id="changeExpertButton" class="custom-button expert-button" @(chatSession.IsExpertChanged ? "disabled" : "")><img src="~/images/sidebar/switch.svg" alt="Сменить собеседника" /><span>Сменить собеседника</span></button>
+                <button id="changeButton" class="custom-button expert-button" @(Model.IsExpertChanged ? "disabled" : "")><img src="~/images/sidebar/switch.svg" alt="Сменить собеседника" /><span>Сменить собеседника</span></button>
             </div>
             <div class="sidebar-block remaining-time"><img src="~/images/sidebar/stopwatch.svg" alt="Оставшееся время" /><span><b id="remainingTime" class="remaining-value">00</b> минуты осталось</span></div>
         }
@@ -16,7 +16,7 @@
             <ul class="appeal-list">
                 <li class="title">Сведения об аппеляции</li>
                 <li><div class="label">Начало онлайн консультации</div><div class="value">@chatSession.StartTime.ToString("g")</div></li>
-                @if (!Model.IsInRange)
+                @if (Model.IsBefore)
                 {
                     <li><div class="label">Завершение онлайн консультации</div><div class="value">@chatSession.FinishTime.ToString("g")</div></li>
                 }
