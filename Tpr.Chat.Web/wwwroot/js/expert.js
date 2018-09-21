@@ -48,11 +48,11 @@ const toggleQuickReply = (isVisible) => {
     if (isVisible) {
         $('#quickReplyButton img').attr('src', 'images/chat/down-chevron.svg');
         $('#quickReply').fadeIn('fast');
-        $('#quickReply .quick-reply').slideDown('fast', () => $('#filterText').focus());
+        $('#quickReply .quick-reply').slideDown('fast', () => $('#filterText').focus().trigger('input'));
     } else {
         $('#quickReplyButton img').attr('src', 'images/chat/quick-reply.svg');
         $('#quickReply').fadeOut('fast');
-        $('#quickReply .quick-reply').slideUp('fast', () => $('#filterText').val('').trigger('input'));
+        $('#quickReply .quick-reply').slideUp('fast', () => $('#filterText').val(''));
     }
 };
 
@@ -139,13 +139,71 @@ const onChatReady = () => {
     // 
     $('#quickReplyButton').on('click', () => toggleQuickReply(!quickReplyIsVisible));
 
-    // 
-    $('#replyList').on('click', 'li', function (e) {
+    //
+    //$("#replyList").selectable({
+    //    selected: (event, item) => {
+    //        console.log($(item).text());
+    //    }
+    //});
+
+    const insertQuickReply = (replyText) => {
         toggleQuickReply(false);
 
-        $('#messageText').insertAtCursor($(this).text())
+        $('#messageText').insertAtCursor(replyText)
             .focus()
             .trigger('input');
+    };
+
+
+    
+    $('#replyList li').on('click', function () {
+        toggleQuickReply(false);
+
+        insertQuickReply($(this).text());
+    });
+
+    $('#filterText').on('keyup', (e) => {
+        const selectedItem = $('#replyList .selected');
+
+        var targetItem = selectedItem.closest('li:visible');
+
+        switch (e.keyCode) {
+            case 13:
+                insertQuickReply(selectedItem.text());
+                return;
+            case 38:
+                const previousItem = selectedItem.prevAll(':visible').first();
+
+                console.log(previousItem.length);
+                if (previousItem.length === 0) return;
+
+                // 
+                selectedItem.removeClass('selected');
+
+                // 
+                previousItem.addClass('selected');
+                return;
+            case 40: const nextItem = selectedItem.nextAll(':visible').first();
+
+                console.log(nextItem.length);
+                if (nextItem.length === 0) return;
+
+                // 
+                selectedItem.removeClass('selected');
+
+                // 
+                nextItem.addClass('selected');
+                return;
+        }
+        //if (e.keyCode == 38) {
+            
+
+        //    return;
+        //}else if (e.keyCode == 40) {
+            
+
+        //    return;
+        //}
     });
 
     //
@@ -153,10 +211,13 @@ const onChatReady = () => {
         var value = $(this).val();
 
         $("#replyList li")
+            .removeClass('selected')
             .hide()
             .filter(":icontains('" + value + "')")
             .show()
-            .each((index, element) => $(element).highlightText(value));
+            .each((index, element) => $(element).highlightText(value))
+            .first()
+            .addClass('selected');
     });
 
     //

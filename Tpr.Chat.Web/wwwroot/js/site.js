@@ -124,7 +124,7 @@ jQuery.fn.highlightText = function (match) {
     // 
     var afterMatch = value.slice(matchEnd);
 
-    $(this).html(beforeMatch + "<strong>" + matchText + "</strong>" + afterMatch);
+    $(this).html(beforeMatch + "<em>" + matchText + "</em>" + afterMatch);
 
     return this;
 };

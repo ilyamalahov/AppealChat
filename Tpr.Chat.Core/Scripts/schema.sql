@@ -37,7 +37,9 @@ CREATE TABLE dbo.ChatSessions (
   ExamDate datetime NOT NULL,
   CommissionStartTime datetime NOT NULL,
   CommissionFinishTime datetime NOT NULL,
-  CommissionLink varchar(max) NOT NULL
+  CommissionLink varchar(max) NOT NULL,
+  IsEarlyCompleted BIT NOT NULL DEFAULT (0),
+  EarlyCompleteTime DATETIME NULL
 )
 ON [PRIMARY]
 TEXTIMAGE_ON [PRIMARY]
