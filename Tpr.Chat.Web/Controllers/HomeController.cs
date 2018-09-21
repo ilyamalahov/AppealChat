@@ -81,6 +81,9 @@ namespace Tpr.Chat.Web.Controllers
 
                 model.QuickReplies = chatRepository.GetQuickReplies();
 
+                //
+                var isExpertChanged = false;
+
                 // Member replacement check
                 var replacement = chatRepository.GetMemberReplacement(appealId);
 
@@ -95,24 +98,11 @@ namespace Tpr.Chat.Web.Controllers
                     {
                         return BadRequest("Не удалось обновить запись бд");
                     }
-
-                    // 
-                    //var nickname = "Член КК № " + key;
-
-                    //var isInserted = chatRepository.WriteChatMessage(appealId, nickname, null, ChatMessageTypes.FirstExpert);
-
-                    //if(!isInserted)
-                    //{
-                    //    return BadRequest("Не удалось добавить запись бд");
-                    //}
-
-                    // 
-                    //chatContext.Clients.User(appealId.ToString()).FirstJoinExpert(key);
                 }
                 else if (replacement.OldMember == key)
                 {
                     // Block ability to send messages
-                    model.IsExpertChanged = true;
+                    isExpertChanged = true;
                 }
                 else if (!replacement.NewMember.HasValue)
                 {
@@ -142,27 +132,19 @@ namespace Tpr.Chat.Web.Controllers
                     //var connectionId = connectionService.GetConnectionId(appealId);
 
                     chatContext.Clients.User(appealId.ToString()).CompleteChange(key);
-
-                    // 
-                    //var nickname = "Член КК № " + key;
-
-                    //var isInserted = chatRepository.WriteChatMessage(appealId, nickname, null, ChatMessageTypes.FirstExpert);
-
-                    //if (!isInserted)
-                    //{
-                    //    return BadRequest("Не удалось добавить запись бд");
-                    //}
-
-                    //// 
-                    //chatContext.Clients.User(appealId.ToString()).FirstJoinExpert(key);
                 }
                 else if(replacement.NewMember != key)
                 {
-                    model.IsExpertChanged = true;
+                    isExpertChanged = true;
                 }
 
+                //
+                ViewBag.IsActive &= !isExpertChanged;
+
+                //
                 model.Messages = chatRepository.GetChatMessages(appealId);
 
+                //
                 return View("Expert", model);
             }
             else if (connectionType == ContextType.Appeal)

@@ -1,10 +1,6 @@
 ﻿@using Tpr.Chat.Core.Models
 @model Tpr.Chat.Web.Models.IndexViewModel
 
-@{ 
-    var isActive = ViewBag.IsActive && !Model.IsExpertChanged;
-}
-
 @section Styles {
     <link rel="stylesheet" type="text/css" href="~/css/expert.css" />
 }
@@ -62,10 +58,13 @@
                     case ChatMessageTypes.FirstExpert:
                         <li class="message-status"><div class="message @(isExpert ? "place-left" : "place-right")">@message.NickName подключился к консультации. Вы можете задать ему свои вопросы</div></li>
                         break;
+                    case ChatMessageTypes.EarlyComplete:
+                        <li class="message-status"><div class="message @(isCurrent ? "place-left" : "place-right")">Апеллянт досрочно завершил консультацию</div></li>
+                        break;
                 }
             }
         </ul>
-        @if (isActive)
+        @if (ViewBag.IsActive)
         {
             <div id="quickReply" class="overlay" style="display:none;">
                 <div class="quick-reply">
@@ -80,7 +79,7 @@
             </div>
         }
     </div>
-    @if (isActive)
+    @if (ViewBag.IsActive)
     {
         <div id="messageForm" class="main-footer">
             <button id="quickReplyButton" class="custom-button reply-button"><img src="~/images/chat/quick-reply.svg" style="height: 20px;" alt="QuickReply" /></button>

@@ -14,9 +14,9 @@ const originalHeight = $(window).height();
 const onReceiveMessage = (message) => {
     const isSender = message.nickName === 'Апеллянт';
 
-    const li = receiveMessage(message, isSender);
+    const messageItem = receiveMessage(message, isSender);
 
-    $('#messagesList').append(li).scrollTo(li);
+    $('#messagesList').append(messageItem).scrollTo(messageItem);
 };
 
 // 
@@ -34,9 +34,10 @@ const onJoinUser = (messageDate, nickName, isFirstJoined, isAppealOnline, isExpe
 
     if (!isFirstJoined && !isSender) { return; }
 
-    const li = joinMessage(messageDate, nickName, isFirstJoined, isSender);
+    // 
+    const messageItem = joinMessage(messageDate, nickName, isFirstJoined, isSender);
 
-    $("#messagesList").append(li).scrollTo(li);
+    $("#messagesList").append(messageItem).scrollTo(messageItem);
 };
 
 // 
@@ -47,9 +48,9 @@ const onLeaveUser = (message) => {
 
     if (!isSender) return;
 
-    const li = leaveMessage(message, isSender);
+    const messageItem = leaveMessage(message, isSender);
 
-    $("#messagesList").append(li).scrollTo(li);
+    $("#messagesList").append(messageItem).scrollTo(messageItem);
 };
 
 // 
@@ -57,9 +58,9 @@ const onCompleteChange = (expertKey) => waitChange(false);
 
 // 
 const onInitalizeChange = (messageText) => {
-    const li = changeExpertMessage(messageText);
+    const messageItem = changeExpertMessage(messageText);
 
-    $('#messagesList').append(li).scrollTo(li);
+    $('#messagesList').append(messageItem).scrollTo(messageItem);
 };
 
 // 
@@ -112,7 +113,7 @@ const scrollToLast = function () {
 
         $('#messagesList').scrollTo(lastItem);
     }
-}
+};
 
 // 
 const changeStatus = (isOnline) => $('#onlineStatus').toggleClass('online', isOnline);
@@ -147,7 +148,7 @@ const completeChat = (appeal) => {
             $('#completeButton, #completeMobileButton').prop('disabled', false);
         }
     });
-}
+};
 
 // 
 const waitChange = (isWait) => {

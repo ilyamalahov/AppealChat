@@ -48,7 +48,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Constants\ChatRole.cs" />
     <Compile Include="Helpers\HashHelper.cs" />
     <Compile Include="Helpers\ExpertKeyHelper.cs" />
     <Compile Include="Models\MemberReplacement.cs" />

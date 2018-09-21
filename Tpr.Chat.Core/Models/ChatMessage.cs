@@ -20,6 +20,7 @@ namespace Tpr.Chat.Core.Models
         Message = 2,
         Leave = 3,
         ChangeExpert = 4,
-        FirstExpert = 5
+        FirstExpert = 5,
+        EarlyComplete = 6
     }
 }

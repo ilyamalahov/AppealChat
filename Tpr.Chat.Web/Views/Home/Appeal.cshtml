@@ -19,12 +19,12 @@
     <script src="~/js/appeal.js"></script>
 }
 
-<partial name="_SideMenu" />
+<partial name="Sidemenu" />
 
 <div class="container">
-    <partial name="_Header" />
+    <partial name="Header" />
     <div class="content">
-        <partial name="_Sidebar" />
+        <partial name="Sidebar" />
         <div class="main">
             <div class="main-header">
                 <button id="sideMobileButton" class="custom-button side-button" title="Меню">
@@ -77,6 +77,9 @@
                                 break;
                             case ChatMessageTypes.FirstExpert:
                                 <li class="message-status"><div class="message @(isCurrent ? "place-left" : "place-right")">@message.NickName подключился к консультации. Вы можете задать ему свои вопросы</div></li>
+                                break;
+                            case ChatMessageTypes.EarlyComplete:
+                                <li class="message-status"><div class="message @(isCurrent ? "place-left" : "place-right")">Апеллянт досрочно завершил консультацию</div></li>
                                 break;
                         }
                     }

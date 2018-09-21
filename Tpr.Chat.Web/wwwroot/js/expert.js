@@ -23,6 +23,8 @@ const updateInfo = () => infoConnection.invoke("MainUpdate", appealId);
 const onReceiveInfo = (currentDate, remainingTime, isAlarm, isFinished) => {
     // Finish consultation
     if (isFinished) {
+        blockChat();
+
         // Hide alarm
         $('#alarm').hide();
 
@@ -56,12 +58,6 @@ const toggleQuickReply = (isVisible) => {
     }
 };
 
-const chatError = (error) => {
-    console.error(error.toString());
-
-    blockChat();
-};
-
 // Change online status
 const changeStatus = (isOnline) => $('#onlineStatus').toggleClass('online', isOnline);
 
@@ -76,9 +72,9 @@ const sendMessage = (message) => {
 const onReceiveMessage = (message) => {
     const isSender = message.nickName === 'Член КК № ' + expertKey;
 
-    const li = receiveMessage(message, isSender);
+    const messageItem = receiveMessage(message, isSender);
 
-    $('#messagesList').append(li).scrollTo(li);
+    $('#messagesList').append(messageItem).scrollTo(messageItem);
 };
 
 // Join user to chat callback
@@ -87,9 +83,9 @@ const onJoinUser = (messageDate, nickName, isFirstJoined, isAppealOnline, isExpe
 
     const isSender = nickName === 'Член КК № ' + expertKey;
 
-    const li = joinMessage(messageDate, nickName, isFirstJoined, isSender);
+    const messageItem = joinMessage(messageDate, nickName, isFirstJoined, isSender);
 
-    $("#messagesList").append(li).scrollTo(li);
+    $("#messagesList").append(messageItem).scrollTo(messageItem);
 };
 
 // Leave user from chat callback
@@ -98,9 +94,9 @@ const onLeaveUser = (message) => {
 
     const isSender = message.nickName === 'Член КК № ' + expertKey;
 
-    const li = leaveMessage(message, isSender);
+    const messageItem = leaveMessage(message, isSender);
 
-    $("#messagesList").append(li).scrollTo(li);
+    $("#messagesList").append(messageItem).scrollTo(messageItem);
 };
 
 // First join expert to chat callback
@@ -112,14 +108,25 @@ const onLeaveUser = (message) => {
 //    $("#messagesList").append(li).scrollTo(li);
 //};
 
+//
 const onInitializeChange = (messageText) => {
     blockChat();
 
-    const li = changeExpertMessage(messageText);
+    const messageItem = changeExpertMessage(messageText);
 
-    $('#messagesList').append(li).scrollTo(li);
+    $('#messagesList').append(messageItem).scrollTo(messageItem);
 };
 
+// 
+const onCompleteChat = () => {
+    blockChat();
+
+    const messageItem = completeChatMessage(true);
+
+    $('#messagesList').append(messageItem).scrollTo(messageItem);
+};
+
+// 
 const blockChat = () => {
     // Stop info hub connection
     infoConnection.stop();
@@ -131,115 +138,85 @@ const blockChat = () => {
     $('#messageForm, #quickReply').remove();
 };
 
-// JQuery document ready (if in range) callback
-const onChatReady = () => {
-    // 
-    $('#sendButton').on('click', () => sendMessage($("#messageText").val()));
+// 
+const insertQuickReply = (replyText) => {
+    toggleQuickReply(false);
 
-    // 
-    $('#quickReplyButton').on('click', () => toggleQuickReply(!quickReplyIsVisible));
+    $('#messageText').insertAtCursor(replyText)
+        .focus()
+        .trigger('input');
+};
 
-    //
-    //$("#replyList").selectable({
-    //    selected: (event, item) => {
-    //        console.log($(item).text());
-    //    }
-    //});
+// 
+const onFilterTextKeyup = (e) => {
+    const selectedItem = $('#replyList .selected');
 
-    const insertQuickReply = (replyText) => {
-        toggleQuickReply(false);
+    switch (e.keyCode) {
+        case 13:
+            insertQuickReply(selectedItem.text());
 
-        $('#messageText').insertAtCursor(replyText)
-            .focus()
-            .trigger('input');
-    };
+            return;
+        case 38:
+            const previousItem = selectedItem.prevAll(':visible').first();
 
+            //
+            if (previousItem.length === 0) return;
 
-    
-    $('#replyList li').on('click', function () {
-        toggleQuickReply(false);
+            // 
+            selectedItem.removeClass('selected');
 
-        insertQuickReply($(this).text());
-    });
+            // 
+            previousItem.addClass('selected');
 
-    $('#filterText').on('keyup', (e) => {
-        const selectedItem = $('#replyList .selected');
+            return;
+        case 40:
+            const nextItem = selectedItem.nextAll(':visible').first();
 
-        var targetItem = selectedItem.closest('li:visible');
+            //
+            if (nextItem.length === 0) return;
 
-        switch (e.keyCode) {
-            case 13:
-                insertQuickReply(selectedItem.text());
-                return;
-            case 38:
-                const previousItem = selectedItem.prevAll(':visible').first();
+            // 
+            selectedItem.removeClass('selected');
 
-                console.log(previousItem.length);
-                if (previousItem.length === 0) return;
+            // 
+            nextItem.addClass('selected');
 
-                // 
-                selectedItem.removeClass('selected');
+            return;
+    }
+};
 
-                // 
-                previousItem.addClass('selected');
-                return;
-            case 40: const nextItem = selectedItem.nextAll(':visible').first();
+//
+const onFilterTextInput = (e) => {
+    const value = $(e.target).val();
 
-                console.log(nextItem.length);
-                if (nextItem.length === 0) return;
+    $("#replyList li")
+        .removeClass('selected')
+        .hide()
+        .filter(":icontains('" + value + "')")
+        .show()
+        .each((index, element) => $(element).highlightText(value))
+        .first()
+        .addClass('selected');
+};
 
-                // 
-                selectedItem.removeClass('selected');
+// 
+const onMessageTextKeyup = (e) => {
+    if (e.keyCode === 13 && !e.shiftKey) {
+        e.preventDefault();
 
-                // 
-                nextItem.addClass('selected');
-                return;
-        }
-        //if (e.keyCode == 38) {
-            
+        const value = $(e.target).val();
 
-        //    return;
-        //}else if (e.keyCode == 40) {
-            
+        if (value.length > 0) { sendMessage(value); }
+    }
+};
 
-        //    return;
-        //}
-    });
+//
+const onMessageTextInput = function (e) {
+    $(this).expandRows();
 
-    //
-    $('#filterText').on('input', function (e) {
-        var value = $(this).val();
+    const isDisabled = $(this).val().length === 0;
 
-        $("#replyList li")
-            .removeClass('selected')
-            .hide()
-            .filter(":icontains('" + value + "')")
-            .show()
-            .each((index, element) => $(element).highlightText(value))
-            .first()
-            .addClass('selected');
-    });
-
-    //
-    $('#messageText').on('keyup', function (e) {
-        if (e.keyCode === 13 && !e.shiftKey) {
-            e.preventDefault();
-
-            if ($(this).val().length > 0) sendMessage($(this).val());
-        }
-    });
-
-    //
-    $('#messageText').on('input', function (e) {
-        $(this).expandRows();
-
-        const isDisabled = $(this).val().length === 0;
-
-        $('#sendButton').prop('disabled', isDisabled);
-    });
-
-    // 
-    $('#messageText').trigger('input');
+    $('#sendButton').prop('disabled', isDisabled);
 };
 
 // Create new info hub connection
@@ -249,9 +226,6 @@ infoConnection = new signalR.HubConnectionBuilder()
 
 // Receive information event handler
 infoConnection.on("ReceiveInfo", onReceiveInfo);
-
-// JQuery document ready handler
-$(document).ready(onChatReady);
 
 // Start info connection
 infoConnection.start().then(updateInfo);
@@ -278,8 +252,35 @@ getAccessToken(appealId, expertKey).then(accessToken => {
     chatConnection.on("InitializeChange", onInitializeChange);
 
     // Complete chat
-    chatConnection.on("CompleteChat", blockChat);
+    chatConnection.on("CompleteChat", onCompleteChat);
 
     // Start chat hub connection
     chatConnection.start();
-}).catch(chatError);
+}).catch(error => {
+        console.error(error.toString());
+
+        blockChat();
+    });
+
+// JQuery document ready
+$(document).ready(() => {
+    // 
+    $('#sendButton').on('click', () => sendMessage($("#messageText").val()));
+
+    // 
+    $('#quickReplyButton').on('click', () => toggleQuickReply(!quickReplyIsVisible));
+
+    // 
+    $('#replyList li').on('click', (e) => insertQuickReply($(e.target).text()));
+
+    // 
+    $('#filterText')
+        .on('keyup', onFilterTextKeyup)
+        .on('input', onFilterTextInput);
+
+    //
+    $('#messageText')
+        .on('keyup', onMessageTextKeyup)
+        .on('input', onMessageTextInput)
+        .trigger('input');
+});

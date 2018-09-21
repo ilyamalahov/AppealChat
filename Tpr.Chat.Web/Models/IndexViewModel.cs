@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Tpr.Chat.Core.Constants;
 using Tpr.Chat.Core.Models;
 
 namespace Tpr.Chat.Web.Models

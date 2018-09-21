@@ -65,11 +65,16 @@ const firstJoinMessage = (expertKey, isSender) => {
     return addMessage(messageText, isSender);
 };
 
-// 
-const changeExpertMessage = (expertKey) => {
-    const messageText = 'Произведена замена члена КК № ' + expertKey;
+    //const messageText = 'Произведена замена члена КК № ' + expertKey;
 
-    return addMessage(expertKey, true);
+// Return "Change expert" message
+const changeExpertMessage = (messageText) => addMessage(messageText, true);
+
+// Return "Change expert" message
+const completeChatMessage = (isSender) => {
+    const messageText = 'Апеллянт досрочно завершил консультацию';
+
+    return addMessage(messageText, isSender);
 };
 
 // Return new list item
@@ -168,20 +173,20 @@ const toggleHelpInfo = (isVisible) => {
     // 
     $('#contactsButton img').toggleClass('flipped', isVisible);
 
-    var arrowPosition = 0;
+    //const arrowOffset = $('#contactsButton img').offset();
 
-    if (isVisible) {
-        const arrowOffset = $('#contactsButton img').offset();
+    //console.log(arrowOffset.top - 110, $('#contactsTooltip').get());
+    //
+    //const targetOffset = $('#contactsTooltip').outerHeight() - (arrowOffset.top - 110);
 
-        arrowPosition = $(window).height() - (arrowOffset.top + $('#contactsButton img').innerHeight()) - 10;
-    }
+    //
+    //$('#contactsArrow').css({ bottom: targetOffset });
 
-    $('#contactsArrow').css({ bottom: arrowPosition });
-
+    //
     const leftPosition = $('#contactsButton').outerWidth() + 10;
 
     //
-    $('#contactsTooltip').toggle(isVisible).css('left', leftPosition);
+    $('#contactsTooltip').toggle(isVisible).offset({ 'left': leftPosition });
 };
 
 const toggleSideMenu = (isVisible) => $('#sideMenu').toggle(isVisible);

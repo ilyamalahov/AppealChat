@@ -22,12 +22,6 @@ namespace Tpr.Chat.Web.Controllers
             this.chatContext = chatContext;
         }
 
-        //[Route("complete")]
-        public IActionResult CompleteChat()
-        {
-            return PartialView("_CompleteModal");
-        }
-
         [HttpPost("expert/change")]
         public IActionResult ChangeExpert(Guid appealId)
         {
@@ -98,14 +92,24 @@ namespace Tpr.Chat.Web.Controllers
             //
             chatSession.IsEarlyCompleted = true;
 
-            //
             chatSession.EarlyCompleteTime = DateTime.Now;
 
-            var updateResult = chatRepository.UpdateSession(chatSession);
+            // Update session record
+            var sessionResult = chatRepository.UpdateSession(chatSession);
 
-            if(!updateResult)
+            if(!sessionResult)
             {
-                return BadRequest("Не удалось вставить запись в таблицу");
+                return BadRequest("Серверная ошибка:<br/>Не удалось добавить запись таблицы 'Сессия чата'");
+            }
+
+            // Add message
+            var nickname = "Аппелянт";
+
+            bool messageResult = chatRepository.WriteChatMessage(appealId, nickname, "", ChatMessageTypes.EarlyComplete);
+
+            if (!sessionResult)
+            {
+                return BadRequest("Серверная ошибка:<br/>Не удалось добавить запись в таблицу 'Сообщения'");
             }
 
             chatContext.Clients.User(appealId.ToString()).CompleteChat();
