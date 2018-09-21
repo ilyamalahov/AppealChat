@@ -23,6 +23,12 @@ const updateInfo = () => infoConnection.invoke("MainUpdate", appealId);
 const onReceiveInfo = (currentDate, remainingTime, isAlarm, isFinished) => {
     // Finish consultation
     if (isFinished) {
+        // Stop info hub connection
+        infoConnection.stop();
+
+        // Stop chat hub connection
+        chatConnection.stop();
+
         // Hide alarm
         $('#alarm').hide();
 
@@ -48,18 +54,18 @@ const toggleQuickReply = (isVisible) => {
     if (isVisible) {
         $('#quickReplyButton img').attr('src', 'images/chat/down-chevron.svg');
         $('#quickReply').fadeIn('fast');
-        $('#quickReply .quick-reply').slideDown('fast', () => $('#filterText').focus().trigger('input'));
+        $('#quickReply .quick-reply').slideDown('fast', () => $('#filterText').focus());
     } else {
         $('#quickReplyButton img').attr('src', 'images/chat/quick-reply.svg');
         $('#quickReply').fadeOut('fast');
-        $('#quickReply .quick-reply').slideUp('fast', () => $('#filterText').val(''));
+        $('#quickReply .quick-reply').slideUp('fast', () => $('#filterText').val('').trigger('input'));
     }
 };
 
 const chatError = (error) => {
     console.error(error.toString());
 
-    blockChat();
+    $('#messageForm, #quickReply').remove();
 };
 
 // Change online status
@@ -113,22 +119,11 @@ const onLeaveUser = (message) => {
 //};
 
 const onInitializeChange = (messageText) => {
-    blockChat();
+    $('#messageForm, #quickReply').remove();
 
     const li = changeExpertMessage(messageText);
 
     $('#messagesList').append(li).scrollTo(li);
-};
-
-const blockChat = () => {
-    // Stop info hub connection
-    infoConnection.stop();
-
-    // Stop chat hub connection
-    chatConnection.stop();
-
-    // 
-    $('#messageForm, #quickReply').remove();
 };
 
 // JQuery document ready (if in range) callback
@@ -139,71 +134,13 @@ const onChatReady = () => {
     // 
     $('#quickReplyButton').on('click', () => toggleQuickReply(!quickReplyIsVisible));
 
-    //
-    //$("#replyList").selectable({
-    //    selected: (event, item) => {
-    //        console.log($(item).text());
-    //    }
-    //});
-
-    const insertQuickReply = (replyText) => {
+    // 
+    $('#replyList').on('click', 'li', function (e) {
         toggleQuickReply(false);
 
-        $('#messageText').insertAtCursor(replyText)
+        $('#messageText').insertAtCursor($(this).text())
             .focus()
             .trigger('input');
-    };
-
-
-    
-    $('#replyList li').on('click', function () {
-        toggleQuickReply(false);
-
-        insertQuickReply($(this).text());
-    });
-
-    $('#filterText').on('keyup', (e) => {
-        const selectedItem = $('#replyList .selected');
-
-        var targetItem = selectedItem.closest('li:visible');
-
-        switch (e.keyCode) {
-            case 13:
-                insertQuickReply(selectedItem.text());
-                return;
-            case 38:
-                const previousItem = selectedItem.prevAll(':visible').first();
-
-                console.log(previousItem.length);
-                if (previousItem.length === 0) return;
-
-                // 
-                selectedItem.removeClass('selected');
-
-                // 
-                previousItem.addClass('selected');
-                return;
-            case 40: const nextItem = selectedItem.nextAll(':visible').first();
-
-                console.log(nextItem.length);
-                if (nextItem.length === 0) return;
-
-                // 
-                selectedItem.removeClass('selected');
-
-                // 
-                nextItem.addClass('selected');
-                return;
-        }
-        //if (e.keyCode == 38) {
-            
-
-        //    return;
-        //}else if (e.keyCode == 40) {
-            
-
-        //    return;
-        //}
     });
 
     //
@@ -211,13 +148,10 @@ const onChatReady = () => {
         var value = $(this).val();
 
         $("#replyList li")
-            .removeClass('selected')
             .hide()
             .filter(":icontains('" + value + "')")
             .show()
-            .each((index, element) => $(element).highlightText(value))
-            .first()
-            .addClass('selected');
+            .each((index, element) => $(element).highlightText(value));
     });
 
     //
@@ -276,9 +210,6 @@ getAccessToken(appealId, expertKey).then(accessToken => {
 
     // First join expert on chat handler
     chatConnection.on("InitializeChange", onInitializeChange);
-
-    // Complete chat
-    chatConnection.on("CompleteChat", blockChat);
 
     // Start chat hub connection
     chatConnection.start();

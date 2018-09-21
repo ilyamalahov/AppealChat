@@ -54,7 +54,7 @@ namespace Tpr.Chat.Web.Controllers
             var isAfter = DateTime.Now > chatSession.FinishTime;
 
             // 
-            var model = new IndexViewModel
+            var sessionModel = new IndexViewModel
             {
                 AppealId = appealId,
                 Session = chatSession,
@@ -62,13 +62,10 @@ namespace Tpr.Chat.Web.Controllers
                 IsBefore = isBefore
             };
 
-            // 
-            ViewBag.IsActive = !isBefore && !isAfter && !chatSession.IsEarlyCompleted;
-            
             // Check if current date less than chat start time
             if (isBefore)
             {
-                return View("Before", model);
+                return View("Before", sessionModel);
             }
 
             // 
@@ -77,9 +74,9 @@ namespace Tpr.Chat.Web.Controllers
             // Expert checkings
             if (connectionType == ContextType.Expert)
             {
-                model.ExpertKey = key;
+                sessionModel.ExpertKey = key;
 
-                model.QuickReplies = chatRepository.GetQuickReplies();
+                sessionModel.QuickReplies = chatRepository.GetQuickReplies();
 
                 // Member replacement check
                 var replacement = chatRepository.GetMemberReplacement(appealId);
@@ -112,7 +109,7 @@ namespace Tpr.Chat.Web.Controllers
                 else if (replacement.OldMember == key)
                 {
                     // Block ability to send messages
-                    model.IsExpertChanged = true;
+                    sessionModel.IsExpertChanged = true;
                 }
                 else if (!replacement.NewMember.HasValue)
                 {
@@ -158,30 +155,30 @@ namespace Tpr.Chat.Web.Controllers
                 }
                 else if(replacement.NewMember != key)
                 {
-                    model.IsExpertChanged = true;
+                    sessionModel.IsExpertChanged = true;
                 }
 
-                model.Messages = chatRepository.GetChatMessages(appealId);
+                sessionModel.Messages = chatRepository.GetChatMessages(appealId);
 
-                return View("Expert", model);
+                return View("Expert", sessionModel);
             }
             else if (connectionType == ContextType.Appeal)
             {
                 // Check if current date more than chat finish time
-                if (chatSession.IsEarlyCompleted || isAfter)
+                if (isAfter)
                 {
-                    return View("After", model);
+                    return View("After", sessionModel);
                 }
 
-                model.Messages = chatRepository.GetChatMessages(appealId);
+                sessionModel.Messages = chatRepository.GetChatMessages(appealId);
 
                 // Member replacement check
                 var replacement = chatRepository.GetMemberReplacement(appealId);
 
                 if (replacement != null)
                 {
-                    model.IsWaiting = replacement.NewMember == null;
-                    model.IsExpertChanged = replacement.OldMember != 0;
+                    sessionModel.IsWaiting = replacement.NewMember == null;
+                    sessionModel.IsExpertChanged = replacement.OldMember != 0;
                 }
 
                 // 
@@ -192,7 +189,7 @@ namespace Tpr.Chat.Web.Controllers
                 //    return BadRequest("Сессия все еще запущена на другом устройстве");
                 //}
 
-                return View("Appeal", model);
+                return View("Appeal", sessionModel);
             }
 
             return BadRequest();

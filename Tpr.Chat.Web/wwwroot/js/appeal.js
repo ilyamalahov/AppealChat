@@ -5,10 +5,7 @@ var infoConnection;
 var chatConnection;
 
 // Update intreval
-const interval = 1000;
-
-// Original window height
-const originalHeight = $(window).height();
+const interval = 10000;
 
 // 
 const onReceiveMessage = (message) => {
@@ -71,7 +68,7 @@ const onReceiveInfo = (currentDate, remainingTime, isAlarm, isFinished) => {
     var remainingDuration = luxon.Duration.fromMillis(remainingTime);
 
     // Remaining time text
-    var remainingText = remainingDuration.toFormat('mm:ss');
+    var remainingText = remainingDuration.toFormat('hh:mm:ss');
 
     // Remaining format minutes
     var remainingMinutes = remainingDuration.as("minutes");
@@ -104,17 +101,6 @@ const sendMessage = (message) => {
 };
 
 // 
-const scrollToLast = function () {
-    const targetHeight = $(this).height();
-
-    if (targetHeight !== originalHeight) {
-        const lastItem = $('#messagesList').children(':last-child');
-
-        $('#messagesList').scrollTo(lastItem);
-    }
-}
-
-// 
 const changeStatus = (isOnline) => $('#onlineStatus').toggleClass('online', isOnline);
 
 // Change expert functionality
@@ -133,51 +119,21 @@ const changeExpert = (appeal) => {
     });
 };
 
-// 
-const completeChat = (appeal) => {
-    $.ajax({
-        method: "POST",
-        url: "ajax/chat/complete",
-        data: { appealId: appeal },
-        beforeSend: () => $('#completeButton, #completeMobileButton').prop('disabled', true),
-        success: () => location.reload(),
-        error: (error) => {
-            alert(error.responseText);
-
-            $('#completeButton, #completeMobileButton').prop('disabled', false);
-        }
-    });
-}
-
-// 
 const waitChange = (isWait) => {
     if (isWait) {
         $('#messageForm').hide();
 
         $('#modal').showModal('modal/waitchange');
-
-        // Stop chat connection
-        chatConnection.stop();
-
-        // Stop info connection
-        infoConnection.stop();
     } else {
         $('#messageForm').show();
 
         $('#modal').hideModal();
-
-        // Start chat connection
-        chatConnection.start().catch(error => console.error(error.toString()));
-
-        // Start info connection
-        infoConnection.start().then(updateInfo).catch(error => console.error(error.toString()));
     }
 };
 
 // 
 const updateInfo = () => infoConnection.send("MainUpdate", appealId);
 
-// 
 getAccessToken(appealId).then(accessToken => {
     // Update info hub connection
     infoConnection = new signalR.HubConnectionBuilder()
@@ -212,25 +168,17 @@ getAccessToken(appealId).then(accessToken => {
 
     // Start info connection
     infoConnection.start().then(updateInfo).catch((error) => console.error(error.toString()));
-
-    waitChange(isWaiting);
 });
 
-// 
 $(document).ready(() => {
-    $(window).on('resize', scrollToLast);
-
     // Send message
     $('#sendButton').on('click', () => sendMessage($('#messageText').val()));
 
     // 
-    $('#sideMobileButton').on('click', () => toggleSideMenu(true));
+    $('#changeButton, #mobileSwitchButton').on('click', () => $('#modal').showModal('modal/changeexpert'));
 
     // 
-    $('#changeButton, #mobileChangeButton').on('click', () => $('#modal').showModal('modal/changeexpert'));
-
-    //
-    $('#completeButton, #completeMobileButton').on('click', () => $('#modal').showModal('modal/completechat'));
+    $('#sideMobileButton').on('click', () => toggleSideMenu(true));
 
     // Textarea auto rows count
     $('#messageText').on('input', function (e) {
@@ -253,10 +201,8 @@ $(document).ready(() => {
 
     // 
     $('#messageText').trigger('input');
+
+    waitChange(isWaiting);
 });
 
-//
 $(document).on('click', '#okChangeButton, #okChangeMobileButton', () => { $('#modal').hideModal(); changeExpert(appealId); });
-
-//
-$(document).on('click', '#okCompleteButton, #okCompleteMobileButton', () => { $('#modal').hideModal(); completeChat(appealId); });

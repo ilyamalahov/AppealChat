@@ -84,14 +84,6 @@ a {
     margin-left: 5px;
 }
 
-.flipped {
-    transform: scale(-1, 1);
-    -moz-transform: scale(-1, 1);
-    -webkit-transform: scale(-1, 1);
-    -o-transform: scale(-1, 1);
-    -ms-transform: scale(-1, 1);
-}
-
 /* */
 .container {
     display: flex;
@@ -300,38 +292,20 @@ a {
     cursor: pointer;
 }
 
-.tooltip {
-    position: fixed;
-    border-radius: 5px;
-    z-index: 1;
-}
-
 .contacts-tooltip {
-    display: flex;
-    flex-flow: column;
-    top: 100px;
-    bottom: 10px;
-    /*left: 370px;*/
+    display: none;
+    position: absolute;
+    z-index: 1;
+    padding: 15px;
     width: 400px;
-    max-height: 660px;
+    border-radius: 5px;
     background: #2b7bde;
     color: #fff;
-    border-radius: 5px;
-    z-index: 1;
+    top: 70px;
+    left: 350px;
 }
 
-    .contacts-tooltip .arrow {
-        position: absolute;
-        left: -5px;
-        height: 15px;
-        width: 15px;
-        transform: rotate(45deg);
-        border-bottom: inherit;
-        border-right: inherit;
-        background: inherit;
-    }
-
-    /*.contacts-tooltip::before {
+    .contacts-tooltip::before {
         content: "";
         position: absolute;
         left: -5px;
@@ -342,37 +316,35 @@ a {
         border-bottom: inherit;
         border-right: inherit;
         background: inherit;
-    }*/
-
-    .contacts-tooltip .tooltip-header {
-        text-align: right;
-        padding: 5px;
     }
 
-    .contacts-tooltip .tooltip-content {
-        padding: 0 15px;
-        overflow-x: hidden;
-        overflow-y: auto;
+    .contacts-tooltip .close-button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 5px;
     }
 
-    .contacts-tooltip .close-button img {
-        height: 20px;
-    }
-
-    .contacts-tooltip ul {
-        line-height: 1;
-    }
-
-        .contacts-tooltip ul li {
-            padding: 10px 0;
-            border-bottom: 1px solid #6ba8eb;
+        .contacts-tooltip .close-button img {
+            height: 20px;
         }
 
-            .contacts-tooltip ul li:last-child {
-                border: none;
-            }
+.contacts-list {
+    margin-top: 10px;
+    line-height: 1;
+}
+
+    .contacts-list li {
+        padding: 10px 0;
+        border-bottom: 1px solid #6ba8eb;
+    }
+
+        .contacts-list li:last-child {
+            border: none;
+        }
 
 .contact-link {
+    display: block;
     color: #fff;
     text-decoration: none;
     font-weight: bold;

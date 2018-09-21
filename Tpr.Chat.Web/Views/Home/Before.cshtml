@@ -15,61 +15,23 @@
     <script type="text/javascript" src="~/js/before.js"></script>
 }
 
-<style>
-    .main {
-        display: flex;
-        flex-flow: column;
-        width: 100%;
-        overflow-y: auto;
-        color: #000;
-        text-align: center;
-    }
-
-    .main-header {
-        margin-bottom: 40px;
-    }
-
-        .main-header .icon {
-            margin-bottom: 10px;
-        }
-
-            .main-header .icon img {
-                width: 80px
-            }
-
-        .main-header .title {
-            color: #ff941a;
-            font-weight: bold;
-            font-size: 20px;
-        }
-    .main-content .title {
-        font-weight: bold;
-        font-size: 20px;
-    }
-    .main-content .remaining-time {
-        color: #8c8d8f;
-    }
-        .main-content .remaining-time b {
-            font-size: 20px;
-            color: #000;
-        }
-</style>
-
 <partial name="_SideMenu" />
 
 <div class="container">
-    <partial name="_Header" />
+    <partial name="_Header" for="@Model" />
     <div class="content">
         <partial name="_Sidebar" />
-        <div class="main">
-            <div style="margin: auto;">
-                <div class="main-header">
-                    <div class="icon"><img src="~/images/before/hourglass.svg" /></div>
-                    <div class="title">Время онлайн консультации <br />по Вашей аппеляции еще не наступило</div>
-                </div>
-                <div class="main-content">
-                    <div class="title">Консультация начнется через</div>
-                    <div class="remaining-time"><b id="remainingDays">0</b> дней(-я) <b id="remainingHours">00</b> часа(-ов) <b id="remainingMinutes">00</b> минут(-ы)</div>
+        <div class="main" style="display: flex; flex-flow:column; justify-content: center; align-items: center; width: 100%; text-align:center; overflow: hidden; color: #000;">
+            <div style="margin-bottom: 40px;">
+                <div style="margin-bottom: 10px"><img src="~/images/hourglass.svg" style="width: 80px" /></div>
+                <div style="color: #ff941a; font-weight: bold; font-size: 20px;">Время онлайн консультации <br />по Вашей аппеляции еще не наступило</div>
+            </div>
+            <div>
+                <div style="font-weight: bold; font-size: 20px;">Консультация начнется через</div>
+                <div style="color: #8c8d8f;">
+                    <b id="remainingDays" style="font-size:20px; color: #000;">0</b> дней(-я)
+                    <b id="remainingHours" style="font-size:20px; color: #000;">00</b> часа(-ов)
+                    <b id="remainingMinutes" style="font-size:20px; color: #000;">00</b> минут(-ы)
                 </div>
             </div>
         </div>

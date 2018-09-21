@@ -1,15 +1,13 @@
 ﻿<div class="modal-window change-window">
     <div class="modal-content">
-        <div class="title">Сменить члена конфликтной комиссии?</div>
-        <div class="button-box">
+        <div class="change-title">Сменить члена конфликтной комиссии?</div>
+        <div class="change-buttons">
             <button id="okChangeButton" class="custom-button btn-action btn-complete">Да</button>
             <button id="cancelButton" class="custom-button btn-action">Нет</button>
         </div>
-        <div class="notice-box">
-            <div class="notice">Вы можете один раз сменить члена КК, который вас консультирует.</div>
-            <div class="sub-notice" style="margin-bottom: 10px;">В случае замены оставшееся время на консультацию и возможность отправки сообщений приостанавливается до момента подключения нового члена конфликтной комиссии.</div>
-            <div class="sub-notice">Ожидание подключения нового члена конфликтной комиссии может занять продолжительное время.</div>
-        </div>
+        <div class="change-notice">Вы можете один раз сменить члена КК, который вас консультирует.</div>
+        <div class="change-sub-notice" style="margin-bottom: 10px;">В случае замены оставшееся время на консультацию и возможность отправки сообщений приостанавливается до момента подключения нового члена конфликтной комиссии.</div>
+        <div class="change-sub-notice">Ожидание подключения нового члена конфликтной комиссии может занять продолжительное время.</div>
     </div>
     <div class="modal-footer">
         <button id="okChangeMobileButton" class="custom-button btn-action btn-complete">Да</button>
@@ -55,43 +53,43 @@
             margin-right: 15px;
         }
 
-        .modal-content .title {
-            font-weight: bold;
-            font-size: 18px;
-            order: 0;
-        }
-
-        .modal-content .button-box {
-            margin: 20px;
-        }
-
-        .notice-box .notice {
-            font-weight: bold;
-            font-size: 12px;
-            margin-bottom: 10px;
-        }
-
-        .notice-box .sub-notice {
-            color: #9b9b9b;
-            font-size: 12px;
-        }
-
         .modal-footer .btn-action {
             width: 100%;
             padding: 20px;
         }
 
+        .change-title {
+            font-weight: bold;
+            font-size: 18px;
+            order: 0;
+        }
+
+        .change-buttons {
+            margin: 20px;
+        }
+
+        .change-notice {
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .change-sub-notice {
+            color: #9b9b9b;
+            font-size: 12px;
+        }
+
         @@media screen and (max-width: 767px) {
-            .modal-content .title {
+            .change-title {
                 margin-top: 20px;
                 order: 1;
             }
 
-            .modal-content .button-box {
+            .change-buttons {
                 display: none;
             }
 
-            .notice-box .notice, .notice-box .sub-notice {
+            .change-notice, .change-sub-notice {
                 font-size: 14px;
             }
         }

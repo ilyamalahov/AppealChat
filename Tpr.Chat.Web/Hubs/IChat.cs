@@ -18,6 +18,5 @@ namespace Tpr.Chat.Web.Hubs
         Task CompleteChange(int expertKey);
 
         Task FirstJoinExpert(int expertKey);
-        Task CompleteChat();
     }
 }

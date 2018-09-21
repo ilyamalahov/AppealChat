@@ -83,35 +83,5 @@ namespace Tpr.Chat.Web.Controllers
             // Return Success result to client
             return Ok();
         }
-
-        [HttpPost("chat/complete")]
-        public IActionResult CompleteChat(Guid appealId)
-        {
-            // Chat session
-            var chatSession = chatRepository.GetChatSession(appealId);
-
-            if (chatSession == null)
-            {
-                return BadRequest("Сессия для данного апеллянта не найдена");
-            }
-
-            //
-            chatSession.IsEarlyCompleted = true;
-
-            //
-            chatSession.EarlyCompleteTime = DateTime.Now;
-
-            var updateResult = chatRepository.UpdateSession(chatSession);
-
-            if(!updateResult)
-            {
-                return BadRequest("Не удалось вставить запись в таблицу");
-            }
-
-            chatContext.Clients.User(appealId.ToString()).CompleteChat();
-
-            // Return Success result to client
-            return Ok();
-        }
     }
 }
