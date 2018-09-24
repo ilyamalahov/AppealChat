@@ -36,9 +36,9 @@ namespace Tpr.Chat.Web.Controllers
             return PartialView("Contacts");
         }
 
-        public IActionResult AppealInfo(Guid appealId)
+        public async Task<IActionResult> AppealInfo(Guid appealId)
         {
-            var chatSession = chatRepository.GetChatSession(appealId);
+            var chatSession = await chatRepository.GetChatSession(appealId);
 
             if (chatSession == null)
             {

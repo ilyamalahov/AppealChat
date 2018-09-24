@@ -20,22 +20,15 @@ const onReceiveMessage = (message) => {
 };
 
 // 
-const onJoinUser = (messageDate, nickName, isFirstJoined, isAppealOnline, isExpertOnline) => {
+const onJoinUser = (messageDate, nickName, isAppealOnline, isExpertOnline) => {
     changeStatus(isExpertOnline);
 
     const isSender = nickName === 'Апеллянт';
 
-    // Expert text
-    if (isFirstJoined) {
-        const expertText = '№' + expertKey;
-
-        $('#expertNumber').text(expertText);
-    }
-
-    if (!isFirstJoined && !isSender) { return; }
+    if (!isSender) { return; }
 
     // 
-    const messageItem = joinMessage(messageDate, nickName, isFirstJoined, isSender);
+    const messageItem = joinMessage(messageDate, nickName, isSender);
 
     $("#messagesList").append(messageItem).scrollTo(messageItem);
 };
@@ -53,11 +46,27 @@ const onLeaveUser = (message) => {
     $("#messagesList").append(messageItem).scrollTo(messageItem);
 };
 
-// 
-const onCompleteChange = (expertKey) => waitChange(false);
+const onFirstJoinExpert = (expertKey) => {
+    // Expert text
+    const expertText = '№' + expertKey;
+
+    $('#expertNumber').text(expertText);
+
+    // 
+    const messageItem = firstJoinMessage(expertKey, false);
+
+    $("#messagesList").append(messageItem).scrollTo(messageItem);
+};
 
 // 
-const onInitalizeChange = (messageText) => {
+const onCompleteChange = (expertKey) => {
+    getAccessToken(appealId).then(restartChatConnection);
+
+    waitChange(false);
+};
+
+// 
+const onInitializeChange = (messageText) => {
     const messageItem = changeExpertMessage(messageText);
 
     $('#messagesList').append(messageItem).scrollTo(messageItem);
@@ -156,27 +165,28 @@ const waitChange = (isWait) => {
         $('#messageForm').hide();
 
         $('#modal').showModal('modal/waitchange');
-
-        // Stop chat connection
-        chatConnection.stop();
-
-        // Stop info connection
-        infoConnection.stop();
     } else {
         $('#messageForm').show();
 
         $('#modal').hideModal();
-
-        // Start chat connection
-        chatConnection.start().catch(error => console.error(error.toString()));
-
-        // Start info connection
-        infoConnection.start().then(updateInfo).catch(error => console.error(error.toString()));
     }
 };
 
 // 
 const updateInfo = () => infoConnection.send("MainUpdate", appealId);
+
+// 
+const restartChatConnection = (token) => {
+    // Stop chat connection
+    chatConnection.stop();
+
+    chatConnection = new signalR.HubConnectionBuilder()
+        .withUrl("/chat", { accessTokenFactory: () => token })
+        .build();
+
+    // Start chat connection
+    chatConnection.start().catch(error => console.error(error.toString()));
+};
 
 // 
 getAccessToken(appealId).then(accessToken => {
@@ -202,8 +212,11 @@ getAccessToken(appealId).then(accessToken => {
     // Leave user from chat
     chatConnection.on("Leave", onLeaveUser);
 
+    // Join user to chat handler
+    chatConnection.on("FirstJoinExpert", onFirstJoinExpert);
+
     // Initialize change expert
-    chatConnection.on("InitializeChange", onInitalizeChange);
+    chatConnection.on("InitializeChange", onInitializeChange);
 
     // Complete change expert
     chatConnection.on("CompleteChange", onCompleteChange);
@@ -213,8 +226,6 @@ getAccessToken(appealId).then(accessToken => {
 
     // Start info connection
     infoConnection.start().then(updateInfo).catch((error) => console.error(error.toString()));
-
-    waitChange(isWaiting);
 });
 
 // 
@@ -254,6 +265,8 @@ $(document).ready(() => {
 
     // 
     $('#messageText').trigger('input');
+
+    waitChange(isWaiting);
 });
 
 //

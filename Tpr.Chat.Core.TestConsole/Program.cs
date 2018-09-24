@@ -16,9 +16,6 @@ namespace Tpr.Chat.Core.TestConsole
             var appealId = new Guid("B8819639-82A0-4C34-92A6-747006A164F7");
             var session = repository.GetChatSession(appealId);
             var messages = repository.GetChatMessages(appealId);
-            repository.WriteJoined(appealId, "Эксперт 123");
-            repository.WriteMessage(appealId, "Эксперт 123", "Все оценки согласно критериям");
-            repository.WriteLeave(appealId, "Эксперт 123");
             var newmessages = repository.GetChatMessages(appealId);
         }
     }

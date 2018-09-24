@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -60,10 +61,18 @@ namespace Tpr.Chat.Web
             services.AddSignalR(options =>
             {
                 options.EnableDetailedErrors = true;
-                //options.KeepAliveInterval = TimeSpan.FromMinutes(5);
             }).AddJsonProtocol();
 
             services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+
+            // Session
+            //services.AddDistributedMemoryCache();
+
+            //services.AddSession();
+
+            // Authentication
+            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            //    .AddCookie();
 
             // Authentication
             var jwtConfiguration = Configuration.GetSection("JWT");
@@ -93,20 +102,21 @@ namespace Tpr.Chat.Web
                         // Skew
                         ClockSkew = TimeSpan.Zero
                     };
+
                     options.Events = new JwtBearerEvents
                     {
                         OnMessageReceived = context =>
                         {
-                            var accessToken = context.Request.Query["access_token"];
+                            var result = context.Request.Query.TryGetValue("access_token", out var token);
 
                             var isContainsChatPath = context.HttpContext.Request.Path.StartsWithSegments("/chat");
                             var isContainsInfoPath = context.HttpContext.Request.Path.StartsWithSegments("/info");
-                            
+
                             // If the request is for our hub...
-                            if (!string.IsNullOrEmpty(accessToken) && (isContainsChatPath || isContainsInfoPath))
+                            if (result && (isContainsChatPath || isContainsInfoPath))
                             {
                                 // Read the token out of the query string
-                                context.Token = accessToken;
+                                context.Token = token;
                             }
                             return Task.CompletedTask;
                         },
@@ -154,6 +164,8 @@ namespace Tpr.Chat.Web
                 routes.MapHub<ChatHub>("/chat");
                 routes.MapHub<InfoHub>("/info");
             });
+
+            //app.UseSession();
 
             // Authentication
             app.UseAuthentication();

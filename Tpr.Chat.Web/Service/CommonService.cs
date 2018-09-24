@@ -20,14 +20,14 @@ namespace Tpr.Chat.Web.Service
             this.configuration = configuration;
         }
 
-        public ClaimsIdentity GetIdentity(Guid appealId, int key, string secretKey)
+        public ClaimsIdentity GetIdentity(Guid appealId, int key = 0, string secretKey = null)
         {
             try
             {
                 // Identity claims
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimsIdentity.DefaultNameClaimType, appealId.ToString())
+                    new Claim(ClaimsIdentity.DefaultNameClaimType, appealId.ToString()),
                 };
 
                 // Expert

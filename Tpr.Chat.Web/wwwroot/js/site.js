@@ -33,13 +33,13 @@ const receiveMessage = (message, isSender) => {
 };
 
 // Return new "Join user" message
-const joinMessage = (messageDate, nickName, isFirstJoined, isSender) => {
+const joinMessage = (messageDate, nickName, isSender) => {
     const messageDateObj = luxon.DateTime.fromISO(messageDate);
 
     var messageText = "";
 
+    //else if (isFirstJoined) messageText = nickName + ' подключился к консультации. Вы можете задать свои вопросы здесь.';
     if (isSender) messageText = 'Вы подключились к консультации';
-    else if (isFirstJoined) messageText = nickName + ' подключился к консультации. Вы можете задать свои вопросы здесь.';
     else messageText = nickName + ' подключился к консультации';
 
     const html = messageText + ' <b class="message-date">' + messageDateObj.toFormat("tt") + '</b>';

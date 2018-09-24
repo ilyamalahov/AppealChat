@@ -60,7 +60,7 @@ namespace Tpr.Chat.Web.Hubs
             var currentDate = DateTime.Now;
 
             // Remaining Time
-            var chatSession = chatRepository.GetChatSession(appealId);
+            var chatSession = await chatRepository.GetChatSession(appealId);
 
             var remainingTimespan = chatSession.FinishTime.Subtract(currentDate);
 
@@ -82,7 +82,7 @@ namespace Tpr.Chat.Web.Hubs
             var currentDate = DateTime.Now;
 
             // Remaining Time
-            var chatSession = chatRepository.GetChatSession(appealId);
+            var chatSession = await chatRepository.GetChatSession(appealId);
 
             var remainingTimespan = chatSession.StartTime.Subtract(currentDate);
 

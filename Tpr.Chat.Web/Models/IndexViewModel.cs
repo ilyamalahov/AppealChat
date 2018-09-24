@@ -16,7 +16,7 @@ namespace Tpr.Chat.Web.Models
 
         public bool IsAfter { get; set; }
 
-        public ICollection<ChatMessage> Messages { get; set; }
+        public IEnumerable<ChatMessage> Messages { get; set; }
 
         public IEnumerable<QuickReply> QuickReplies { get; set; }
 

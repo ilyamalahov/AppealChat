@@ -5,6 +5,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Xml;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +29,7 @@ namespace Tpr.Chat.Web.Controllers
         public HomeController(
             IChatRepository chatRepository,
             ICommonService commonService,
-            IConnectionService connectionService, 
+            IConnectionService connectionService,
             IHubContext<ChatHub, IChat> chatContext)
         {
             this.chatRepository = chatRepository;
@@ -37,10 +39,10 @@ namespace Tpr.Chat.Web.Controllers
         }
 
         [HttpGet("/{appealId}")]
-        public IActionResult Index(Guid appealId, int key = 0, string secretKey = null)
+        public async Task<IActionResult> Index(Guid appealId, int key = 0, string secretKey = null)
         {
             // Check if chat session is exists
-            var chatSession = chatRepository.GetChatSession(appealId);
+            var chatSession = await chatRepository.GetChatSession(appealId);
 
             if (chatSession == null)
             {
@@ -64,7 +66,7 @@ namespace Tpr.Chat.Web.Controllers
 
             // 
             ViewBag.IsActive = !isBefore && !isAfter && !chatSession.IsEarlyCompleted;
-            
+
             // Check if current date less than chat start time
             if (isBefore)
             {
@@ -79,20 +81,20 @@ namespace Tpr.Chat.Web.Controllers
             {
                 model.ExpertKey = key;
 
-                model.QuickReplies = chatRepository.GetQuickReplies();
+                model.QuickReplies = await chatRepository.GetQuickReplies();
 
                 //
                 var isExpertChanged = false;
 
                 // Member replacement check
-                var replacement = chatRepository.GetMemberReplacement(appealId);
+                var replacement = await chatRepository.GetMemberReplacement(appealId);
 
                 if (replacement == null)
                 {
                     // 
                     chatSession.CurrentExpertKey = key;
 
-                    var isSessionUpdated = chatRepository.UpdateSession(chatSession);
+                    var isSessionUpdated = await chatRepository.UpdateSession(chatSession);
 
                     if (!isSessionUpdated)
                     {
@@ -110,7 +112,7 @@ namespace Tpr.Chat.Web.Controllers
                     replacement.ReplaceTime = DateTime.Now;
                     replacement.NewMember = key;
 
-                    var isReplacementUpdated = chatRepository.UpdateMemberReplacement(replacement);
+                    var isReplacementUpdated = await chatRepository.UpdateMemberReplacement(replacement);
 
                     if (!isReplacementUpdated)
                     {
@@ -121,7 +123,7 @@ namespace Tpr.Chat.Web.Controllers
                     chatSession.FinishTime = replacement.ReplaceTime.Value + (replacement.RequestTime - chatSession.StartTime);
                     chatSession.CurrentExpertKey = key;
 
-                    var isSessionUpdated = chatRepository.UpdateSession(chatSession);
+                    var isSessionUpdated = await chatRepository.UpdateSession(chatSession);
 
                     if (!isSessionUpdated)
                     {
@@ -131,9 +133,9 @@ namespace Tpr.Chat.Web.Controllers
                     // 
                     //var connectionId = connectionService.GetConnectionId(appealId);
 
-                    chatContext.Clients.User(appealId.ToString()).CompleteChange(key);
+                    await chatContext.Clients.User(appealId.ToString()).CompleteChange(key);
                 }
-                else if(replacement.NewMember != key)
+                else if (replacement.NewMember != key)
                 {
                     isExpertChanged = true;
                 }
@@ -142,7 +144,7 @@ namespace Tpr.Chat.Web.Controllers
                 ViewBag.IsActive &= !isExpertChanged;
 
                 //
-                model.Messages = chatRepository.GetChatMessages(appealId);
+                model.Messages = await chatRepository.GetChatMessages(appealId);
 
                 //
                 return View("Expert", model);
@@ -155,10 +157,10 @@ namespace Tpr.Chat.Web.Controllers
                     return View("After", model);
                 }
 
-                model.Messages = chatRepository.GetChatMessages(appealId);
+                model.Messages = await chatRepository.GetChatMessages(appealId);
 
                 // Member replacement check
-                var replacement = chatRepository.GetMemberReplacement(appealId);
+                var replacement = await chatRepository.GetMemberReplacement(appealId);
 
                 if (replacement != null)
                 {
@@ -177,14 +179,37 @@ namespace Tpr.Chat.Web.Controllers
                 return View("Appeal", model);
             }
 
+            // Identity claims
+            //var claims = new List<Claim>
+            //{
+            //    new Claim(ClaimsIdentity.DefaultNameClaimType, appealId.ToString())
+            //};
+
+            //// Expert
+            //if (key > 0)
+            //{
+            //    // Secret checkings, etc...
+
+            //    claims.Add(new Claim("expertkey", key.ToString()));
+            //}
+
+            //var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            //var properties = new AuthenticationProperties
+            //{
+            //    AllowRefresh = true
+            //};
+
+            //await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity), properties);
+
             return BadRequest();
         }
 
         [Produces("application/json")]
         [HttpPost("token")]
-        public IActionResult Token(Guid appealId, int key = 0, string secretKey = null)
+        public async Task<IActionResult> Token(Guid appealId, int key = 0)
         {
-            var chatSession = chatRepository.GetChatSession(appealId);
+            var chatSession = await chatRepository.GetChatSession(appealId);
 
             // Check if chat session is exists
             if (chatSession == null)
@@ -204,12 +229,7 @@ namespace Tpr.Chat.Web.Controllers
                 return Error();
             }
 
-            var identity = commonService.GetIdentity(appealId, key, secretKey);
-
-            if (identity == null)
-            {
-                return Error();
-            }
+            var identity = commonService.GetIdentity(appealId, key);
 
             var accessToken = commonService.CreateToken(identity, chatSession.StartTime, chatSession.FinishTime);
 

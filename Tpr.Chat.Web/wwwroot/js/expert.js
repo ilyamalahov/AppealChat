@@ -78,12 +78,12 @@ const onReceiveMessage = (message) => {
 };
 
 // Join user to chat callback
-const onJoinUser = (messageDate, nickName, isFirstJoined, isAppealOnline, isExpertOnline) => {
+const onJoinUser = (messageDate, nickName, isAppealOnline, isExpertOnline) => {
     changeStatus(isAppealOnline);
 
     const isSender = nickName === 'Член КК № ' + expertKey;
 
-    const messageItem = joinMessage(messageDate, nickName, isFirstJoined, isSender);
+    const messageItem = joinMessage(messageDate, nickName, isSender);
 
     $("#messagesList").append(messageItem).scrollTo(messageItem);
 };
@@ -100,13 +100,11 @@ const onLeaveUser = (message) => {
 };
 
 // First join expert to chat callback
-//const onFirstExpert = (expertKey) => {
-//    const isSender = nickname !== 'Апеллянт';
+const onFirstJoinExpert = (expertKey) => {
+    const messageItem = firstJoinMessage(expertKey, true);
 
-//    const li = firstJoinMessage(expertKey, isSender);
-
-//    $("#messagesList").append(li).scrollTo(li);
-//};
+    $("#messagesList").append(messageItem).scrollTo(messageItem);
+}
 
 //
 const onInitializeChange = (messageText) => {
@@ -129,10 +127,10 @@ const onCompleteChat = () => {
 // 
 const blockChat = () => {
     // Stop info hub connection
-    infoConnection.stop();
+    //infoConnection.stop();
 
     // Stop chat hub connection
-    chatConnection.stop();
+    //chatConnection.stop();
 
     // 
     $('#messageForm, #quickReply').remove();
@@ -247,6 +245,9 @@ getAccessToken(appealId, expertKey).then(accessToken => {
 
     // Leave user from chat handler
     chatConnection.on("Leave", onLeaveUser);
+
+    // Join user to chat handler
+    chatConnection.on("FirstJoinExpert", onFirstJoinExpert);
 
     // First join expert on chat handler
     chatConnection.on("InitializeChange", onInitializeChange);

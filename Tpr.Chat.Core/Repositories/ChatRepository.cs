@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 using Dapper;
 using Dapper.Contrib.Extensions;
 using Tpr.Chat.Core.Models;
@@ -20,23 +21,23 @@ namespace Tpr.Chat.Core.Repositories
 
         #region Session
 
-        public ChatSession GetChatSession(Guid appealId)
+        public async Task<ChatSession> GetChatSession(Guid appealId)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                connection.Open();
+                await connection.OpenAsync();
 
-                return connection.Get<ChatSession>(appealId);
+                return await connection.GetAsync<ChatSession>(appealId);
             }
         }
 
-        public bool UpdateSession(ChatSession chatSession)
+        public async Task<bool> UpdateSession(ChatSession chatSession)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                connection.Open();
+                await connection.OpenAsync();
 
-                return connection.Update(chatSession);
+                return await connection.UpdateAsync(chatSession);
             }
         }
 
@@ -44,7 +45,7 @@ namespace Tpr.Chat.Core.Repositories
 
         #region Messages
 
-        public ChatMessage GetWelcomeMessage(Guid appealId, string expertKey)
+        public async Task<ChatMessage> GetWelcomeMessage(Guid appealId, string expertKey)
         {
             var nickname = "Член КК № " + expertKey;
             var messageType = (int)ChatMessageTypes.FirstExpert;
@@ -55,9 +56,9 @@ namespace Tpr.Chat.Core.Repositories
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
-                    connection.Open();
+                    await connection.OpenAsync();
 
-                    return connection.QuerySingle<ChatMessage>(sql, new { appealId, nickname, messageType });
+                    return await connection.QuerySingleOrDefaultAsync<ChatMessage>(sql, new { appealId, nickname, messageType });
                 }
             }
             catch (Exception exception)
@@ -68,15 +69,17 @@ namespace Tpr.Chat.Core.Repositories
             }
         }
 
-        public IList<ChatMessage> GetChatMessages(Guid appealId)
+        public async Task<IEnumerable<ChatMessage>> GetChatMessages(Guid appealId)
         {
+            string sql = "SELECT * FROM dbo.ChatMessages WHERE AppealId = @AppealId";
+
             try
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
-                    connection.Open();
-                    string sql = "SELECT * FROM dbo.ChatMessages WHERE AppealId = @AppealId";
-                    return connection.Query<ChatMessage>(sql, new { appealId }).ToList();
+                    await connection.OpenAsync();
+
+                    return await connection.QueryAsync<ChatMessage>(sql, new { appealId });
                 }
             }
             catch (Exception exception)
@@ -87,22 +90,7 @@ namespace Tpr.Chat.Core.Repositories
             }
         }
 
-        public bool WriteMessage(Guid appealId, string nickName, string messageText)
-        {
-            return WriteChatMessage(appealId, nickName, messageText, ChatMessageTypes.Message);
-        }
-
-        public bool WriteJoined(Guid appealId, string nickName)
-        {
-            return WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Joined);
-        }
-
-        public bool WriteLeave(Guid appealId, string nickName)
-        {
-            return WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Leave);
-        }
-
-        public bool WriteChatMessage(Guid appealId, string nickName, string messageString, ChatMessageTypes messageType)
+        public async Task<bool> WriteChatMessage(Guid appealId, string nickName, string messageString, ChatMessageTypes messageType)
         {
             var chatMessage = new ChatMessage()
             {
@@ -113,23 +101,23 @@ namespace Tpr.Chat.Core.Repositories
                 MessageString = messageString
             };
 
-            return WriteChatMessage(chatMessage);
+            return await WriteChatMessage(chatMessage);
         }
 
-        public bool AddStatusMessage(Guid appealId, string nickName, ChatMessageTypes messageType)
+        public async Task<bool> AddStatusMessage(Guid appealId, string nickName, ChatMessageTypes messageType)
         {
-            return WriteChatMessage(appealId, nickName, null, messageType);
+            return await WriteChatMessage(appealId, nickName, null, messageType);
         }
 
-        public bool WriteChatMessage(ChatMessage message)
+        public async Task<bool> WriteChatMessage(ChatMessage message)
         {
             try
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
-                    connection.Open();
+                    await connection.OpenAsync();
 
-                    return connection.Insert(message) > 0;
+                    return await connection.InsertAsync(message) > 0;
                 }
             }
             catch (Exception exception)
@@ -143,38 +131,14 @@ namespace Tpr.Chat.Core.Repositories
         #endregion
 
         #region Quick Reply
-
-        //public IEnumerable<int> GetExperts(Guid appealId)
-        //{
-        //    string sql = "SELECT ExpertKey FROM dbo.SessionExperts WHERE AppealId = @appealId";
-
-        //    using (var connection = new SqlConnection(_connectionString))
-        //    {
-        //        connection.Open();
-
-        //        return connection.Query<int>(sql, new { appealId });
-        //    }
-        //}
-
-        //public bool AddExpert(Guid appealId, int expertKey)
-        //{
-        //    string sql = "INSERT INTO dbo.SessionExperts (ExpertKey, AppealId) VALUES (@expertKey, @appealId)";
-
-        //    using (var connection = new SqlConnection(_connectionString))
-        //    {
-        //        connection.Open();
-
-        //        return connection.Execute(sql, new { expertKey, appealId }) > 0;
-        //    }
-        //}
-
-        public IEnumerable<QuickReply> GetQuickReplies()
+        
+        public async Task<IEnumerable<QuickReply>> GetQuickReplies()
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                connection.Open();
+                await connection.OpenAsync();
 
-                return connection.GetAll<QuickReply>();
+                return await connection.GetAllAsync<QuickReply>();
             }
         }
 
@@ -182,37 +146,17 @@ namespace Tpr.Chat.Core.Repositories
 
         #region Member Replacement
 
-        public MemberReplacement GetMemberReplacement(Guid appealId)
+        public async Task<MemberReplacement> GetMemberReplacement(Guid appealId)
         {
             try
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
-                    connection.Open();
+                    await connection.OpenAsync();
 
                     var sql = "SELECT * FROM dbo.MemberReplacements WHERE AppealId = @appealId";
 
-                    return connection.QuerySingle<MemberReplacement>(sql, new { appealId });
-                }
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine(exception.Message);
-
-                return null;
-            }
-        }
-        public MemberReplacement GetMemberReplacement(Guid appealId, string expertKey)
-        {
-            try
-            {
-                using (var connection = new SqlConnection(_connectionString))
-                {
-                    connection.Open();
-
-                    var sql = "SELECT * FROM dbo.MemberReplacements WHERE AppealId = @appealId AND OldMember = @expertKey";
-
-                    return connection.QuerySingle<MemberReplacement>(sql, new { appealId, expertKey });
+                    return await connection.QuerySingleOrDefaultAsync<MemberReplacement>(sql, new { appealId });
                 }
             }
             catch (Exception exception)
@@ -223,7 +167,7 @@ namespace Tpr.Chat.Core.Repositories
             }
         }
 
-        public bool AddMemberReplacement(Guid appealId, int expertKey)
+        public async Task<bool> AddMemberReplacement(Guid appealId, int expertKey)
         {
             var replacement = new MemberReplacement
             {
@@ -232,18 +176,19 @@ namespace Tpr.Chat.Core.Repositories
                 OldMember = expertKey
             };
 
-            return AddMemberReplacement(replacement);
+            return await AddMemberReplacement(replacement);
         }
 
-        public bool AddMemberReplacement(MemberReplacement replacement)
+        public async Task<bool> AddMemberReplacement(MemberReplacement replacement)
         {
             try
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
-                    connection.Open();
+                    await connection.OpenAsync();
 
-                    connection.Insert(replacement);
+                    await connection.InsertAsync(replacement);
+
                     return true;
                 }
             }
@@ -255,15 +200,15 @@ namespace Tpr.Chat.Core.Repositories
             }
         }
 
-        public bool UpdateMemberReplacement(MemberReplacement replacement)
+        public async Task<bool> UpdateMemberReplacement(MemberReplacement replacement)
         {
             try
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
-                    connection.Open();
+                    await connection.OpenAsync();
 
-                    return connection.Update(replacement);
+                    return await connection.UpdateAsync(replacement);
                 }
             }
             catch (Exception exception)
