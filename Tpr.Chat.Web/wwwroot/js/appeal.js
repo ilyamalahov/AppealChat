@@ -1,5 +1,7 @@
-﻿// 
-var infoConnection;
+﻿// Update info hub connection
+var infoConnection = new signalR.HubConnectionBuilder()
+    .withUrl("/info")
+    .build();
 
 // 
 var chatConnection;
@@ -39,7 +41,7 @@ const onLeaveUser = (message) => {
 
     const isSender = message.nickName === 'Апеллянт';
 
-    if (!isSender) return;
+    if (!isSender) { return; }
 
     const messageItem = leaveMessage(message, isSender);
 
@@ -59,13 +61,6 @@ const onFirstJoinExpert = (expertKey) => {
 };
 
 // 
-const onCompleteChange = (expertKey) => {
-    getAccessToken(appealId).then(restartChatConnection);
-
-    waitChange(false);
-};
-
-// 
 const onInitializeChange = (messageText) => {
     const messageItem = changeExpertMessage(messageText);
 
@@ -73,9 +68,29 @@ const onInitializeChange = (messageText) => {
 };
 
 // 
+const onCompleteChange = (expertKey) => {
+    // Start info connection
+    infoConnection.start().then(updateInfo).catch(error => console.error(error.toString()));
+
+    generateToken(appealId).then(token => chatConnection.stop().then(() => createChatConnection("/chat", token)));
+
+    waitChange(false);
+};
+
+const generateToken = () => {
+    return new Promise((resolve, reject) =>
+        $.post("ajax/token", { appealId }, (response) => {
+            sessionStorage.setItem("access_token", response.accessToken);
+
+            return resolve(response.accessToken);
+        })
+    );
+};
+
+// 
 const onReceiveInfo = (currentDate, remainingTime, isAlarm, isFinished) => {
     // Redirect on consultation end
-    if (isFinished) location.reload();
+    if (isFinished) { location.reload(); }
 
     // Remaining duration
     var remainingDuration = luxon.Duration.fromMillis(remainingTime);
@@ -131,10 +146,10 @@ const changeStatus = (isOnline) => $('#onlineStatus').toggleClass('online', isOn
 const changeExpert = (appeal) => {
     $.ajax({
         method: "POST",
-        url: "ajax/expert/change",
+        url: "ajax/change/expert",
         data: { appealId: appeal },
         beforeSend: () => $('#changeButton, #changeMobileButton').prop('disabled', true),
-        success: () => waitChange(true),
+        success: () => { infoConnection.stop(); waitChange(true); },
         error: (error) => {
             alert(error.responseText);
 
@@ -176,32 +191,11 @@ const waitChange = (isWait) => {
 const updateInfo = () => infoConnection.send("MainUpdate", appealId);
 
 // 
-const restartChatConnection = (token) => {
-    // Stop chat connection
-    chatConnection.stop();
-
+const createChatConnection = (url, accessToken) => {
     chatConnection = new signalR.HubConnectionBuilder()
-        .withUrl("/chat", { accessTokenFactory: () => token })
+        .withUrl(url, { accessTokenFactory: () => accessToken })
+        .configureLogging(signalR.LogLevel.Trace)
         .build();
-
-    // Start chat connection
-    chatConnection.start().catch(error => console.error(error.toString()));
-};
-
-// 
-getAccessToken(appealId).then(accessToken => {
-    // Update info hub connection
-    infoConnection = new signalR.HubConnectionBuilder()
-        .withUrl("/info")
-        .build();
-
-    // Chat hub connection
-    chatConnection = new signalR.HubConnectionBuilder()
-        .withUrl("/chat", { accessTokenFactory: () => accessToken })
-        .build();
-
-    // Receive information response event
-    infoConnection.on("ReceiveInfo", onReceiveInfo);
 
     // Receiving message from user
     chatConnection.on("Receive", onReceiveMessage);
@@ -221,15 +215,19 @@ getAccessToken(appealId).then(accessToken => {
     // Complete change expert
     chatConnection.on("CompleteChange", onCompleteChange);
 
-    // Start chat connection
-    chatConnection.start().catch((error) => console.error(error.toString()));
+    // Complete change expert
+    //chatConnection.onclose(() => createChatConnection(url, accessToken));
 
-    // Start info connection
-    infoConnection.start().then(updateInfo).catch((error) => console.error(error.toString()));
-});
+    // Start chat connection
+    chatConnection.start().catch(error => console.error(error.toString()));
+};
 
 // 
 $(document).ready(() => {
+    // Receive information response event
+    infoConnection.on("ReceiveInfo", onReceiveInfo);
+
+    // 
     $(window).on('resize', scrollToLast);
 
     // Send message
@@ -266,7 +264,14 @@ $(document).ready(() => {
     // 
     $('#messageText').trigger('input');
 
+    //
     waitChange(isWaiting);
+
+    // Start info connection
+    infoConnection.start().then(updateInfo).catch(error => console.error(error.toString()));
+
+    // 
+    getAccessToken(appealId).then(token => createChatConnection("/chat", token));
 });
 
 //

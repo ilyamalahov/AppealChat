@@ -7,8 +7,8 @@ const getAccessToken = (appeal, expert) => {
 
         $.ajax({
             method: "post",
-            url: "token",
-            data: { appealId: appeal, key: expert },
+            url: "ajax/token",
+            data: { appealId: appeal, expertKey: expert },
             success: (response) => {
                 sessionStorage.setItem("access_token", response.accessToken);
 
@@ -171,16 +171,10 @@ const toggleHelpInfo = (isVisible) => {
     contactsInfoIsVisible = isVisible;
 
     // 
-    $('#contactsButton img').toggleClass('flipped', isVisible);
-
-    //const arrowOffset = $('#contactsButton img').offset();
-
-    //console.log(arrowOffset.top - 110, $('#contactsTooltip').get());
-    //
-    //const targetOffset = $('#contactsTooltip').outerHeight() - (arrowOffset.top - 110);
+    $('#contactsChevron').toggleClass('flipped', isVisible);
 
     //
-    //$('#contactsArrow').css({ bottom: targetOffset });
+    $('#contactsArrow').css({ top: $('#contactsChevron').position().top });
 
     //
     const leftPosition = $('#contactsButton').outerWidth() + 10;

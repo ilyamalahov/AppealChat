@@ -112,20 +112,24 @@ namespace Tpr.Chat.Web.Controllers
                     replacement.ReplaceTime = DateTime.Now;
                     replacement.NewMember = key;
 
-                    var isReplacementUpdated = await chatRepository.UpdateMemberReplacement(replacement);
+                    var replacementUpdated = await chatRepository.UpdateMemberReplacement(replacement);
 
-                    if (!isReplacementUpdated)
+                    if (!replacementUpdated)
                     {
                         return BadRequest("Не удалось обновить запись бд");
                     }
 
                     // 
-                    chatSession.FinishTime = replacement.ReplaceTime.Value + (replacement.RequestTime - chatSession.StartTime);
+                    var waitTime = replacement.ReplaceTime.Value.Subtract(replacement.RequestTime);
+
+                    chatSession.FinishTime = chatSession.FinishTime.Add(waitTime);
+                    
+                    //
                     chatSession.CurrentExpertKey = key;
 
-                    var isSessionUpdated = await chatRepository.UpdateSession(chatSession);
+                    var sessionUpdated = await chatRepository.UpdateSession(chatSession);
 
-                    if (!isSessionUpdated)
+                    if (!sessionUpdated)
                     {
                         return BadRequest("Не удалось обновить запись бд");
                     }
@@ -203,40 +207,6 @@ namespace Tpr.Chat.Web.Controllers
             //await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity), properties);
 
             return BadRequest();
-        }
-
-        [Produces("application/json")]
-        [HttpPost("token")]
-        public async Task<IActionResult> Token(Guid appealId, int key = 0)
-        {
-            var chatSession = await chatRepository.GetChatSession(appealId);
-
-            // Check if chat session is exists
-            if (chatSession == null)
-            {
-                return Error();
-            }
-
-            // Check if current date less than chat start time
-            if (DateTime.Now < chatSession.StartTime)
-            {
-                return Error();
-            }
-
-            // Check if current date more than chat finish time
-            if (DateTime.Now > chatSession.FinishTime)
-            {
-                return Error();
-            }
-
-            var identity = commonService.GetIdentity(appealId, key);
-
-            var accessToken = commonService.CreateToken(identity, chatSession.StartTime, chatSession.FinishTime);
-
-            // JSON Response
-            var response = new { accessToken };
-
-            return Ok(response);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

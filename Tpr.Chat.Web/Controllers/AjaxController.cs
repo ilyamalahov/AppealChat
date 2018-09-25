@@ -27,7 +27,7 @@ namespace Tpr.Chat.Web.Controllers
             this.chatContext = chatContext;
         }
 
-        [HttpPost("expert/change")]
+        [HttpPost("change/expert")]
         public async Task<IActionResult> ChangeExpert(Guid appealId)
         {
             // Member replacement
@@ -81,15 +81,7 @@ namespace Tpr.Chat.Web.Controllers
             }
 
             await chatContext.Clients.User(appealId.ToString()).InitializeChange(messageText);
-
-            // Send change expert request to external system
-
-            //var identity = commonService.GetIdentity(appealId);
-
-            //var accessToken = commonService.CreateToken(identity, chatSession.StartTime, chatSession.FinishTime);
-
-            //var response = new { accessToken };
-
+            
             // Return Success result to client
             return Ok();
         }
@@ -115,7 +107,7 @@ namespace Tpr.Chat.Web.Controllers
 
             if(!sessionResult)
             {
-                return BadRequest("Серверная ошибка:<br/>Не удалось добавить запись таблицы 'Сессия чата'");
+                return BadRequest("Не удалось добавить запись таблицы 'Сессия'");
             }
 
             // Add message
@@ -125,13 +117,39 @@ namespace Tpr.Chat.Web.Controllers
 
             if (!sessionResult)
             {
-                return BadRequest("Серверная ошибка:<br/>Не удалось добавить запись в таблицу 'Сообщения'");
+                return BadRequest("Не удалось добавить запись в таблицу 'Сообщения'");
             }
 
             await chatContext.Clients.User(appealId.ToString()).CompleteChat();
 
             // Return Success result to client
             return Ok();
+        }
+
+        [Produces("application/json")]
+        [HttpPost("token")]
+        public async Task<IActionResult> Token(Guid appealId, int expertKey = 0)
+        {
+            // 
+            var chatSession = await chatRepository.GetChatSession(appealId);
+
+            // Check if chat session is exists
+            if (chatSession == null)
+            {
+                return BadRequest("Сессия для данного апеллянта не найдена");
+            }
+
+            // 
+            var identity = commonService.GetIdentity(appealId, expertKey);
+
+            // 
+            var accessToken = commonService.CreateToken(identity, chatSession.StartTime, chatSession.FinishTime);
+
+            // JSON Response
+            var response = new { accessToken };
+
+            // 
+            return Ok(response);
         }
     }
 }
