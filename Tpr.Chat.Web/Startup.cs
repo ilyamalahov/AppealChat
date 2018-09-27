@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -33,16 +34,16 @@ namespace Tpr.Chat.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectionString = Configuration.GetConnectionString("DefaultConnection");
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
 
             // Chat repository
             services.AddTransient<IChatRepository, ChatRepository>(repository => new ChatRepository(connectionString));
 
-            //services.AddHostedService<QueuedHostedService>();
-            //services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.AddHostedService<QueuedHostedService>();
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
-            // Common service
-            services.AddTransient<ICommonService, CommonService>();
+            // Authentication service
+            services.AddTransient<IAuthService, AuthService>();
 
             // Connections service
             services.AddSingleton<IConnectionService, ConnectionService>();
@@ -63,16 +64,25 @@ namespace Tpr.Chat.Web
                 options.EnableDetailedErrors = true;
             }).AddJsonProtocol();
 
-            services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+            //services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
             // Session
-            //services.AddDistributedMemoryCache();
+            services.AddDistributedMemoryCache();
 
-            //services.AddSession();
+            services.AddSession();
 
             // Authentication
             //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             //    .AddCookie();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(JwtBearerDefaults.AuthenticationScheme, policy =>
+                {
+                    policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireClaim(ClaimTypes.NameIdentifier);
+                });
+            });
 
             // Authentication
             var jwtConfiguration = Configuration.GetSection("JWT");
@@ -92,37 +102,34 @@ namespace Tpr.Chat.Web
                         // Token audience
                         ValidAudience = jwtConfiguration["Audience"],
 
+                        ValidateActor = false,
+
                         // Validate signing key
-                        ValidateIssuerSigningKey = true,
+                        //ValidateIssuerSigningKey = true,
                         // Issuer Signing Key
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfiguration["SecretKey"])),
 
                         // Validate token lifetime
                         ValidateLifetime = true,
-                        // Skew
-                        ClockSkew = TimeSpan.Zero
+
+                        LifetimeValidator = (before, expires, token, parameters) => expires > DateTime.UtcNow
                     };
 
                     options.Events = new JwtBearerEvents
                     {
                         OnMessageReceived = context =>
                         {
-                            var result = context.Request.Query.TryGetValue("access_token", out var token);
+                            var tokenResult = context.Request.Query.TryGetValue("access_token", out var accessToken);
 
-                            var isContainsChatPath = context.HttpContext.Request.Path.StartsWithSegments("/chat");
-                            var isContainsInfoPath = context.HttpContext.Request.Path.StartsWithSegments("/info");
+                            var isWebsocketRequest = context.HttpContext.WebSockets.IsWebSocketRequest;
+
+                            var isEventStreamRequest = context.Request.Headers["Accept"] == "text/event-stream";
 
                             // If the request is for our hub...
-                            if (result && (isContainsChatPath || isContainsInfoPath))
+                            if (tokenResult && (isWebsocketRequest || isEventStreamRequest))
                             {
-                                // Read the token out of the query string
-                                context.Token = token;
+                                context.Token = accessToken;
                             }
-                            return Task.CompletedTask;
-                        },
-                        OnAuthenticationFailed = context =>
-                        {
-                            Console.WriteLine(context.Exception.Message);
 
                             return Task.CompletedTask;
                         }
@@ -165,7 +172,7 @@ namespace Tpr.Chat.Web
                 routes.MapHub<InfoHub>("/info");
             });
 
-            //app.UseSession();
+            app.UseSession();
 
             // Authentication
             app.UseAuthentication();

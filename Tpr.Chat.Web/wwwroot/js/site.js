@@ -35,12 +35,8 @@ const receiveMessage = (message, isSender) => {
 // Return new "Join user" message
 const joinMessage = (messageDate, nickName, isSender) => {
     const messageDateObj = luxon.DateTime.fromISO(messageDate);
-
-    var messageText = "";
-
-    //else if (isFirstJoined) messageText = nickName + ' подключился к консультации. Вы можете задать свои вопросы здесь.';
-    if (isSender) messageText = 'Вы подключились к консультации';
-    else messageText = nickName + ' подключился к консультации';
+    
+    const messageText = isSender ? 'Вы подключились к консультации' : nickName + ' подключился к консультации';
 
     const html = messageText + ' <b class="message-date">' + messageDateObj.toFormat("tt") + '</b>';
 
@@ -48,12 +44,12 @@ const joinMessage = (messageDate, nickName, isSender) => {
 };
 
 // Return new "Leave user" message
-const leaveMessage = (message, isSender) => {
-    const messageDate = luxon.DateTime.fromISO(message.createDate);
+const leaveMessage = (messageDate, nickName, isSender) => {
+    const messageDateObj = luxon.DateTime.fromISO(messageDate);
 
-    const messageText = isSender ? 'Вы покинули консультацию' : message.nickName + ' покинул консультацию';
+    const messageText = isSender ? 'Вы покинули консультацию' : nickName + ' покинул консультацию';
 
-    const html = messageText + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
+    const html = messageText + ' <b class="message-date">' + messageDateObj.toFormat("tt") + '</b>';
 
     return addMessage(html, isSender);
 };

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -17,14 +18,23 @@ namespace Tpr.Chat.Web.Controllers
     public class AjaxController : Controller
     {
         private readonly IChatRepository chatRepository;
-        private readonly ICommonService commonService;
+        private readonly IAuthService authService;
         private readonly IHubContext<ChatHub, IChat> chatContext;
 
-        public AjaxController(IChatRepository chatRepository, ICommonService commonService, IHubContext<ChatHub, IChat> chatContext)
+        public IBackgroundTaskQueue BackgroundQueue { get; }
+
+        public AjaxController(
+            IChatRepository chatRepository,
+            IAuthService authService,
+            IHubContext<ChatHub, IChat> chatContext,
+            IBackgroundTaskQueue backgroundQueue
+            )
         {
             this.chatRepository = chatRepository;
-            this.commonService = commonService;
+            this.authService = authService;
             this.chatContext = chatContext;
+
+            BackgroundQueue = backgroundQueue;
         }
 
         [HttpPost("change/expert")]
@@ -75,13 +85,13 @@ namespace Tpr.Chat.Web.Controllers
 
             var isMessageInserted = await chatRepository.WriteChatMessage(appealId, nickname, messageText, ChatMessageTypes.ChangeExpert);
 
-            if(!isMessageInserted)
+            if (!isMessageInserted)
             {
                 return BadRequest("Не удалось вставить запись в таблицу");
             }
 
             await chatContext.Clients.User(appealId.ToString()).InitializeChange(messageText);
-            
+
             // Return Success result to client
             return Ok();
         }
@@ -105,7 +115,7 @@ namespace Tpr.Chat.Web.Controllers
             // Update session record
             var sessionResult = await chatRepository.UpdateSession(chatSession);
 
-            if(!sessionResult)
+            if (!sessionResult)
             {
                 return BadRequest("Не удалось добавить запись таблицы 'Сессия'");
             }
@@ -127,8 +137,8 @@ namespace Tpr.Chat.Web.Controllers
         }
 
         [Produces("application/json")]
-        [HttpPost("token")]
-        public async Task<IActionResult> Token(Guid appealId, int expertKey = 0)
+        [HttpGet("token")]
+        public async Task<IActionResult> Token(Guid appealId, string expertKey = null)
         {
             // 
             var chatSession = await chatRepository.GetChatSession(appealId);
@@ -140,16 +150,51 @@ namespace Tpr.Chat.Web.Controllers
             }
 
             // 
-            var identity = commonService.GetIdentity(appealId, expertKey);
+            var identity = authService.GetIdentity(appealId, expertKey);
 
             // 
-            var accessToken = commonService.CreateToken(identity, chatSession.StartTime, chatSession.FinishTime);
-
-            // JSON Response
-            var response = new { accessToken };
-
+            var accessToken = authService.CreateToken(identity, TimeSpan.FromSeconds(30));
+            
             // 
-            return Ok(response);
+            return Ok(accessToken);
+        }
+
+        [HttpPost("chat/disconnect")]
+        public void DisconnectChat(Guid appealId, string expertKey = null)
+        {
+            BackgroundQueue.QueueBackgroundWorkItem(async token => {
+                await Task.Delay(TimeSpan.FromSeconds(10), token);
+
+                // Sender type
+                var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
+
+                // Nick name
+                var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
+
+                // Write message to database
+                await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Leave);
+
+                // Send "Leave" message to specified user clients 
+                await chatContext.Clients.User(appealId.ToString()).Leave(DateTime.Now, nickName);
+            });
+        }
+
+        public async Task WaitDisconnect(CancellationToken token)
+        {
+            //// Sender type
+            //var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
+
+            //// Nick name
+            //var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
+
+            //// Remove caller's connection ID
+            //connectionService.RemoveConnectionId(appealId, senderType);
+
+            //// Write message to database
+            //await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Leave);
+
+            //// Send "Leave" message to specified user clients 
+            //await Clients.User(Context.UserIdentifier).Leave(DateTime.Now, nickName);
         }
     }
 }
