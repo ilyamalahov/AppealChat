@@ -16,19 +16,20 @@ using Tpr.Chat.Core.Repositories;
 using Tpr.Chat.Web.Hubs;
 using Tpr.Chat.Web.Models;
 using Tpr.Chat.Web.Service;
+using Microsoft.AspNetCore.Http;
 
 namespace Tpr.Chat.Web.Controllers
 {
     public class HomeController : Controller
     {
         private readonly IChatRepository chatRepository;
-        private readonly ICommonService commonService;
+        private readonly IAuthService commonService;
         private readonly IConnectionService connectionService;
         private readonly IHubContext<ChatHub, IChat> chatContext;
 
         public HomeController(
             IChatRepository chatRepository,
-            ICommonService commonService,
+            IAuthService commonService,
             IConnectionService connectionService,
             IHubContext<ChatHub, IChat> chatContext)
         {
@@ -179,6 +180,13 @@ namespace Tpr.Chat.Web.Controllers
                 //{
                 //    return BadRequest("Сессия все еще запущена на другом устройстве");
                 //}
+                
+                var sessionAppealId = HttpContext.Session.GetString("appealId");
+                
+                if(sessionAppealId == null)
+                {
+                    HttpContext.Session.SetString("appealId", appealId.ToString());
+                }
 
                 return View("Appeal", model);
             }

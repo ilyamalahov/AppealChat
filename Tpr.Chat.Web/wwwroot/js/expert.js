@@ -89,12 +89,12 @@ const onJoinUser = (messageDate, nickName, isAppealOnline, isExpertOnline) => {
 };
 
 // Leave user from chat callback
-const onLeaveUser = (message) => {
+const onLeaveUser = (messageDate, nickName) => {
     changeStatus(false);
 
-    const isSender = message.nickName === 'Член КК № ' + expertKey;
+    const isSender = nickName === 'Член КК № ' + expertKey;
 
-    const messageItem = leaveMessage(message, isSender);
+    const messageItem = leaveMessage(messageDate, nickName, isSender);
 
     $("#messagesList").append(messageItem).scrollTo(messageItem);
 };

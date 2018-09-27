@@ -15,20 +15,16 @@ namespace Tpr.Chat.Web.Hubs
     public class InfoHub : Hub
     {
         private readonly IChatRepository chatRepository;
-        //private readonly IBackgroundTaskQueue queue;
-        private readonly ILogger logger;
+        private readonly IConnectionService connectionService;
 
-        public InfoHub(IChatRepository chatRepository, ILoggerFactory loggerFactory)
+        public InfoHub(IChatRepository chatRepository, IConnectionService connectionService)
         {
             this.chatRepository = chatRepository;
-            //this.queue = queue;
-            logger = loggerFactory.CreateLogger<InfoHub>();
+            this.connectionService = connectionService;
         }
 
         public override Task OnConnectedAsync()
         {
-            //queue.QueueBackgroundWorkItem(Update);
-
             return base.OnConnectedAsync();
         }
 
@@ -37,21 +33,51 @@ namespace Tpr.Chat.Web.Hubs
             return base.OnDisconnectedAsync(exception);
         }
 
-        //private async Task Update(CancellationToken token)
-        //{
-        //    var taskId = Guid.NewGuid();
+        public async Task ConnectToChat(Guid appealId, string expertKey = null)
+        {
+            // Sender type
+            var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
 
-        //    logger.LogInformation("Task: {0} is started", taskId);
+            // Nick name
+            var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
 
-        //    while (!token.IsCancellationRequested)
-        //    {
-        //        logger.LogDebug("Task: {0}, Current date: {1}", taskId, DateTime.Now);
+            // Expert welcome message
+            if (senderType == ContextType.Expert)
+            {
+                // 
+                //var chatSession = await chatRepository.GetChatSession(appealId);
 
-        //        await Task.Delay(TimeSpan.FromMinutes(1), token);
-        //    }
+                //if (chatSession.CurrentExpertKey == null)
+                //{
+                //    return;
+                //}
 
-        //    logger.LogInformation("Task: {0} is completed", taskId);
-        //}
+                //// 
+                //if (expertKey != chatSession.CurrentExpertKey.ToString())
+                //{
+                //    return;
+                //}
+
+                //var welcomeResult = await SendWelcomeMessage(appealId, expertKey);
+
+                //if (welcomeResult != null) return;
+            }
+
+            // Add connection ID to collection
+            connectionService.AddConnectionId(appealId, Context.ConnectionId, senderType);
+
+            // Write message to database
+            //await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Joined);
+
+            // Check if appeal is online
+            var isAppealOnline = connectionService.isOnline(appealId);
+
+            // Check if current expert is online
+            var isExpertOnline = connectionService.isOnline(appealId, ContextType.Expert);
+
+            // Send "Join" message to specified user clients
+            //await chatCliens.User(Context.UserIdentifier).Join(DateTime.Now, nickName, isAppealOnline, isExpertOnline);
+        }
 
         //[Authorize(AuthenticationSchemes = "Bearer")]
         public async Task MainUpdate(Guid appealId)
