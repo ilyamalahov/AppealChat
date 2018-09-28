@@ -20,37 +20,33 @@ namespace Tpr.Chat.Web.Service
             Configuration = configuration;
         }
 
-        public ClaimsIdentity GetIdentity(Guid appealId, string expertKey = null)
+        public string CreateToken(Guid appealId, string expertKey = null)
         {
-            // Identity claims
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, appealId.ToString())
-            };
-
-            // Expert
-            if (expertKey != null)
-            {
-                claims.Add(new Claim("expertkey", expertKey));
-            }
-
-            return new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme);
-        }
-
-        public string CreateToken(ClaimsIdentity identity, TimeSpan expiryTime)
-        {
-            var jwtConfiguration = Configuration.GetSection("JWT");
-
             try
             {
-                var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration["SecretKey"]));
+                var jwtConfiguration = Configuration.GetSection("JWT");
+
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, appealId.ToString())
+                };
+
+                // Expert
+                if (expertKey != null)
+                {
+                    claims.Add(new Claim("expertkey", expertKey));
+                }
+
+                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration["SecretKey"]));
+
+                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
                 var token = new JwtSecurityToken(
                     jwtConfiguration["Issuer"],
                     jwtConfiguration["Audience"],
-                    identity.Claims,
-                    expires: DateTime.UtcNow.Add(expiryTime),
-                    signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
+                    claims,
+                    expires: DateTime.UtcNow.AddSeconds(30),
+                    signingCredentials: credentials
                 );
 
                 return new JwtSecurityTokenHandler().WriteToken(token);

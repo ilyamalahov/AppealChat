@@ -20,14 +20,14 @@ namespace Tpr.Chat.Web.Hubs
         private readonly IChatRepository chatRepository;
         private readonly IConnectionService connectionService;
 
-        public IBackgroundTaskQueue TaskQueue { get; }
+        //public IBackgroundTaskQueue TaskQueue { get; }
 
-        public ChatHub(IChatRepository chatRepository, IConnectionService connectionService, IBackgroundTaskQueue taskQueue)
+        public ChatHub(IChatRepository chatRepository, IConnectionService connectionService)
         {
             this.chatRepository = chatRepository;
             this.connectionService = connectionService;
 
-            TaskQueue = taskQueue;
+            //TaskQueue = taskQueue;
         }
 
         public override async Task OnConnectedAsync()

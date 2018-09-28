@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Tpr.Chat.Core.Models;
 using Tpr.Chat.Core.Repositories;
 using Tpr.Chat.Web.Hubs;
@@ -18,23 +22,20 @@ namespace Tpr.Chat.Web.Controllers
     public class AjaxController : Controller
     {
         private readonly IChatRepository chatRepository;
-        private readonly IAuthService authService;
         private readonly IHubContext<ChatHub, IChat> chatContext;
 
-        public IBackgroundTaskQueue BackgroundQueue { get; }
+        public IConfiguration Configuration { get; }
 
         public AjaxController(
+            IConfiguration configuration,
             IChatRepository chatRepository,
-            IAuthService authService,
-            IHubContext<ChatHub, IChat> chatContext,
-            IBackgroundTaskQueue backgroundQueue
+            IHubContext<ChatHub, IChat> chatContext
             )
         {
             this.chatRepository = chatRepository;
-            this.authService = authService;
             this.chatContext = chatContext;
 
-            BackgroundQueue = backgroundQueue;
+            Configuration = configuration;
         }
 
         [HttpPost("change/expert")]
@@ -138,63 +139,84 @@ namespace Tpr.Chat.Web.Controllers
 
         [Produces("application/json")]
         [HttpGet("token")]
-        public async Task<IActionResult> Token(Guid appealId, string expertKey = null)
+        public IActionResult Token(Guid appealId, string expertKey = null)
         {
-            // 
-            var chatSession = await chatRepository.GetChatSession(appealId);
+            // JWT token configuration
+            var jwtConfiguration = Configuration.GetSection("JWT");
 
-            // Check if chat session is exists
-            if (chatSession == null)
+            // Token identifier (Appeal Id)
+            var claims = new List<Claim>
             {
-                return BadRequest("Сессия для данного апеллянта не найдена");
+                new Claim(ClaimTypes.NameIdentifier, appealId.ToString())
+            };
+
+            // Expert key
+            if (expertKey != null)
+            {
+                claims.Add(new Claim("expertkey", expertKey));
             }
 
-            // 
-            var identity = authService.GetIdentity(appealId, expertKey);
+            // Expiration time
+            var expiryInterval = jwtConfiguration.GetValue<TimeSpan>("Expires");
 
-            // 
-            var accessToken = authService.CreateToken(identity, TimeSpan.FromSeconds(30));
-            
-            // 
+            // Credentials
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration["SecretKey"]));
+
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            // Token object
+            var token = new JwtSecurityToken(
+                jwtConfiguration["Issuer"],
+                jwtConfiguration["Audience"],
+                claims,
+                expires: DateTime.UtcNow.Add(expiryInterval),
+                signingCredentials: credentials
+            );
+
+            // Token string
+            var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+            // Response
             return Ok(accessToken);
         }
 
-        [HttpPost("chat/disconnect")]
-        public void DisconnectChat(Guid appealId, string expertKey = null)
-        {
-            BackgroundQueue.QueueBackgroundWorkItem(async token => {
-                await Task.Delay(TimeSpan.FromSeconds(10), token);
+        //public string CreateToken(Guid appealId, string expertKey = null)
+        //{
+        //    try
+        //    {
+        //        var jwtConfiguration = Configuration.GetSection("JWT");
 
-                // Sender type
-                var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
+        //        var claims = new List<Claim>
+        //        {
+        //            new Claim(ClaimTypes.NameIdentifier, appealId.ToString())
+        //        };
 
-                // Nick name
-                var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
+        //        // Expert
+        //        if (expertKey != null)
+        //        {
+        //            claims.Add(new Claim("expertkey", expertKey));
+        //        }
 
-                // Write message to database
-                await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Leave);
+        //        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration["SecretKey"]));
 
-                // Send "Leave" message to specified user clients 
-                await chatContext.Clients.User(appealId.ToString()).Leave(DateTime.Now, nickName);
-            });
-        }
+        //        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-        public async Task WaitDisconnect(CancellationToken token)
-        {
-            //// Sender type
-            //var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
+        //        var token = new JwtSecurityToken(
+        //            jwtConfiguration["Issuer"],
+        //            jwtConfiguration["Audience"],
+        //            claims,
+        //            expires: DateTime.UtcNow.AddSeconds(30),
+        //            signingCredentials: credentials
+        //        );
 
-            //// Nick name
-            //var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
+        //        return new JwtSecurityTokenHandler().WriteToken(token);
+        //    }
+        //    catch (Exception exception)
+        //    {
+        //        Console.WriteLine(exception.Message);
 
-            //// Remove caller's connection ID
-            //connectionService.RemoveConnectionId(appealId, senderType);
-
-            //// Write message to database
-            //await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Leave);
-
-            //// Send "Leave" message to specified user clients 
-            //await Clients.User(Context.UserIdentifier).Leave(DateTime.Now, nickName);
-        }
+        //        return null;
+        //    }
+        //}
     }
 }
