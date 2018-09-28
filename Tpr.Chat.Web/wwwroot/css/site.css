@@ -1,63 +1,78 @@
 ﻿@font-face {
     font-family: Roboto;
-    src: url(/fonts/Roboto/OpenSans-Regular.ttf);
+    src: url(/fonts/Roboto/Thin.ttf);
+    font-weight: 100;
 }
 
 @font-face {
     font-family: Roboto;
-    src: url(/fonts/Roboto/OpenSans-Italic.ttf);
+    src: url(/fonts/Roboto/ThinItalic.ttf);
+    font-weight: 100;
     font-style: italic;
 }
 
 @font-face {
     font-family: Roboto;
-    src: url(/fonts/Roboto/OpenSans-Light.ttf);
+    src: url(/fonts/Roboto/Light.ttf);
     font-weight: 300;
 }
 
 @font-face {
     font-family: Roboto;
-    src: url(/fonts/Roboto/OpenSans-LightItalic.ttf);
+    src: url(/fonts/Roboto/LightItalic.ttf);
     font-weight: 300;
     font-style: italic;
 }
 
 @font-face {
     font-family: Roboto;
-    src: url(/fonts/Roboto/OpenSans-SemiBold.ttf);
-    font-weight: 600;
+    src: url(/fonts/Roboto/Regular.ttf);
+    font-weight: 400;
 }
 
 @font-face {
     font-family: Roboto;
-    src: url(/fonts/Roboto/OpenSans-SemiBoldItalic.ttf);
-    font-weight: 600;
+    src: url(/fonts/Roboto/Italic.ttf);
+    font-weight: 400;
     font-style: italic;
 }
 
 @font-face {
     font-family: Roboto;
-    src: url(/fonts/Roboto/OpenSans-Bold.ttf);
+    src: url(/fonts/Roboto/Medium.ttf);
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url(/fonts/Roboto/MediumItalic.ttf);
+    font-weight: 500;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url(/fonts/Roboto/Bold.ttf);
     font-weight: 700;
 }
 
 @font-face {
     font-family: Roboto;
-    src: url(/fonts/Roboto/OpenSans-BoldItalic.ttf);
+    src: url(/fonts/Roboto/BoldItalic.ttf);
     font-weight: 700;
     font-style: italic;
 }
 
 @font-face {
     font-family: Roboto;
-    src: url(/fonts/Roboto/OpenSans-ExtraBold.ttf);
-    font-weight: 800;
+    src: url(/fonts/Roboto/Black.ttf);
+    font-weight: 900;
 }
 
 @font-face {
     font-family: Roboto;
-    src: url(/fonts/Roboto/OpenSans-ExtraBoldItalic.ttf);
-    font-weight: 800;
+    src: url(/fonts/Roboto/BlackItalic.ttf);
+    font-weight: 900;
     font-style: italic;
 }
 

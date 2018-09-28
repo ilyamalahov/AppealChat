@@ -6,14 +6,19 @@ var infoConnection = new signalR.HubConnectionBuilder()
 // 
 var chatConnection;
 
+var tokenInterval = 20000;
+
 // Update intreval
-const interval = 10000;
+const infoInterval = 10000;
 
 // Original window height
 const originalHeight = $(window).height();
 
-// 
+// Update information timer id
 var infoTimer;
+
+// Jwt Bearer access token
+var accessToken;
 
 // 
 const onReceiveMessage = (message) => {
@@ -73,9 +78,9 @@ const onInitializeChange = (messageText) => {
 // 
 const onCompleteChange = (expertKey) => {
     // Start info connection
-    setTimeout(updateInfo);
+    updateInfo();
 
-    generateToken(appealId).then(token => chatConnection.stop().then(() => chatConnection.start()));
+    refreshToken(appealId);
 
     waitChange(false);
 };
@@ -120,7 +125,7 @@ const onReceiveInfo = (currentDate, remainingTime, isAlarm, isFinished) => {
         $('#alarm').text(alarmText).show();
     }
 
-    infoTimer = setTimeout(updateInfo, interval);
+    infoTimer = setTimeout(updateInfo, infoInterval);
 };
 
 // Send message
@@ -193,42 +198,19 @@ const waitChange = (isWait) => {
 // 
 const updateInfo = () => infoConnection.send("MainUpdate", appealId);
 
-// 
-const createChatConnection = (url) => {
-    chatConnection = new signalR.HubConnectionBuilder()
-        .withUrl(url, { accessTokenFactory: () => accessToken })
-        .configureLogging(signalR.LogLevel.Trace)
-        .build();
+// Refresh access token
+const refreshToken = (appeal) => getJwtToken(appeal).then(token => { accessToken = token; setTimeout(() => refreshToken(appeal), tokenInterval); });
 
-    // Receiving message from user
-    chatConnection.on("Receive", onReceiveMessage);
+// Info hub connection
 
-    // Joining user to chat
-    chatConnection.on("Join", onJoinUser);
+// Receive information response event
+infoConnection.on("ReceiveInfo", onReceiveInfo);
 
-    // Leave user from chat
-    chatConnection.on("Leave", onLeaveUser);
-
-    // Join user to chat handler
-    chatConnection.on("FirstJoinExpert", onFirstJoinExpert);
-
-    // Initialize change expert
-    chatConnection.on("InitializeChange", onInitializeChange);
-
-    // Complete change expert
-    chatConnection.on("CompleteChange", onCompleteChange);
-
-    // Complete change expert
-    chatConnection.onclose(() => chatConnection.invoke('SendDisconnectMessage', appealId, null));
-
-    // Start chat connection
-    return chatConnection.start();
-};
+// Start info connection
+infoConnection.start().then(updateInfo).catch(error => console.error(error.toString()));
 
 // 
 $(document).ready(() => {
-    // Receive information response event
-    infoConnection.on("ReceiveInfo", onReceiveInfo);
 
     // 
     $(window).on('resize', scrollToLast);
@@ -269,73 +251,45 @@ $(document).ready(() => {
 
     $('#stopButton').on('click', () => { clearTimeout(tokenTimer); console.info('Token timer paused'); });
 
-    $('#startButton').on('click', () => { tokenTimer = setTimeout(refreshToken, tokenInterval); console.info('Token timer resumed'); });
+    //$('#startButton').on('click', () => { tokenTimer = setTimeout(refreshToken, 20000); console.info('Token timer resumed'); });
 
     //
     waitChange(isWaiting);
-
-    // Start info connection
-    infoConnection.start().then(updateInfo).catch(error => console.error(error.toString()));
-
-    // 
-    refreshToken(appealId)
-        .then(() => {
-            const options = { accessTokenFactory: () => accessToken };
-
-            chatConnection = new signalR.HubConnectionBuilder()
-                .withUrl('chat', options)
-                .configureLogging(signalR.LogLevel.Trace)
-                .build();
-
-            // Receiving message from user
-            chatConnection.on("Receive", onReceiveMessage);
-
-            // Joining user to chat
-            chatConnection.on("Join", onJoinUser);
-
-            // Leave user from chat
-            chatConnection.on("Leave", onLeaveUser);
-
-            // Join user to chat handler
-            chatConnection.on("FirstJoinExpert", onFirstJoinExpert);
-
-            // Initialize change expert
-            chatConnection.on("InitializeChange", onInitializeChange);
-
-            // Complete change expert
-            chatConnection.on("CompleteChange", onCompleteChange);
-
-            // Start chat connection
-            return chatConnection.start();
-        })
-        .then(() => tokenTimer = setInterval(() => { console.info('Refreshing token'); refreshToken(appealId); }, tokenInterval) /*setTimeout(refreshToken, tokenInterval)*/)
-        .catch(error => console.error(error.toString()));
 });
 
-var tokenTimer;
+// 
+refreshToken(appealId)
+    .then(() => {
+        const options = { accessTokenFactory: () => accessToken };
 
-const tokenInterval = 20000;
+        chatConnection = new signalR.HubConnectionBuilder()
+            .withUrl('chat', options)
+            .configureLogging(signalR.LogLevel.Trace)
+            .build();
 
-var accessToken;
+        // Receiving message from user
+        chatConnection.on("Receive", onReceiveMessage);
 
-const refreshToken = (appeal) => {
-    return getJwtToken(appeal)
-        .then(token => { accessToken = token; console.log(accessToken); })
-        .catch(error => console.error(error.toString()));
-};
+        // Joining user to chat
+        chatConnection.on("Join", onJoinUser);
 
-const getJwtToken = (appealId) => {
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            method: 'get',
-            url: 'ajax/token',
-            data: { appealId: appealId },
-            beforeSend: () => console.info('Request new access token'),
-            success: resolve,
-            error: reject
-        });
-    });
-};
+        // Leave user from chat
+        chatConnection.on("Leave", onLeaveUser);
+
+        // Join user to chat handler
+        chatConnection.on("FirstJoinExpert", onFirstJoinExpert);
+
+        // Initialize change expert
+        chatConnection.on("InitializeChange", onInitializeChange);
+
+        // Complete change expert
+        chatConnection.on("CompleteChange", onCompleteChange);
+
+        // Start chat connection
+        return chatConnection.start();
+    })
+    .then(() => setTimeout(() => refreshToken(appealId), tokenInterval))
+    .catch(error => console.error(error.toString()));
 
 //
 $(document).on('click', '#okChangeButton, #okChangeMobileButton', () => { $('#modal').hideModal(); changeExpert(appealId); });

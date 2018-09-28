@@ -19,6 +19,20 @@ const getAccessToken = (appeal, expert) => {
     });
 };
 
+// Get JWT Bearer access token
+const getJwtToken = (appeal, expert) => {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            method: 'get',
+            url: 'ajax/token',
+            data: { appealId: appeal, expertKey: expert },
+            beforeSend: () => console.info('Request new access token'),
+            success: resolve,
+            error: reject
+        });
+    });
+};
+
 // Return new "Receive" message
 const receiveMessage = (message, isSender) => {
     const nickName = isSender ? 'Вы' : message.nickName;
@@ -86,6 +100,8 @@ const addMessage = (html, isSender, isStatusMessage = true) => {
 
 // Scroll to element
 jQuery.fn.scrollTo = function (element) {
+    if (element === undefined) { return; }
+
     $(this).scrollTop($(this).scrollTop() - $(this).offset().top + $(element).offset().top);
 
     return this;

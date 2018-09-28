@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,8 +41,8 @@ namespace Tpr.Chat.Web
             // Chat repository
             services.AddTransient<IChatRepository, ChatRepository>(repository => new ChatRepository(connectionString));
 
-            services.AddHostedService<QueuedHostedService>();
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            //services.AddHostedService<QueuedHostedService>();
+            //services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
             // Authentication service
             services.AddTransient<IAuthService, AuthService>();
@@ -59,22 +61,9 @@ namespace Tpr.Chat.Web
             );
 
             // SignalR
-            services.AddSignalR(options =>
-            {
-                options.EnableDetailedErrors = true;
-            }).AddJsonProtocol();
+            services.AddSignalR();
 
-            //services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
-
-            // Session
-            services.AddDistributedMemoryCache();
-
-            services.AddSession();
-
-            // Authentication
-            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            //    .AddCookie();
-
+            // Authorization
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(JwtBearerDefaults.AuthenticationScheme, policy =>
@@ -84,35 +73,28 @@ namespace Tpr.Chat.Web
                 });
             });
 
+            services.AddSession();
+
             // Authentication
             var jwtConfiguration = Configuration.GetSection("JWT");
+
+            var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfiguration["SecretKey"]));
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        // Validate the issuer when validating the token
-                        ValidateIssuer = true,
-                        // Token issuer
-                        ValidIssuer = jwtConfiguration["Issuer"],
-
-                        // Validate the token audience
                         ValidateAudience = true,
-                        // Token audience
                         ValidAudience = jwtConfiguration["Audience"],
 
-                        ValidateActor = false,
+                        ValidateIssuer = true,
+                        ValidIssuer = jwtConfiguration["Issuer"],
 
-                        // Validate signing key
-                        //ValidateIssuerSigningKey = true,
-                        // Issuer Signing Key
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfiguration["SecretKey"])),
-
-                        // Validate token lifetime
                         ValidateLifetime = true,
+                        LifetimeValidator = (before, expires, token, parameters) => expires > DateTime.UtcNow,
 
-                        LifetimeValidator = (before, expires, token, parameters) => expires > DateTime.UtcNow
+                        IssuerSigningKey = securityKey
                     };
 
                     options.Events = new JwtBearerEvents
@@ -125,7 +107,6 @@ namespace Tpr.Chat.Web
 
                             var isEventStreamRequest = context.Request.Headers["Accept"] == "text/event-stream";
 
-                            // If the request is for our hub...
                             if (tokenResult && (isWebsocketRequest || isEventStreamRequest))
                             {
                                 context.Token = accessToken;
@@ -172,18 +153,54 @@ namespace Tpr.Chat.Web
                 routes.MapHub<InfoHub>("/info");
             });
 
-            app.UseSession();
+            //app.UseSession();
 
             // Authentication
             app.UseAuthentication();
 
+            //var routeBuilder = new RouteBuilder(app);
+            //routeBuilder.MapGet("token", context => context.Response.WriteAsync(GenerateToken(context)));
+            //app.UseRouter(routeBuilder.Build());
+
             // MVC
             app.UseMvc(routes =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute("Home", "{appealId:guid}", new { controller = "Home", action = "Index" });
             });
         }
+
+        //private string GenerateToken(HttpContext context)
+        //{
+        //    var jwtConfiguration = Configuration.GetSection("JWT");
+
+        //    var appealId = context.Request.Query["appealId"];
+
+        //    var claims = new List<Claim>
+        //    {
+        //        new Claim(ClaimTypes.NameIdentifier, appealId.ToString())
+        //    };
+
+        //    // Expert key
+        //    var expertKey = context.Request.Query["expertKey"];
+
+        //    if (expertKey.Count > 0)
+        //    {
+        //        claims.Add(new Claim("expertkey", expertKey));
+        //    }
+
+        //    var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration["SecretKey"]));
+
+        //    var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        //    var token = new JwtSecurityToken(
+        //        jwtConfiguration["Issuer"],
+        //        jwtConfiguration["Audience"],
+        //        claims,
+        //        expires: DateTime.UtcNow.AddSeconds(30),
+        //        signingCredentials: credentials
+        //    );
+
+        //    return new JwtSecurityTokenHandler().WriteToken(token);
+        //}
     }
 }

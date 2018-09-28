@@ -27,6 +27,8 @@ namespace Tpr.Chat.Web.Controllers
         private readonly IConnectionService connectionService;
         private readonly IHubContext<ChatHub, IChat> chatContext;
 
+        private IDictionary<Guid, Guid> Clients { get; }
+
         public HomeController(
             IChatRepository chatRepository,
             IAuthService commonService,
@@ -37,9 +39,10 @@ namespace Tpr.Chat.Web.Controllers
             this.commonService = commonService;
             this.connectionService = connectionService;
             this.chatContext = chatContext;
-        }
 
-        [HttpGet("/{appealId}")]
+            Clients = new Dictionary<Guid, Guid>();
+        }
+        
         public async Task<IActionResult> Index(Guid appealId, int key = 0, string secretKey = null)
         {
             // Check if chat session is exists
@@ -180,39 +183,17 @@ namespace Tpr.Chat.Web.Controllers
                 //{
                 //    return BadRequest("Сессия все еще запущена на другом устройстве");
                 //}
-                
-                var sessionAppealId = HttpContext.Session.GetString("appealId");
-                
-                if(sessionAppealId == null)
-                {
-                    HttpContext.Session.SetString("appealId", appealId.ToString());
-                }
+
+
+                //var sessionAppealId = HttpContext.Session.GetString("appealId");
+
+                //if(sessionAppealId == null)
+                //{
+                //    HttpContext.Session.SetString("appealId", appealId.ToString());
+                //}
 
                 return View("Appeal", model);
             }
-
-            // Identity claims
-            //var claims = new List<Claim>
-            //{
-            //    new Claim(ClaimsIdentity.DefaultNameClaimType, appealId.ToString())
-            //};
-
-            //// Expert
-            //if (key > 0)
-            //{
-            //    // Secret checkings, etc...
-
-            //    claims.Add(new Claim("expertkey", key.ToString()));
-            //}
-
-            //var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-            //var properties = new AuthenticationProperties
-            //{
-            //    AllowRefresh = true
-            //};
-
-            //await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity), properties);
 
             return BadRequest();
         }
