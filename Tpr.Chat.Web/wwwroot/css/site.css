@@ -137,7 +137,7 @@ a {
     .header .title {
         flex: auto;
         padding: 10px;
-        font-size: 20px;
+        font-size: 23px;
         font-weight: bold;
         color: #3387dd;
         line-height: 1;
@@ -152,8 +152,9 @@ a {
     }
 
         .header .moscow-time img {
-            height: 25px;
+            height: 30px;
             vertical-align: middle;
+            margin-right: 5px;
         }
 
 .moscow-time {
@@ -164,11 +165,11 @@ a {
 .moscow-value {
     color: #000;
     font-weight: bold;
-    font-size: 22px;
+    font-size: 24px;
 }
 
 .moscow-caption {
-    font-size: 12px;
+    font-size: 13px;
     color: #8c8c8c;
 }
 
