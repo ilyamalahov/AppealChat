@@ -316,7 +316,11 @@ a {
     /*left: 370px;*/
     width: 475px;
     max-height: 630px;
-    background: #2b7bde;
+    /* background: #2b7bde;*/
+    background-image: url(/images/sidebar/sidebar-background.png);
+    background-repeat: no-repeat;
+    background-clip: border-box;
+    background-size: cover;
     color: #fff;
     border-radius: 5px;
     z-index: 1;
@@ -330,7 +334,7 @@ a {
         transform: rotate(45deg);
         border-bottom: inherit;
         border-right: inherit;
-        background: inherit;
+        background: #007DE4;
     }
 
     /*.contacts-tooltip::before {
