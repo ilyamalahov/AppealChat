@@ -312,8 +312,8 @@ a {
     top: 100px;
     bottom: 10px;
     /*left: 370px;*/
-    width: 400px;
-    max-height: 660px;
+    width: 475px;
+    max-height: 630px;
     background: #2b7bde;
     color: #fff;
     border-radius: 5px;
@@ -347,6 +347,7 @@ a {
     .contacts-tooltip .tooltip-header {
         text-align: right;
         padding: 5px;
+
     }
 
     .contacts-tooltip .tooltip-content {
@@ -382,11 +383,23 @@ a {
         height: 20px;
         vertical-align: middle;
         margin-right: 10px;
+        margin-left: 5px;
+        margin-right: 5px;
     }
 
 .contact-title {
     margin-bottom: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
 }
+
+.contact-text {
+   
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 10px;
+}
+
 
 .arrow-chevron {
     width: 15px;
