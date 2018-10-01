@@ -60,9 +60,10 @@
         }
 
     .item-content img {
-        margin-right: 5px;
-        height: 20px;
+        margin-right: 10px;
+        height: 25px;
         vertical-align: middle;
+        opacity: 0.5;
     }
 
     .item-content b {
@@ -95,7 +96,7 @@
         }
 
         .webcast-button img {
-            height: 30px;
+            height: 35px;
             margin-right: 30px;
         }
 
@@ -123,7 +124,7 @@
                 <div class="webcast-box" style="margin: auto; max-width: 350px; padding: 20px;">
                     <a class="webcast-button" href="@Model.Session.CommissionLink">
                         <div style="display: flex; align-items: center;">
-                            <img src="~/images/after/film.png" alt="Онлайн-трансляция" />Онлайн трансляция заседания конфликтной комиссии
+                            <img src="~/images/after/film.svg" alt="Онлайн-трансляция" />Онлайн трансляция заседания конфликтной комиссии
                         </div>
                     </a>
                 </div>
@@ -135,7 +136,7 @@
 
                     <div class="info-item">
                         <div class="item-title">Заседание конфликтной комиссии, в рамках которой будет вынесено<br />Решение по Вашей аппеляции состоится</div>
-                        <div class="item-content"><img src="~/images/after/calendar.png" alt="Календарь" /><b>@Model.Session.ApplicationDate</b></div>
+                        <div class="item-content"><img src="~/images/after/calendar.svg" alt="Календарь" /><b>@Model.Session.ApplicationDate</b></div>
                     </div>
                     <div class="info-item">
                         <div class="item-title">Запланированное время рассмотрения Вашей аппеляции</div>
