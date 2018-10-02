@@ -41,6 +41,8 @@ namespace Tpr.Chat.Web
             // Chat repository
             services.AddTransient<IChatRepository, ChatRepository>(repository => new ChatRepository(connectionString));
 
+            services.AddHostedService<TimedHostedService>();
+
             //services.AddHostedService<QueuedHostedService>();
             //services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
