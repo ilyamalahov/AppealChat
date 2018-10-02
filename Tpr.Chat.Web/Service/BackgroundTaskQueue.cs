@@ -30,6 +30,8 @@ namespace Tpr.Chat.Web.Service
             workItems.Enqueue(workItem);
 
             signal.Release();
+
+            ConcurrentDictionary<Guid, Func<CancellationToken, Task>> items = new ConcurrentDictionary<Guid, Func<CancellationToken, Task>>();
         }
 
         public async Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken)

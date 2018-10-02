@@ -17,6 +17,7 @@ using Tpr.Chat.Web.Hubs;
 using Tpr.Chat.Web.Models;
 using Tpr.Chat.Web.Service;
 using Microsoft.AspNetCore.Http;
+using System.Threading;
 
 namespace Tpr.Chat.Web.Controllers
 {
@@ -26,21 +27,21 @@ namespace Tpr.Chat.Web.Controllers
         private readonly IAuthService commonService;
         private readonly IConnectionService connectionService;
         private readonly IHubContext<ChatHub, IChat> chatContext;
-
-        private IDictionary<Guid, Guid> Clients { get; }
+        private readonly IClientService clientService;
 
         public HomeController(
             IChatRepository chatRepository,
             IAuthService commonService,
             IConnectionService connectionService,
-            IHubContext<ChatHub, IChat> chatContext)
+            IHubContext<ChatHub, IChat> chatContext, 
+            IClientService clientService)
         {
             this.chatRepository = chatRepository;
             this.commonService = commonService;
             this.connectionService = connectionService;
             this.chatContext = chatContext;
 
-            Clients = new Dictionary<Guid, Guid>();
+            this.clientService = clientService;
         }
         
         public async Task<IActionResult> Index(Guid appealId, int key = 0, string secretKey = null)
@@ -176,6 +177,10 @@ namespace Tpr.Chat.Web.Controllers
                     model.IsExpertChanged = replacement.OldMember != 0;
                 }
 
+                clientService.AddTask(appealId, async token => {
+                    
+                });
+
                 // 
                 //var connectionId = connectionService.GetConnectionId(appealId);
 
@@ -196,6 +201,11 @@ namespace Tpr.Chat.Web.Controllers
             }
 
             return BadRequest();
+        }
+
+        private Task DisconnectHandle(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
