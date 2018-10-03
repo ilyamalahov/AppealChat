@@ -23,17 +23,19 @@ namespace Tpr.Chat.Web.Controllers
     {
         private readonly IChatRepository chatRepository;
         private readonly IHubContext<ChatHub, IChat> chatContext;
+        private readonly IClientService clientService;
 
         public IConfiguration Configuration { get; }
 
         public AjaxController(
             IConfiguration configuration,
             IChatRepository chatRepository,
-            IHubContext<ChatHub, IChat> chatContext
-            )
+            IHubContext<ChatHub, IChat> chatContext,
+            IClientService clientService)
         {
             this.chatRepository = chatRepository;
             this.chatContext = chatContext;
+            this.clientService = clientService;
 
             Configuration = configuration;
         }
@@ -178,6 +180,27 @@ namespace Tpr.Chat.Web.Controllers
 
             // Response
             return Ok(accessToken);
+        }
+
+        [HttpGet("closepage")]
+        public async Task ClosePage(Guid appealId, string expertKey = null)
+        {
+            //
+            var clientResult = clientService.Remove(appealId);
+
+            if (!clientResult) return;
+
+            // Sender type
+            var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
+
+            // Nick name
+            var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
+
+            // Write message to database
+            await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Leave);
+
+            // 
+            await chatContext.Clients.User(appealId.ToString()).Leave(DateTime.Now, nickName);
         }
 
         //public string CreateToken(Guid appealId, string expertKey = null)

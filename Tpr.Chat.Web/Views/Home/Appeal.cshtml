@@ -14,6 +14,7 @@
 @section Scripts {
     <script>
         var appealId = @Json.Serialize(Model.AppealId);
+        var clientId = @Json.Serialize(ViewBag.ClientId);
         var isWaiting = @Json.Serialize(Model.IsWaiting);
     </script>
     <script src="~/js/appeal.js"></script>

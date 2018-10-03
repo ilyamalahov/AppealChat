@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Tpr.Chat.Core.Repositories;
 using Tpr.Chat.Web.Hubs;
@@ -26,10 +27,13 @@ namespace Tpr.Chat.Web
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
+            Logger = logger;
         }
+
+        public ILogger<Startup> Logger { get; }
 
         public IConfiguration Configuration { get; }
 
@@ -41,7 +45,7 @@ namespace Tpr.Chat.Web
             // Chat repository
             services.AddTransient<IChatRepository, ChatRepository>(repository => new ChatRepository(connectionString));
 
-            services.AddHostedService<TimedHostedService>();
+            //services.AddHostedService<TimedHostedService>();
 
             //services.AddHostedService<QueuedHostedService>();
             //services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
@@ -52,6 +56,7 @@ namespace Tpr.Chat.Web
             // Connections service
             services.AddSingleton<IConnectionService, ConnectionService>();
 
+            services.AddSingleton<IClientService, ClientService>();
             // Cross-Origin Request Sharing
             services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
             {
@@ -74,6 +79,8 @@ namespace Tpr.Chat.Web
                     policy.RequireClaim(ClaimTypes.NameIdentifier);
                 });
             });
+
+            services.AddDistributedMemoryCache();
 
             services.AddSession();
 
@@ -155,20 +162,29 @@ namespace Tpr.Chat.Web
                 routes.MapHub<InfoHub>("/info");
             });
 
-            //app.UseSession();
+            app.UseSession();
 
             // Authentication
             app.UseAuthentication();
 
-            //var routeBuilder = new RouteBuilder(app);
+            var routeBuilder = new RouteBuilder(app);
             //routeBuilder.MapGet("token", context => context.Response.WriteAsync(GenerateToken(context)));
-            //app.UseRouter(routeBuilder.Build());
+            routeBuilder.MapGet("test", Test);
+            app.UseRouter(routeBuilder.Build());
 
             // MVC
             app.UseMvc(routes =>
             {
                 routes.MapRoute("Home", "{appealId:guid}", new { controller = "Home", action = "Index" });
             });
+        }
+
+        private Task Test(HttpContext context)
+        {
+            Logger.LogInformation("Page closed");
+            Logger.LogDebug("Appeal ID: {0}", context.Request.Query["appeaId"]);
+
+            return Task.CompletedTask;
         }
 
         //private string GenerateToken(HttpContext context)
