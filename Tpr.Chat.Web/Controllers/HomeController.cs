@@ -71,7 +71,7 @@ namespace Tpr.Chat.Web.Controllers
             };
 
             // 
-            ViewBag.IsActive = !isBefore && !isAfter && !chatSession.IsEarlyCompleted;
+            ViewBag.IsNotActive = isBefore || isAfter || chatSession.IsEarlyCompleted;
 
             // Check if current date less than chat start time
             if (isBefore)
@@ -85,13 +85,6 @@ namespace Tpr.Chat.Web.Controllers
             // Expert checkings
             if (connectionType == ContextType.Expert)
             {
-                model.ExpertKey = key;
-
-                model.QuickReplies = await chatRepository.GetQuickReplies();
-
-                //
-                var isExpertChanged = false;
-
                 // Member replacement check
                 var replacement = await chatRepository.GetMemberReplacement(appealId);
 
@@ -110,17 +103,17 @@ namespace Tpr.Chat.Web.Controllers
                 else if (replacement.OldMember == key)
                 {
                     // Block ability to send messages
-                    isExpertChanged = true;
+                    ViewBag.IsNotActive = true;
                 }
-                else if (!replacement.NewMember.HasValue || replacement.NewMember == key)
+                else if (replacement.NewMember == null || replacement.NewMember == key)
                 {
                     // 
                     replacement.ReplaceTime = DateTime.Now;
                     replacement.NewMember = key;
 
-                    var replacementUpdated = await chatRepository.UpdateMemberReplacement(replacement);
+                    var replacementResult = await chatRepository.UpdateMemberReplacement(replacement);
 
-                    if (!replacementUpdated)
+                    if (!replacementResult)
                     {
                         return BadRequest("Не удалось обновить запись бд");
                     }
@@ -133,28 +126,28 @@ namespace Tpr.Chat.Web.Controllers
                     //
                     chatSession.CurrentExpertKey = key;
 
-                    var sessionUpdated = await chatRepository.UpdateSession(chatSession);
+                    var sessionResult = await chatRepository.UpdateSession(chatSession);
 
-                    if (!sessionUpdated)
+                    if (!sessionResult)
                     {
                         return BadRequest("Не удалось обновить запись бд");
                     }
-
-                    // 
-                    //var connectionId = connectionService.GetConnectionId(appealId);
 
                     await chatContext.Clients.User(appealId.ToString()).CompleteChange(key);
                 }
                 else if (replacement.NewMember != key)
                 {
-                    isExpertChanged = true;
+                    ViewBag.IsNotActive = true;
                 }
 
-                //
-                ViewBag.IsActive &= !isExpertChanged;
+                // 
+                model.ExpertKey = key;
 
                 //
                 model.Messages = await chatRepository.GetChatMessages(appealId);
+
+                // 
+                model.QuickReplies = await chatRepository.GetQuickReplies();
 
                 //
                 return View("Expert", model);
@@ -166,6 +159,12 @@ namespace Tpr.Chat.Web.Controllers
                 {
                     return View("After", model);
                 }
+
+                var clientId = clientService.Get(appealId);
+
+                if (clientId != null) return BadRequest("Пользователь уже существует");
+
+                clientService.Add(appealId, Guid.NewGuid().ToString());
 
                 await SendConnectMessage(appealId);
 
@@ -179,12 +178,6 @@ namespace Tpr.Chat.Web.Controllers
                     model.IsWaiting = replacement.NewMember == null;
                     model.IsExpertChanged = replacement.OldMember != 0;
                 }
-
-                var clientId = clientService.Get(appealId);
-
-                if (clientId != null) return BadRequest("Пользователь уже существует");
-
-                clientService.Add(appealId, Guid.NewGuid().ToString());
 
                 //var clientId = HttpContext.Session.GetString("clientId");
                 
