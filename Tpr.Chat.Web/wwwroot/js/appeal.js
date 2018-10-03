@@ -209,8 +209,18 @@ infoConnection.on("ReceiveInfo", onReceiveInfo);
 // Start info connection
 infoConnection.start().then(updateInfo).catch(error => console.error(error.toString()));
 
+const sendCloseRequest = (appeal, expert) => {
+    $.ajax({
+        method: 'GET',
+        url: 'ajax/closepage',
+        data: { appealId: appeal, expertKey: expert },
+        async: false
+    });
+};
+
 // 
 $(document).ready(() => {
+    $(window).on('beforeunload', () => sendCloseRequest(appealId));
 
     // 
     $(window).on('resize', scrollToLast);
@@ -226,6 +236,7 @@ $(document).ready(() => {
 
     //
     $('#completeButton, #completeMobileButton').on('click', () => $('#modal').showModal('modal/completechat'));
+
 
     // Textarea auto rows count
     $('#messageText').on('input', function (e) {
@@ -248,10 +259,6 @@ $(document).ready(() => {
 
     // 
     $('#messageText').trigger('input');
-
-    $('#stopButton').on('click', () => { clearTimeout(tokenTimer); console.info('Token timer paused'); });
-
-    //$('#startButton').on('click', () => { tokenTimer = setTimeout(refreshToken, 20000); console.info('Token timer resumed'); });
 
     //
     waitChange(isWaiting);

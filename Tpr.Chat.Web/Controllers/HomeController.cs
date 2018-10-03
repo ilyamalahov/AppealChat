@@ -18,6 +18,7 @@ using Tpr.Chat.Web.Models;
 using Tpr.Chat.Web.Service;
 using Microsoft.AspNetCore.Http;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 
 namespace Tpr.Chat.Web.Controllers
 {
@@ -25,23 +26,23 @@ namespace Tpr.Chat.Web.Controllers
     {
         private readonly IChatRepository chatRepository;
         private readonly IAuthService commonService;
-        private readonly IConnectionService connectionService;
-        private readonly IHubContext<ChatHub, IChat> chatContext;
         private readonly IClientService clientService;
+        private readonly IHubContext<ChatHub, IChat> chatContext;
+
+        private readonly ILogger<HomeController> logger;
 
         public HomeController(
             IChatRepository chatRepository,
             IAuthService commonService,
-            IConnectionService connectionService,
+            IClientService clientService,
             IHubContext<ChatHub, IChat> chatContext, 
-            IClientService clientService)
+            ILogger<HomeController> logger)
         {
             this.chatRepository = chatRepository;
             this.commonService = commonService;
-            this.connectionService = connectionService;
-            this.chatContext = chatContext;
-
             this.clientService = clientService;
+            this.chatContext = chatContext;
+            this.logger = logger;
         }
         
         public async Task<IActionResult> Index(Guid appealId, int key = 0, string secretKey = null)
@@ -166,6 +167,8 @@ namespace Tpr.Chat.Web.Controllers
                     return View("After", model);
                 }
 
+                await SendConnectMessage(appealId);
+
                 model.Messages = await chatRepository.GetChatMessages(appealId);
 
                 // Member replacement check
@@ -177,24 +180,21 @@ namespace Tpr.Chat.Web.Controllers
                     model.IsExpertChanged = replacement.OldMember != 0;
                 }
 
-                clientService.AddTask(appealId, async token => {
-                    
-                });
+                var clientId = clientService.Get(appealId);
 
-                // 
-                //var connectionId = connectionService.GetConnectionId(appealId);
+                if (clientId != null) return BadRequest("Пользователь уже существует");
 
-                //if (!string.IsNullOrEmpty(connectionId))
+                clientService.Add(appealId, Guid.NewGuid().ToString());
+
+                //var clientId = HttpContext.Session.GetString("clientId");
+                
+                //if(clientId == null)
                 //{
-                //    return BadRequest("Сессия все еще запущена на другом устройстве");
-                //}
+                //    var newClientId = Guid.NewGuid().ToString();
 
+                //    ViewBag.ClientId = newClientId;
 
-                //var sessionAppealId = HttpContext.Session.GetString("appealId");
-
-                //if(sessionAppealId == null)
-                //{
-                //    HttpContext.Session.SetString("appealId", appealId.ToString());
+                //    HttpContext.Session.SetString("clientId", newClientId);
                 //}
 
                 return View("Appeal", model);
@@ -203,9 +203,19 @@ namespace Tpr.Chat.Web.Controllers
             return BadRequest();
         }
 
-        private Task DisconnectHandle(CancellationToken cancellationToken)
+        private async Task SendConnectMessage(Guid appealId, string expertKey = null)
         {
-            return Task.CompletedTask;
+            // Sender type
+            var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
+
+            // Nick name
+            var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
+
+            // Write message to database
+            await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Joined);
+
+            // Send "Join" message to specified user clients
+            await chatContext.Clients.User(appealId.ToString()).Join(DateTime.Now, nickName, false, false);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

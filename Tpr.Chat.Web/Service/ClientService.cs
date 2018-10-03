@@ -8,27 +8,29 @@ using System.Threading.Tasks;
 
 namespace Tpr.Chat.Web.Service
 {
-    public class CustomTask
-    {
-        public CustomTask(Func<CancellationToken, Task> method)
-        {
-            Method = method;
-        }
+    //public class CustomTask
+    //{
+    //    public CustomTask(Func<CancellationToken, Task> method)
+    //    {
+    //        Method = method;
+    //    }
 
-        public bool IsActive { get; set; }
+    //    public bool IsActive { get; set; }
 
-        public Func<CancellationToken, Task> Method { get; }
-    }
+    //    public Func<CancellationToken, Task> Method { get; }
+    //}
 
     public interface IClientService
     {
-        void AddTask(Guid appealId, Func<CancellationToken, Task> task);
+        bool Add(Guid appealId, string clientId);
+        bool Remove(Guid appealId);
+        string Get(Guid appealId);
     }
 
-    public class ClientService
+    public class ClientService : IClientService
     {
-        private readonly Dictionary<Guid, CustomTask> tasks = new Dictionary<Guid, CustomTask>();
-        private readonly Dictionary<Guid, Func<CancellationToken, Task>> taskItems = new Dictionary<Guid, Func<CancellationToken, Task>>();
+        private readonly Dictionary<Guid, string> clients = new Dictionary<Guid, string>();
+
         private readonly ILogger<ClientService> logger;
 
         public ClientService(ILogger<ClientService> logger)
@@ -36,26 +38,70 @@ namespace Tpr.Chat.Web.Service
             this.logger = logger;
         }
 
-        private void DoWork(object state)
+        public bool Add(Guid appealId, string clientId)
         {
-            Console.WriteLine("Work timer");
-        }
-
-        public bool AddTask(Guid appealId, Func<CancellationToken, Task> task)
-        {
-            lock (tasks)
+            try
             {
-                taskItems.Add(appealId, TimedHandle);
+                if (appealId == null) throw new ArgumentNullException(nameof(appealId));
 
-                if (!taskItems.TryAdd(appealId, task)) return false;
+                var client = Get(appealId);
+
+                if (client != null) throw new Exception("Client already exists");
+
+                lock (clients)
+                {
+                    return clients.TryAdd(appealId, clientId);
+                }
             }
+            catch (Exception exception)
+            {
+                logger.LogError(exception, exception.Message);
 
-            return true;
+                return false;
+            }
         }
 
-        private Task TimedHandle(CancellationToken cancellationToken)
+        public string Get(Guid appealId)
         {
-            return null;
+            try
+            {
+                if (appealId == null) throw new ArgumentNullException(nameof(appealId));
+
+                var clientResult = clients.TryGetValue(appealId, out var clientId);
+
+                if (!clientResult) throw new Exception("Client does not exists");
+
+                return clientId;
+            }
+            catch (Exception exception)
+            {
+                logger.LogError(exception, exception.Message);
+
+                return null;
+            }
+        }
+
+        public bool Remove(Guid appealId)
+        {
+            try
+            {
+                if (appealId == null) throw new ArgumentNullException(nameof(appealId));
+
+                var client = Get(appealId);
+
+                if(client == null) throw new Exception("Client does not exists");
+
+                lock (clients)
+                {
+                    return clients.Remove(appealId);
+                }
+            }
+            catch (Exception exception)
+            {
+                logger.LogError(exception, exception.Message);
+
+                return false;
+            }
         }
     }
 }
