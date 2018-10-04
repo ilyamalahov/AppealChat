@@ -45,18 +45,18 @@ namespace Tpr.Chat.Web
             // Chat repository
             services.AddTransient<IChatRepository, ChatRepository>(repository => new ChatRepository(connectionString));
 
-            //services.AddHostedService<TimedHostedService>();
-
-            //services.AddHostedService<QueuedHostedService>();
-            //services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
-
             // Authentication service
             services.AddTransient<IAuthService, AuthService>();
 
-            // Connections service
-            services.AddSingleton<IConnectionService, ConnectionService>();
-
+            // Client service
             services.AddSingleton<IClientService, ClientService>();
+
+            // Custom SignalR user identifier provider
+            services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+
+            // SignalR
+            services.AddSignalR();
+
             // Cross-Origin Request Sharing
             services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
             {
@@ -66,9 +66,6 @@ namespace Tpr.Chat.Web
                     .AllowCredentials();
             })
             );
-
-            // SignalR
-            services.AddSignalR();
 
             // Authorization
             services.AddAuthorization(options =>
@@ -80,9 +77,10 @@ namespace Tpr.Chat.Web
                 });
             });
 
-            services.AddDistributedMemoryCache();
+            // Session
+            //services.AddDistributedMemoryCache();
 
-            services.AddSession();
+            //services.AddSession();
 
             // Authentication
             var jwtConfiguration = Configuration.GetSection("JWT");
@@ -162,15 +160,10 @@ namespace Tpr.Chat.Web
                 routes.MapHub<InfoHub>("/info");
             });
 
-            app.UseSession();
+            //app.UseSession();
 
             // Authentication
             app.UseAuthentication();
-
-            var routeBuilder = new RouteBuilder(app);
-            //routeBuilder.MapGet("token", context => context.Response.WriteAsync(GenerateToken(context)));
-            routeBuilder.MapGet("test", Test);
-            app.UseRouter(routeBuilder.Build());
 
             // MVC
             app.UseMvc(routes =>
@@ -178,47 +171,5 @@ namespace Tpr.Chat.Web
                 routes.MapRoute("Home", "{appealId:guid}", new { controller = "Home", action = "Index" });
             });
         }
-
-        private Task Test(HttpContext context)
-        {
-            Logger.LogInformation("Page closed");
-            Logger.LogDebug("Appeal ID: {0}", context.Request.Query["appeaId"]);
-
-            return Task.CompletedTask;
-        }
-
-        //private string GenerateToken(HttpContext context)
-        //{
-        //    var jwtConfiguration = Configuration.GetSection("JWT");
-
-        //    var appealId = context.Request.Query["appealId"];
-
-        //    var claims = new List<Claim>
-        //    {
-        //        new Claim(ClaimTypes.NameIdentifier, appealId.ToString())
-        //    };
-
-        //    // Expert key
-        //    var expertKey = context.Request.Query["expertKey"];
-
-        //    if (expertKey.Count > 0)
-        //    {
-        //        claims.Add(new Claim("expertkey", expertKey));
-        //    }
-
-        //    var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration["SecretKey"]));
-
-        //    var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-        //    var token = new JwtSecurityToken(
-        //        jwtConfiguration["Issuer"],
-        //        jwtConfiguration["Audience"],
-        //        claims,
-        //        expires: DateTime.UtcNow.AddSeconds(30),
-        //        signingCredentials: credentials
-        //    );
-
-        //    return new JwtSecurityTokenHandler().WriteToken(token);
-        //}
     }
 }

@@ -6,19 +6,17 @@ var infoConnection = new signalR.HubConnectionBuilder()
 // 
 var chatConnection;
 
-var tokenInterval = 20000;
+// Jwt Bearer access token
+var accessToken;
+
+// Refresh token interval
+const tokenInterval = 30000;
 
 // Update intreval
 const infoInterval = 10000;
 
 // Original window height
 const originalHeight = $(window).height();
-
-// Update information timer id
-var infoTimer;
-
-// Jwt Bearer access token
-var accessToken;
 
 // 
 const onReceiveMessage = (message) => {
@@ -77,22 +75,9 @@ const onInitializeChange = (messageText) => {
 
 // 
 const onCompleteChange = (expertKey) => {
-    // Start info connection
-    updateInfo();
-
     refreshToken(appealId);
 
     waitChange(false);
-};
-
-const generateToken = () => {
-    return new Promise((resolve, reject) =>
-        $.post("ajax/token", { appealId }, (response) => {
-            sessionStorage.setItem("access_token", response.accessToken);
-
-            return resolve(response.accessToken);
-        })
-    );
 };
 
 // 
@@ -125,7 +110,7 @@ const onReceiveInfo = (currentDate, remainingTime, isAlarm, isFinished) => {
         $('#alarm').text(alarmText).show();
     }
 
-    infoTimer = setTimeout(updateInfo, infoInterval);
+    setTimeout(updateInfo, infoInterval);
 };
 
 // Send message
@@ -157,7 +142,7 @@ const changeExpert = (appeal) => {
         url: "ajax/change/expert",
         data: { appealId: appeal },
         beforeSend: () => $('#changeButton, #changeMobileButton').prop('disabled', true),
-        success: () => { clearTimeout(infoTimer); waitChange(true); },
+        success: () => waitChange(true),
         error: (error) => {
             alert(error.responseText);
 
@@ -201,15 +186,8 @@ const updateInfo = () => infoConnection.send("MainUpdate", appealId);
 // Refresh access token
 const refreshToken = (appeal) => getJwtToken(appeal).then(token => { accessToken = token; setTimeout(() => refreshToken(appeal), tokenInterval); });
 
-// Info hub connection
-
-// Receive information response event
-infoConnection.on("ReceiveInfo", onReceiveInfo);
-
-// Start info connection
-infoConnection.start().then(updateInfo).catch(error => console.error(error.toString()));
-
-const sendCloseRequest = (appeal, expert) => {
+//
+const sendDisconnectRequest = (appeal, expert) => {
     $.ajax({
         method: 'GET',
         url: 'ajax/closepage',
@@ -218,9 +196,17 @@ const sendCloseRequest = (appeal, expert) => {
     });
 };
 
+// Info hub connection
+
+// Receive information response event
+infoConnection.on("ReceiveInfo", onReceiveInfo);
+
+// Start info connection
+infoConnection.start().then(updateInfo).catch(error => console.error(error.toString()));
+
 // 
 $(document).ready(() => {
-    $(window).on('beforeunload', () => sendCloseRequest(appealId));
+    $(window).on('beforeunload', () => sendDisconnectRequest(appealId));
 
     // 
     $(window).on('resize', scrollToLast);
@@ -236,7 +222,6 @@ $(document).ready(() => {
 
     //
     $('#completeButton, #completeMobileButton').on('click', () => $('#modal').showModal('modal/completechat'));
-
 
     // Textarea auto rows count
     $('#messageText').on('input', function (e) {
@@ -262,6 +247,8 @@ $(document).ready(() => {
 
     //
     waitChange(isWaiting);
+
+    scrollToLast();
 });
 
 // 

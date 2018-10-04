@@ -15,68 +15,10 @@ namespace Tpr.Chat.Web.Hubs
     public class InfoHub : Hub
     {
         private readonly IChatRepository chatRepository;
-        private readonly IConnectionService connectionService;
 
-        public InfoHub(IChatRepository chatRepository, IConnectionService connectionService)
+        public InfoHub(IChatRepository chatRepository)
         {
             this.chatRepository = chatRepository;
-            this.connectionService = connectionService;
-        }
-
-        public override Task OnConnectedAsync()
-        {
-            return base.OnConnectedAsync();
-        }
-
-        public override Task OnDisconnectedAsync(Exception exception)
-        {
-            return base.OnDisconnectedAsync(exception);
-        }
-
-        public async Task ConnectToChat(Guid appealId, string expertKey = null)
-        {
-            // Sender type
-            var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
-
-            // Nick name
-            var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
-
-            // Expert welcome message
-            if (senderType == ContextType.Expert)
-            {
-                // 
-                //var chatSession = await chatRepository.GetChatSession(appealId);
-
-                //if (chatSession.CurrentExpertKey == null)
-                //{
-                //    return;
-                //}
-
-                //// 
-                //if (expertKey != chatSession.CurrentExpertKey.ToString())
-                //{
-                //    return;
-                //}
-
-                //var welcomeResult = await SendWelcomeMessage(appealId, expertKey);
-
-                //if (welcomeResult != null) return;
-            }
-
-            // Add connection ID to collection
-            connectionService.AddConnectionId(appealId, Context.ConnectionId, senderType);
-
-            // Write message to database
-            //await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Joined);
-
-            // Check if appeal is online
-            var isAppealOnline = connectionService.isOnline(appealId);
-
-            // Check if current expert is online
-            var isExpertOnline = connectionService.isOnline(appealId, ContextType.Expert);
-
-            // Send "Join" message to specified user clients
-            //await chatCliens.User(Context.UserIdentifier).Join(DateTime.Now, nickName, isAppealOnline, isExpertOnline);
         }
 
         //[Authorize(AuthenticationSchemes = "Bearer")]

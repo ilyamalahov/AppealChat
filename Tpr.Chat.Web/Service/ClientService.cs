@@ -8,18 +8,6 @@ using System.Threading.Tasks;
 
 namespace Tpr.Chat.Web.Service
 {
-    //public class CustomTask
-    //{
-    //    public CustomTask(Func<CancellationToken, Task> method)
-    //    {
-    //        Method = method;
-    //    }
-
-    //    public bool IsActive { get; set; }
-
-    //    public Func<CancellationToken, Task> Method { get; }
-    //}
-
     public interface IClientService
     {
         bool Add(Guid appealId, string clientId);
