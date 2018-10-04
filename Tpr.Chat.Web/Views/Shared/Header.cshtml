@@ -6,7 +6,7 @@
     </div>
     <div class="title"></div>
     <a class="right-button" title="Инструкция по работе с чатом" href="~/files/manual.pdf" target="_blank"><img src="~/images/header/help.svg" alt="Помощь" /></a>
-    @if (!ViewBag.IsNotActive)
+    @if (ViewBag.IsActive)
     {
         <a id="completeButton" class="right-button" title="Завершение консультации" href="#"><img src="~/images/header/login.svg" alt="Завершение консультации" /></a>
     }

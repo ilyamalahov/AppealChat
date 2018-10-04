@@ -11,7 +11,7 @@
             <a href="~/files/manual.pdf" target="_blank" class="sidemenu-item"><div><img src="~/images/sidemenu/help.png" alt="Инструкция по работе с чатом" /><div>Инструкция по работе с чатом</div></div></a>
         </div>
         <div class="sidemenu-footer">
-            @if (!ViewBag.IsNotActive)
+            @if (ViewBag.IsActive)
             {
                 <a id="completeMobileButton" href="#" class="sidemenu-item">
                     <div>

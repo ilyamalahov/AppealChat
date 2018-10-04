@@ -46,7 +46,7 @@ namespace Tpr.Chat.Web.Controllers
             // Member replacement
             var replacement = await chatRepository.GetMemberReplacement(appealId);
 
-            if (replacement != null)
+            if (replacement.OldMember != null)
             {
                 return BadRequest("Замена консультанта уже была произведена");
             }
@@ -68,10 +68,13 @@ namespace Tpr.Chat.Web.Controllers
             // 
             var oldExpertKey = chatSession.CurrentExpertKey.Value;
 
-            // Insert new member replacement
-            var isInserted = await chatRepository.AddMemberReplacement(appealId, oldExpertKey);
+            replacement.OldMember = oldExpertKey;
+            replacement.RequestTime = DateTime.Now;
 
-            if (!isInserted)
+            // Update member replacement
+            var replacementResult = await chatRepository.UpdateMemberReplacement(replacement);
+
+            if (!replacementResult)
             {
                 return BadRequest("Не удалось вставить запись в таблицу");
             }
@@ -79,16 +82,18 @@ namespace Tpr.Chat.Web.Controllers
             //
             chatSession.CurrentExpertKey = null;
 
-            await chatRepository.UpdateSession(chatSession);
+            var sessionResult = await chatRepository.UpdateSession(chatSession);
+
+
 
             // 
             var nickname = "Член КК № " + oldExpertKey;
 
             var messageText = "Произведена замена члена КК № " + oldExpertKey;
 
-            var isMessageInserted = await chatRepository.WriteChatMessage(appealId, nickname, messageText, ChatMessageTypes.ChangeExpert);
+            var messageResult = await chatRepository.WriteChatMessage(appealId, nickname, messageText, ChatMessageTypes.ChangeExpert);
 
-            if (!isMessageInserted)
+            if (!messageResult)
             {
                 return BadRequest("Не удалось вставить запись в таблицу");
             }
@@ -185,8 +190,12 @@ namespace Tpr.Chat.Web.Controllers
         [HttpGet("closepage")]
         public async Task ClosePage(Guid appealId, string expertKey = null)
         {
+            //var chatSession = await chatRepository.GetChatSession(appealId);
+
+            //if(expertKey != null && expertKey == chatSession.CurrentExpertKey)
+
             //
-            var clientResult = clientService.Remove(appealId);
+            var clientResult = clientService.RemoveAppeal(appealId);
 
             if (!clientResult) return;
 
@@ -201,6 +210,8 @@ namespace Tpr.Chat.Web.Controllers
 
             // 
             await chatContext.Clients.User(appealId.ToString()).Leave(DateTime.Now, nickName);
+
+            await chatContext.Clients.User(appealId.ToString()).OnlineStatus(false);
         }
 
         //public string CreateToken(Guid appealId, string expertKey = null)

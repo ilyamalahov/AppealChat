@@ -1,23 +1,23 @@
 ﻿// Get JWT access token
-const getAccessToken = (appeal, expert) => {
-    return new Promise((resolve, reject) => {
-        const accessToken = sessionStorage.getItem('access_token');
+//const getAccessToken = (appeal, expert) => {
+//    return new Promise((resolve, reject) => {
+//        const accessToken = sessionStorage.getItem('access_token');
 
-        if (accessToken) { return resolve(accessToken); }
+//        if (accessToken) { return resolve(accessToken); }
 
-        $.ajax({
-            method: "post",
-            url: "ajax/token",
-            data: { appealId: appeal, expertKey: expert },
-            success: (response) => {
-                sessionStorage.setItem("access_token", response.accessToken);
+//        $.ajax({
+//            method: "post",
+//            url: "ajax/token",
+//            data: { appealId: appeal, expertKey: expert },
+//            success: (response) => {
+//                sessionStorage.setItem("access_token", response.accessToken);
 
-                return resolve(response.accessToken);
-            },
-            error: reject
-        });
-    });
-};
+//                return resolve(response.accessToken);
+//            },
+//            error: reject
+//        });
+//    });
+//};
 
 // Get JWT Bearer access token
 const getJwtToken = (appeal, expert) => {
@@ -30,6 +30,16 @@ const getJwtToken = (appeal, expert) => {
             success: resolve,
             error: reject
         });
+    });
+};
+
+//
+const sendDisconnectRequest = (appeal, expert) => {
+    $.ajax({
+        method: 'GET',
+        url: 'ajax/closepage',
+        data: { appealId: appeal, expertKey: expert },
+        async: false
     });
 };
 

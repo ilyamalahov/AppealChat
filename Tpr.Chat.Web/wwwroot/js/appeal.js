@@ -29,7 +29,7 @@ const onReceiveMessage = (message) => {
 
 // 
 const onJoinUser = (messageDate, nickName, isAppealOnline, isExpertOnline) => {
-    changeStatus(isExpertOnline);
+    //changeStatus(isExpertOnline);
 
     const isSender = nickName === 'Апеллянт';
 
@@ -43,7 +43,7 @@ const onJoinUser = (messageDate, nickName, isAppealOnline, isExpertOnline) => {
 
 // 
 const onLeaveUser = (messageDate, nickName) => {
-    changeStatus(false);
+    //changeStatus(false);
 
     const isSender = nickName === 'Апеллянт';
 
@@ -186,16 +186,6 @@ const updateInfo = () => infoConnection.send("MainUpdate", appealId);
 // Refresh access token
 const refreshToken = (appeal) => getJwtToken(appeal).then(token => { accessToken = token; setTimeout(() => refreshToken(appeal), tokenInterval); });
 
-//
-const sendDisconnectRequest = (appeal, expert) => {
-    $.ajax({
-        method: 'GET',
-        url: 'ajax/closepage',
-        data: { appealId: appeal, expertKey: expert },
-        async: false
-    });
-};
-
 // 
 const onMessageTextKeyup = function (e) {
     if (e.keyCode === 13 && !e.shiftKey) {
@@ -219,12 +209,14 @@ const onMessageTextInput = function (e) {
 infoConnection.on("ReceiveInfo", onReceiveInfo);
 
 // Window subscribe events
+$(window).on('beforeunload', () =>  sendDisconnectRequest(appealId));
+
 $(window)
-    .on('beforeunload', () => sendDisconnectRequest(appealId))
+    //.on('beforeunload', () => sendDisconnectRequest(appealId))
     .on('resize', scrollToLast);
 
 // Document ready event
-$(document).ready( () => {
+$(document).ready(() => {
     // Send message
     $('#sendButton').on('click', () => sendMessage($('#messageText').val()));
 
@@ -277,6 +269,9 @@ refreshToken(appealId)
 
         // Complete change expert
         chatConnection.on("CompleteChange", onCompleteChange);
+
+        // Online status
+        chatConnection.on("OnlineStatus", changeStatus);
 
         // Start chat connection
         return chatConnection.start();

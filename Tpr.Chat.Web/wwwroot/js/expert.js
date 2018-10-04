@@ -82,7 +82,7 @@ const onReceiveMessage = (message) => {
 
 // Join user to chat callback
 const onJoinUser = (messageDate, nickName, isAppealOnline, isExpertOnline) => {
-    changeStatus(isAppealOnline);
+    //changeStatus(isAppealOnline);
 
     const isSender = nickName === 'Член КК № ' + expertKey;
 
@@ -93,7 +93,7 @@ const onJoinUser = (messageDate, nickName, isAppealOnline, isExpertOnline) => {
 
 // Leave user from chat callback
 const onLeaveUser = (messageDate, nickName) => {
-    changeStatus(false);
+    //changeStatus(false);
 
     const isSender = nickName === 'Член КК № ' + expertKey;
 
@@ -226,27 +226,29 @@ const refreshToken = (appeal, expert) => getJwtToken(appeal, expert).then(token 
 // Receive information event handler
 infoConnection.on("ReceiveInfo", onReceiveInfo);
 
+$(window).on('beforeunload unload', () => sendDisconnectRequest(appealId, expertKey));
+
 // JQuery document ready
 $(document).ready(() => {
-    // 
-    $('#sendButton').on('click', () => sendMessage($("#messageText").val()));
-
-    // 
+    // Quick reply toggle
     $('#quickReplyButton').on('click', () => toggleQuickReply(!quickReplyIsVisible));
 
-    // 
-    $('#replyList li').on('click', (e) => insertQuickReply($(e.target).text()));
-
-    // 
+    // Quick reply filter text
     $('#filterText')
         .on('keyup', onFilterTextKeyup)
         .on('input', onFilterTextInput);
 
-    //
+    // Quick reply list
+    $('#replyList li').on('click', (e) => insertQuickReply($(e.target).text()));
+    
+    // Message form textarea
     $('#messageText')
         .on('keyup', onMessageTextKeyup)
         .on('input', onMessageTextInput)
         .trigger('input');
+
+    // Message form send button
+    $('#sendButton').on('click', () => sendMessage($("#messageText").val()));
 });
 
 // Start info connection
@@ -279,6 +281,9 @@ refreshToken(appealId, expertKey)
 
         // Complete change expert
         chatConnection.on("CompleteChat", onCompleteChat);
+
+        // Online status
+        chatConnection.on("OnlineStatus", changeStatus);
 
         // Start chat connection
         return chatConnection.start();

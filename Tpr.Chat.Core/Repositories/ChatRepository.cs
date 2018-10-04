@@ -156,7 +156,16 @@ namespace Tpr.Chat.Core.Repositories
 
                     var sql = "SELECT * FROM dbo.MemberReplacements WHERE AppealId = @appealId";
 
-                    return await connection.QuerySingleOrDefaultAsync<MemberReplacement>(sql, new { appealId });
+                    var replacement = await connection.QuerySingleOrDefaultAsync<MemberReplacement>(sql, new { appealId });
+
+                    if(replacement == null)
+                    {
+                        replacement = new MemberReplacement { AppealId = appealId };
+
+                        if (!await AddMemberReplacement(replacement)) return null;
+                    }
+
+                    return replacement;
                 }
             }
             catch (Exception exception)
