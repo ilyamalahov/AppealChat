@@ -52,7 +52,7 @@ namespace Tpr.Chat.Web
             services.AddSingleton<IClientService, ClientService>();
 
             // Custom SignalR user identifier provider
-            services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+            //services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
             // SignalR
             services.AddSignalR();

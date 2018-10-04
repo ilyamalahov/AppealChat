@@ -196,21 +196,35 @@ const sendDisconnectRequest = (appeal, expert) => {
     });
 };
 
-// Info hub connection
+// 
+const onMessageTextKeyup = function (e) {
+    if (e.keyCode === 13 && !e.shiftKey) {
+        e.preventDefault();
+
+        if ($(this).val().length > 0) { sendMessage($(this).val()); }
+    }
+};
+
+// 
+const onMessageTextInput = function (e) {
+    $(this).expandRows();
+
+    // 
+    const isDisabled = $(this).val().length === 0;
+
+    $('#sendButton').prop('disabled', isDisabled);
+};
 
 // Receive information response event
 infoConnection.on("ReceiveInfo", onReceiveInfo);
 
-// Start info connection
-infoConnection.start().then(updateInfo).catch(error => console.error(error.toString()));
+// Window subscribe events
+$(window)
+    .on('beforeunload', () => sendDisconnectRequest(appealId))
+    .on('resize', scrollToLast);
 
-// 
-$(document).ready(() => {
-    $(window).on('beforeunload', () => sendDisconnectRequest(appealId));
-
-    // 
-    $(window).on('resize', scrollToLast);
-
+// Document ready event
+$(document).ready( () => {
     // Send message
     $('#sendButton').on('click', () => sendMessage($('#messageText').val()));
 
@@ -224,34 +238,19 @@ $(document).ready(() => {
     $('#completeButton, #completeMobileButton').on('click', () => $('#modal').showModal('modal/completechat'));
 
     // Textarea auto rows count
-    $('#messageText').on('input', function (e) {
-        $(this).expandRows();
-
-        // 
-        const isDisabled = $(this).val().length === 0;
-
-        $('#sendButton').prop('disabled', isDisabled);
-    });
-
-    // Message textarea keyup event
-    $('#messageText').on('keyup', function (e) {
-        if (e.keyCode === 13 && !e.shiftKey) {
-            e.preventDefault();
-
-            if ($(this).val().length > 0) { sendMessage($(this).val()); }
-        }
-    });
-
-    // 
-    $('#messageText').trigger('input');
+    $('#messageText')
+        .on('keyup', onMessageTextKeyup)
+        .on('input', onMessageTextInput)
+        .trigger('input');
 
     //
     waitChange(isWaiting);
-
-    scrollToLast();
 });
 
-// 
+// Start info connection
+infoConnection.start().then(updateInfo);
+
+// Chat connection
 refreshToken(appealId)
     .then(() => {
         const options = { accessTokenFactory: () => accessToken };
