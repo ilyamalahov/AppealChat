@@ -141,7 +141,7 @@ namespace Tpr.Chat.Web.Controllers
 
         [Produces("application/json")]
         [HttpGet("token")]
-        public IActionResult Token(Guid appealId, string expertKey = null)
+        public IActionResult Token(Guid appealId, int expertKey = 0)
         {
             // JWT token configuration
             var jwtConfiguration = Configuration.GetSection("JWT");
@@ -153,9 +153,9 @@ namespace Tpr.Chat.Web.Controllers
             };
 
             // Expert key
-            if (expertKey != null)
+            if (expertKey > 0)
             {
-                claims.Add(new Claim("expertkey", expertKey));
+                claims.Add(new Claim("expertkey", expertKey.ToString()));
             }
 
             // Expiration time
