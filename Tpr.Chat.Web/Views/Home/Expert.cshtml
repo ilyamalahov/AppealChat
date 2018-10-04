@@ -13,10 +13,6 @@
     <script src="~/js/expert.js"></script>
 }
 
-@{ 
-    var isActive = !ViewBag.IsNotActive;
-}
-
 <div class="main">
     <div class="main-header">
         <div class="title">Участник аппеляции</div>
@@ -68,7 +64,7 @@
                 }
             }
         </ul>
-        @if (isActive)
+        @if (ViewBag.IsActive)
         {
             <div id="quickReply" class="overlay" style="display:none;">
                 <div class="quick-reply">
@@ -83,7 +79,7 @@
             </div>
         }
     </div>
-    @if (isActive)
+    @if (ViewBag.IsActive)
     {
         <div id="messageForm" class="main-footer">
             <button id="quickReplyButton" class="custom-button reply-button"><img src="~/images/chat/quick-reply.svg" style="height: 20px;" alt="QuickReply" /></button>

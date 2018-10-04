@@ -1,6 +1,6 @@
 ﻿<div class="sidebar">
     <div class="sidebar-content">
-        @if (!ViewBag.IsNotActive)
+        @if (ViewBag.IsActive)
         {
             <div class="switch-expert">
                 <button id="changeButton" class="custom-button expert-button" @(Model.IsExpertChanged ? "disabled" : "")><img src="~/images/sidebar/switch.svg" alt="Сменить собеседника" /><span>Сменить собеседника</span></button>

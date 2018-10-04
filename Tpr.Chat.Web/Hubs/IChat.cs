@@ -19,5 +19,7 @@ namespace Tpr.Chat.Web.Hubs
 
         Task FirstJoinExpert(string expertKey);
         Task CompleteChat();
+
+        Task OnlineStatus(bool isOnline);
     }
 }
