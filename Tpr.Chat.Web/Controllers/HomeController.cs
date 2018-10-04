@@ -25,7 +25,7 @@ namespace Tpr.Chat.Web.Controllers
     public class HomeController : Controller
     {
         private readonly IChatRepository chatRepository;
-        private readonly IAuthService commonService;
+        private readonly IAuthService authService;
         private readonly IClientService clientService;
         private readonly IHubContext<ChatHub, IChat> chatContext;
 
@@ -33,13 +33,13 @@ namespace Tpr.Chat.Web.Controllers
 
         public HomeController(
             IChatRepository chatRepository,
-            IAuthService commonService,
+            IAuthService authService,
             IClientService clientService,
             IHubContext<ChatHub, IChat> chatContext, 
             ILogger<HomeController> logger)
         {
             this.chatRepository = chatRepository;
-            this.commonService = commonService;
+            this.authService = authService;
             this.clientService = clientService;
             this.chatContext = chatContext;
             this.logger = logger;
@@ -160,14 +160,17 @@ namespace Tpr.Chat.Web.Controllers
                     return View("After", model);
                 }
 
+                // 
                 var clientId = clientService.Get(appealId);
 
                 if (clientId != null) return BadRequest("Пользователь уже существует");
 
                 clientService.Add(appealId, Guid.NewGuid().ToString());
 
+                //
                 await SendConnectMessage(appealId);
 
+                // 
                 model.Messages = await chatRepository.GetChatMessages(appealId);
 
                 // Member replacement check
@@ -178,17 +181,6 @@ namespace Tpr.Chat.Web.Controllers
                     model.IsWaiting = replacement.NewMember == null;
                     model.IsExpertChanged = replacement.OldMember != 0;
                 }
-
-                //var clientId = HttpContext.Session.GetString("clientId");
-                
-                //if(clientId == null)
-                //{
-                //    var newClientId = Guid.NewGuid().ToString();
-
-                //    ViewBag.ClientId = newClientId;
-
-                //    HttpContext.Session.SetString("clientId", newClientId);
-                //}
 
                 return View("Appeal", model);
             }

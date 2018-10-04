@@ -18,16 +18,10 @@ namespace Tpr.Chat.Web.Hubs
     public class ChatHub : Hub<IChat>
     {
         private readonly IChatRepository chatRepository;
-        private readonly IConnectionService connectionService;
 
-        //public IBackgroundTaskQueue TaskQueue { get; }
-
-        public ChatHub(IChatRepository chatRepository, IConnectionService connectionService)
+        public ChatHub(IChatRepository chatRepository)
         {
             this.chatRepository = chatRepository;
-            this.connectionService = connectionService;
-
-            //TaskQueue = taskQueue;
         }
 
         public override async Task OnConnectedAsync()
@@ -35,10 +29,10 @@ namespace Tpr.Chat.Web.Hubs
             try
             {
                 // Appeal ID from JWT token
-                var appealId = Guid.Parse(Context.User.Identity.Name);
+                //var appealId = Guid.Parse(Context.User.Identity.Name);
 
                 // Expert key from JWT token
-                var expertKey = Context.User.FindFirstValue("expertkey");
+                //var expertKey = Context.User.FindFirstValue("expertkey");
 
                 // 
                 //await SendConnectMessage(appealId, expertKey);
@@ -77,10 +71,10 @@ namespace Tpr.Chat.Web.Hubs
             try
             {
                 // Appeal ID from JWT token
-                var appealId = Guid.Parse(Context.User.Identity.Name);
+                //var appealId = Guid.Parse(Context.User.Identity.Name);
 
                 // Expert key from JWT token
-                var expertKey = Context.User.FindFirstValue("expertkey");
+                //var expertKey = Context.User.FindFirstValue("expertkey");
 
                 // 
                 //await SendDisconnectMessage(appealId, expertKey);
@@ -143,7 +137,7 @@ namespace Tpr.Chat.Web.Hubs
             //}
 
             // Remove caller's connection ID
-            connectionService.RemoveConnectionId(appealId, senderType);
+            //connectionService.RemoveConnectionId(appealId, senderType);
 
             // Write message to database
             //await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Leave);
@@ -184,19 +178,19 @@ namespace Tpr.Chat.Web.Hubs
             }
 
             // Add connection ID to collection
-            connectionService.AddConnectionId(appealId, Context.ConnectionId, senderType);
+            //connectionService.AddConnectionId(appealId, Context.ConnectionId, senderType);
 
             // Write message to database
             //await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Joined);
 
             // Check if appeal is online
-            var isAppealOnline = connectionService.isOnline(appealId);
+            //var isAppealOnline = connectionService.isOnline(appealId);
 
             // Check if current expert is online
-            var isExpertOnline = connectionService.isOnline(appealId, ContextType.Expert);
+            //var isExpertOnline = connectionService.isOnline(appealId, ContextType.Expert);
 
             // Send "Join" message to specified user clients
-            await Clients.User(Context.UserIdentifier).Join(DateTime.Now, nickName, isAppealOnline, isExpertOnline);
+            //await Clients.User(Context.UserIdentifier).Join(DateTime.Now, nickName, isAppealOnline, isExpertOnline);
         }
 
         //
