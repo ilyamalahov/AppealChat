@@ -51,6 +51,9 @@ namespace Tpr.Chat.Web
             // Client service
             services.AddSingleton<IClientService, ClientService>();
 
+            // Client service
+            services.AddSingleton<ITimedService, TimedService>();
+
             // Custom SignalR user identifier provider
             //services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 

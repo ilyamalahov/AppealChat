@@ -10,7 +10,7 @@ var chatConnection;
 var accessToken;
 
 // Refresh token interval
-const tokenInterval = 30000;
+const tokenInterval = 20000;
 
 // Update intreval
 const infoInterval = 10000;
@@ -209,7 +209,11 @@ const onMessageTextInput = function (e) {
 infoConnection.on("ReceiveInfo", onReceiveInfo);
 
 // Window subscribe events
-$(window).on('beforeunload', () =>  sendDisconnectRequest(appealId));
+//$(window).on('beforeunload', () =>  sendDisconnectRequest(appealId));
+
+//window.onbeforeunload = function () {
+//    sendDisconnectRequest(appealId);
+//};
 
 $(window)
     //.on('beforeunload', () => sendDisconnectRequest(appealId))
