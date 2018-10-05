@@ -27,6 +27,7 @@ namespace Tpr.Chat.Web.Controllers
         private readonly IChatRepository chatRepository;
         private readonly IAuthService authService;
         private readonly IClientService clientService;
+        private readonly ITimedService timedService;
         private readonly IHubContext<ChatHub, IChat> chatContext;
 
         private readonly ILogger<HomeController> logger;
@@ -35,12 +36,14 @@ namespace Tpr.Chat.Web.Controllers
             IChatRepository chatRepository,
             IAuthService authService,
             IClientService clientService,
+            ITimedService timedService,
             IHubContext<ChatHub, IChat> chatContext,
             ILogger<HomeController> logger)
         {
             this.chatRepository = chatRepository;
             this.authService = authService;
             this.clientService = clientService;
+            this.timedService = timedService;
             this.chatContext = chatContext;
             this.logger = logger;
         }
@@ -129,12 +132,6 @@ namespace Tpr.Chat.Web.Controllers
                     await chatContext.Clients.User(appealId.ToString()).CompleteChange(key);
                 }
 
-                CancellationToken token = new CancellationToken();
-
-                token.ThrowIfCancellationRequested();
-
-                await Task.Delay(TimeSpan.FromSeconds(10)).ContinueWith(task => Console.WriteLine(""), null);
-
                 if (key != chatSession.CurrentExpertKey)
                 {
                     ViewBag.IsActive = false;
@@ -163,20 +160,12 @@ namespace Tpr.Chat.Web.Controllers
                     return View("After", model);
                 }
 
-                TaskService taskService = new TaskService();
-
-                var cancellationToken = taskService.GetToken(appealId);
-
-                cancellationToken.Cancel();
-
-                taskService.Add(appealId, Disconnect());
-
                 // 
-                var client = clientService.GetClient(appealId);
-                
-                if (client.AppealClientId != null) return BadRequest("Пользователь уже существует");
+                //var client = clientService.GetClient(appealId);
 
-                clientService.AddAppeal(appealId, Guid.NewGuid());
+                //if (client.AppealClientId != null) return BadRequest("Пользователь уже существует");
+
+                //clientService.AddAppeal(appealId, Guid.NewGuid());
 
                 //
                 await SendConnectMessage(appealId);

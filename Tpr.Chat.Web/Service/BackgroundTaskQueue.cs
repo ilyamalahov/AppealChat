@@ -9,17 +9,17 @@ namespace Tpr.Chat.Web.Service
 {
     public interface IBackgroundTaskQueue
     {
-        void Queue(Func<CancellationToken, Task> workItem);
+        void Queue(CancellationTask workItem);
 
-        Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken);
+        Task<CancellationTask> DequeueAsync(CancellationToken cancellationToken);
     }
 
     public class BackgroundTaskQueue : IBackgroundTaskQueue
     {
-        private ConcurrentQueue<Func<CancellationToken, Task>> _workItems = new ConcurrentQueue<Func<CancellationToken, Task>>();
+        private ConcurrentQueue<CancellationTask> _workItems = new ConcurrentQueue<CancellationTask>();
         private SemaphoreSlim _signal = new SemaphoreSlim(0);
 
-        public void Queue(Func<CancellationToken, Task> workItem)
+        public void Queue(CancellationTask workItem)
         {
             if (workItem == null)
             {
@@ -31,7 +31,7 @@ namespace Tpr.Chat.Web.Service
             _signal.Release();
         }
 
-        public async Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken)
+        public async Task<CancellationTask> DequeueAsync(CancellationToken cancellationToken)
         {
             await _signal.WaitAsync(cancellationToken);
 

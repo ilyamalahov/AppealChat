@@ -24,6 +24,8 @@ namespace Tpr.Chat.Web.Controllers
         private readonly IChatRepository chatRepository;
         private readonly IHubContext<ChatHub, IChat> chatContext;
         private readonly IClientService clientService;
+        private readonly ITimedService timedService;
+        private readonly ITaskService taskService;
 
         public IConfiguration Configuration { get; }
 
@@ -31,11 +33,15 @@ namespace Tpr.Chat.Web.Controllers
             IConfiguration configuration,
             IChatRepository chatRepository,
             IHubContext<ChatHub, IChat> chatContext,
-            IClientService clientService)
+            IClientService clientService,
+            ITimedService timedService,
+            ITaskService taskService)
         {
             this.chatRepository = chatRepository;
             this.chatContext = chatContext;
             this.clientService = clientService;
+            this.timedService = timedService;
+            this.taskService = taskService;
 
             Configuration = configuration;
         }
@@ -148,6 +154,21 @@ namespace Tpr.Chat.Web.Controllers
         [HttpGet("token")]
         public IActionResult Token(Guid appealId, int expertKey = 0)
         {
+            if (expertKey == 0)
+            {
+                var tokenSource = taskService.GetTokenSource(appealId);
+
+                if (tokenSource == null)
+                {
+                    taskService.Add(appealId, async cancellationToken =>
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        await SendDisconnectMessage(appealId, expertKey.ToString());
+                    });
+                }
+            }
+
             // JWT token configuration
             var jwtConfiguration = Configuration.GetSection("JWT");
 
@@ -187,6 +208,27 @@ namespace Tpr.Chat.Web.Controllers
             return Ok(accessToken);
         }
 
+        private async Task SendDisconnectMessage(Guid appealId, string expertKey)
+        {
+
+            await Task.Delay(TimeSpan.FromSeconds(30));
+
+            // Sender type
+            var senderType = expertKey != null ? ContextType.Appeal : ContextType.Expert;
+
+            // Nick name
+            var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
+
+            // Write message to database
+            await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Leave);
+
+            // 
+            await chatContext.Clients.User(appealId.ToString()).Leave(DateTime.Now, nickName);
+
+            // 
+            await chatContext.Clients.User(appealId.ToString()).OnlineStatus(false);
+        }
+
         [HttpGet("closepage")]
         public async Task ClosePage(Guid appealId, string expertKey = null)
         {
@@ -195,9 +237,7 @@ namespace Tpr.Chat.Web.Controllers
             //if(expertKey != null && expertKey == chatSession.CurrentExpertKey)
 
             //
-            var clientResult = clientService.RemoveAppeal(appealId);
-
-            if (!clientResult) return;
+            //var clientResult = clientService.RemoveAppeal(appealId);
 
             // Sender type
             var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;

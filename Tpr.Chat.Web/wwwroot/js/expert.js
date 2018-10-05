@@ -6,7 +6,7 @@ var quickReplyIsVisible = false;
 // Update time interval in milliseconds
 const updateInterval = 1000;
 
-const tokenInterval = 30000;
+const tokenInterval = 20000;
 
 // Update info hub connection
 var infoConnection = new signalR.HubConnectionBuilder()
