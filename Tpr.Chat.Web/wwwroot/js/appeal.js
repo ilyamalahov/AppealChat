@@ -247,8 +247,10 @@ $(document).ready(() => {
 infoConnection.start().then(updateInfo);
 
 // Chat connection
-refreshToken(appealId)
-    .then(() => {
+getJwtToken(appealId)
+    .then(token => {
+        accessToken = token;
+
         const options = { accessTokenFactory: () => accessToken };
 
         chatConnection = new signalR.HubConnectionBuilder()

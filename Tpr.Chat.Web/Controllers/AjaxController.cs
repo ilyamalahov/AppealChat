@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Tpr.Chat.Core.Models;
 using Tpr.Chat.Core.Repositories;
@@ -24,8 +25,8 @@ namespace Tpr.Chat.Web.Controllers
         private readonly IChatRepository chatRepository;
         private readonly IHubContext<ChatHub, IChat> chatContext;
         private readonly IClientService clientService;
-        private readonly ITimedService timedService;
         private readonly ITaskService taskService;
+        private readonly ILogger<AjaxController> logger;
 
         public IConfiguration Configuration { get; }
 
@@ -34,14 +35,15 @@ namespace Tpr.Chat.Web.Controllers
             IChatRepository chatRepository,
             IHubContext<ChatHub, IChat> chatContext,
             IClientService clientService,
-            ITimedService timedService,
-            ITaskService taskService)
+            ITaskService taskService,
+            ILogger<AjaxController> logger)
         {
             this.chatRepository = chatRepository;
             this.chatContext = chatContext;
             this.clientService = clientService;
-            this.timedService = timedService;
             this.taskService = taskService;
+
+            this.logger = logger;
 
             Configuration = configuration;
         }
@@ -152,21 +154,15 @@ namespace Tpr.Chat.Web.Controllers
 
         [Produces("application/json")]
         [HttpGet("token")]
-        public IActionResult Token(Guid appealId, int expertKey = 0)
+        public IActionResult Token(Guid appealId, string expertKey = null)
         {
-            if (expertKey == 0)
+            if (expertKey == null)
             {
                 var tokenSource = taskService.GetTokenSource(appealId);
 
-                if (tokenSource == null)
-                {
-                    taskService.Add(appealId, async cancellationToken =>
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
+                tokenSource?.Cancel();
 
-                        await SendDisconnectMessage(appealId, expertKey.ToString());
-                    });
-                }
+                taskService.AddOrUpdate(appealId, async canceltoken => await LeaveFromChat(appealId, expertKey, canceltoken));
             }
 
             // JWT token configuration
@@ -179,7 +175,7 @@ namespace Tpr.Chat.Web.Controllers
             };
 
             // Expert key
-            if (expertKey > 0)
+            if (expertKey != null)
             {
                 claims.Add(new Claim("expertkey", expertKey.ToString()));
             }
@@ -208,25 +204,33 @@ namespace Tpr.Chat.Web.Controllers
             return Ok(accessToken);
         }
 
-        private async Task SendDisconnectMessage(Guid appealId, string expertKey)
+        private async Task LeaveFromChat(Guid appealId, string expertKey, CancellationToken token)
         {
+            try
+            {
+                await Task.Delay(TimeSpan.FromSeconds(30), token);
 
-            await Task.Delay(TimeSpan.FromSeconds(30));
+                logger.LogWarning("Appeal {appealId} left", appealId);
 
-            // Sender type
-            var senderType = expertKey != null ? ContextType.Appeal : ContextType.Expert;
+                // Sender type
+                var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
 
-            // Nick name
-            var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
+                // Nick name
+                var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
 
-            // Write message to database
-            await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Leave);
+                // Write message to database
+                await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Leave);
 
-            // 
-            await chatContext.Clients.User(appealId.ToString()).Leave(DateTime.Now, nickName);
+                // 
+                await chatContext.Clients.User(appealId.ToString()).Leave(DateTime.Now, nickName);
 
-            // 
-            await chatContext.Clients.User(appealId.ToString()).OnlineStatus(false);
+                // 
+                //await chatContext.Clients.User(appealId.ToString()).OnlineStatus(false);
+            }
+            catch (TaskCanceledException exception)
+            {
+                logger.LogError(exception, "Task canceled");
+            }
         }
 
         [HttpGet("closepage")]

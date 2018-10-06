@@ -50,17 +50,20 @@ namespace Tpr.Chat.Web
 
             // Client service
             services.AddSingleton<IClientService, ClientService>();
+            
+            // Task service
+            services.AddSingleton<ITaskService, TaskService>();
 
-            // Client service
-            services.AddSingleton<ITimedService, TimedService>();
+            // Background task queue service
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
-            // Custom SignalR user identifier provider
-            //services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
-
+            // Background task hosted service
+            services.AddHostedService<QueuedHostedService>();
+            
             // SignalR
             services.AddSignalR();
 
-            // Cross-Origin Request Sharing
+            // CORS (Cross-Origin Request Sharing)
             services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
             {
                 builder.AllowAnyMethod()
