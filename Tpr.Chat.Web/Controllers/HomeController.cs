@@ -28,6 +28,7 @@ namespace Tpr.Chat.Web.Controllers
         private readonly IAuthService authService;
         private readonly IClientService clientService;
         private readonly ITimedService timedService;
+        private readonly ITaskService taskService;
         private readonly IHubContext<ChatHub, IChat> chatContext;
 
         private readonly ILogger<HomeController> logger;
@@ -37,6 +38,7 @@ namespace Tpr.Chat.Web.Controllers
             IAuthService authService,
             IClientService clientService,
             ITimedService timedService,
+            ITaskService taskService,
             IHubContext<ChatHub, IChat> chatContext,
             ILogger<HomeController> logger)
         {
@@ -44,6 +46,7 @@ namespace Tpr.Chat.Web.Controllers
             this.authService = authService;
             this.clientService = clientService;
             this.timedService = timedService;
+            this.taskService = taskService;
             this.chatContext = chatContext;
             this.logger = logger;
         }
@@ -166,7 +169,7 @@ namespace Tpr.Chat.Web.Controllers
                 //if (client.AppealClientId != null) return BadRequest("Пользователь уже существует");
 
                 //clientService.AddAppeal(appealId, Guid.NewGuid());
-
+                
                 //
                 await SendConnectMessage(appealId);
 
@@ -186,11 +189,6 @@ namespace Tpr.Chat.Web.Controllers
             }
 
             return BadRequest();
-        }
-
-        private async Task Disconnect()
-        {
-            await Task.Delay(0).ContinueWith(task => { });
         }
 
         private async Task SendConnectMessage(Guid appealId, string expertKey = null)

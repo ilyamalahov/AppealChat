@@ -10,36 +10,56 @@ namespace Tpr.Chat.Web.Service
 {
     public class QueuedHostedService : BackgroundService
     {
-        private readonly ILogger _logger;
+        private readonly ILogger logger;
+        private readonly ITaskService taskService;
 
-        public QueuedHostedService(IBackgroundTaskQueue taskQueue, ILoggerFactory loggerFactory)
+        public QueuedHostedService(IBackgroundTaskQueue taskQueue, ITaskService taskService, ILogger<QueuedHostedService> logger)
         {
             TaskQueue = taskQueue;
 
-            _logger = loggerFactory.CreateLogger<QueuedHostedService>();
+            this.logger = logger;
+            this.taskService = taskService;
         }
 
         public IBackgroundTaskQueue TaskQueue { get; }
 
         protected async override Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Queued Hosted Service is starting.");
+            logger.LogInformation("Queued Hosted Service is starting.");
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                var workItem = await TaskQueue.DequeueAsync(cancellationToken);
+                var cancellationTask = await TaskQueue.DequeueAsync(cancellationToken);
+
+                var tokenSource = cancellationTask?.TokenSource;
 
                 try
                 {
-                    await workItem(cancellationToken);
+                    if (tokenSource == null) throw new NullReferenceException();
+
+                    using (var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, tokenSource.Token))
+                    {
+                        await cancellationTask.TaskMethod(linkedSource.Token);
+                    }
                 }
+                //catch(OperationCanceledException exception)
+                //{
+                //    logger.LogWarning(exception, exception.Message);
+                //}
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Error occurred executing {nameof(workItem)}.");
+                    logger.LogError(ex, $"Error occurred executing {nameof(cancellationTask.TaskMethod)}.");
+                }
+                finally
+                {
+                    if(taskService.RemoveByItem(tokenSource))
+                    {
+                        logger.LogWarning("Cancellation token source removed");
+                    }
                 }
             }
 
-            _logger.LogInformation("Queued Hosted Service is stopping.");
+            logger.LogInformation("Queued Hosted Service is stopping.");
         }
     }
 }

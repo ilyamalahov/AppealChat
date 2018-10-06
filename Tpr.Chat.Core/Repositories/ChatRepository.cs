@@ -162,7 +162,9 @@ namespace Tpr.Chat.Core.Repositories
                     {
                         replacement = new MemberReplacement { AppealId = appealId };
 
-                        if (!await AddMemberReplacement(replacement)) return null;
+                        var replacementResult = await AddMemberReplacement(replacement);
+
+                        if (!replacementResult) return null;
                     }
 
                     return replacement;
@@ -176,22 +178,12 @@ namespace Tpr.Chat.Core.Repositories
             }
         }
 
-        public async Task<bool> AddMemberReplacement(Guid appealId, int expertKey)
-        {
-            var replacement = new MemberReplacement
-            {
-                AppealId = appealId,
-                RequestTime = DateTime.Now,
-                OldMember = expertKey
-            };
-
-            return await AddMemberReplacement(replacement);
-        }
-
         public async Task<bool> AddMemberReplacement(MemberReplacement replacement)
         {
             try
             {
+                Console.WriteLine(replacement);
+
                 using (var connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();
