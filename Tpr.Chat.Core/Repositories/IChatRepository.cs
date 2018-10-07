@@ -22,10 +22,8 @@ namespace Tpr.Chat.Core.Repositories
         Task<IEnumerable<QuickReply>> GetQuickReplies();
 
         // Member replacements
-        Task<bool> AddMemberReplacement(MemberReplacement replacement);
-
-        Task<bool> UpdateMemberReplacement(MemberReplacement replacement);
-
-        Task<MemberReplacement> GetMemberReplacement(Guid appealId);
+        Task<bool> AddReplacement(MemberReplacement replacement);
+        Task<bool> UpdateReplacement(MemberReplacement replacement);
+        Task<MemberReplacement> GetReplacement(Guid appealId);
     }
 }

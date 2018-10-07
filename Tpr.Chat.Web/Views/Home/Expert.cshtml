@@ -1,5 +1,5 @@
 ﻿@using Tpr.Chat.Core.Models
-@model Tpr.Chat.Web.Models.IndexViewModel
+@model Tpr.Chat.Web.Models.ExpertViewModel
 
 @section Styles {
     <link rel="stylesheet" type="text/css" href="~/css/expert.css" />
@@ -7,7 +7,7 @@
 
 @section Scripts {
     <script>
-        var appealId = @Json.Serialize(Model.AppealId);
+        var appealId = @Json.Serialize(Model.SessionModel.AppealId);
         var expertKey = @Json.Serialize(Model.ExpertKey);
     </script>
     <script src="~/js/expert.js"></script>

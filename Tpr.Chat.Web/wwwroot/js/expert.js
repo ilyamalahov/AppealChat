@@ -66,7 +66,7 @@ const changeStatus = (isOnline) => $('#onlineStatus').toggleClass('online', isOn
 
 // Send message
 const sendMessage = (message) => {
-    chatConnection.send('SendMessage', message);
+    chatConnection.send('SendMessage', appealId, message, expertKey);
 
     $('#messageText').val('').trigger('input');
 };
@@ -82,7 +82,7 @@ const onReceiveMessage = (message) => {
 
 // Join user to chat callback
 const onJoinUser = (messageDate, nickName, isAppealOnline, isExpertOnline) => {
-    //changeStatus(isAppealOnline);
+    changeStatus(isAppealOnline);
 
     const isSender = nickName === 'Член КК № ' + expertKey;
 
@@ -93,7 +93,7 @@ const onJoinUser = (messageDate, nickName, isAppealOnline, isExpertOnline) => {
 
 // Leave user from chat callback
 const onLeaveUser = (messageDate, nickName) => {
-    //changeStatus(false);
+    changeStatus(false);
 
     const isSender = nickName === 'Член КК № ' + expertKey;
 
@@ -103,8 +103,8 @@ const onLeaveUser = (messageDate, nickName) => {
 };
 
 // First join expert to chat callback
-const onFirstJoinExpert = (expertKey) => {
-    const messageItem = firstJoinMessage(expertKey, true);
+const onFirstJoinExpert = (expert) => {
+    const messageItem = firstJoinMessage(expert, true);
 
     $("#messagesList").append(messageItem).scrollTo(messageItem);
 };
@@ -140,7 +140,7 @@ const blockChat = () => {
 };
 
 // 
-const insertQuickReply = (replyText) => {
+const insertReply = (replyText) => {
     toggleQuickReply(false);
 
     $('#messageText').insertAtCursor(replyText)
@@ -154,7 +154,7 @@ const onFilterTextKeyup = (e) => {
 
     switch (e.keyCode) {
         case 13:
-            insertQuickReply(selectedItem.text());
+            insertReply(selectedItem.text());
 
             return;
         case 38:
@@ -226,8 +226,6 @@ const refreshToken = (appeal, expert) => getJwtToken(appeal, expert).then(token 
 // Receive information event handler
 infoConnection.on("ReceiveInfo", onReceiveInfo);
 
-$(window).on('beforeunload unload', () => sendDisconnectRequest(appealId, expertKey));
-
 // JQuery document ready
 $(document).ready(() => {
     // Quick reply toggle
@@ -239,7 +237,7 @@ $(document).ready(() => {
         .on('input', onFilterTextInput);
 
     // Quick reply list
-    $('#replyList li').on('click', (e) => insertQuickReply($(e.target).text()));
+    $('#replyList li').on('click', (e) => insertReply($(e.target).text()));
     
     // Message form textarea
     $('#messageText')
@@ -255,8 +253,10 @@ $(document).ready(() => {
 infoConnection.start().then(updateInfo);
 
 // 
-refreshToken(appealId, expertKey)
-    .then(() => {
+getJwtToken(appealId, expertKey)
+    .then(token => {
+        accessToken = token;
+
         const options = { accessTokenFactory: () => accessToken };
 
         chatConnection = new signalR.HubConnectionBuilder()
@@ -281,9 +281,6 @@ refreshToken(appealId, expertKey)
 
         // Complete change expert
         chatConnection.on("CompleteChat", onCompleteChat);
-
-        // Online status
-        chatConnection.on("OnlineStatus", changeStatus);
 
         // Start chat connection
         return chatConnection.start();

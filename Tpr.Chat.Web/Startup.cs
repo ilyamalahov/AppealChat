@@ -98,15 +98,19 @@ namespace Tpr.Chat.Web
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
+                        // Audience
                         ValidateAudience = true,
                         ValidAudience = jwtConfiguration["Audience"],
 
+                        // Issuer
                         ValidateIssuer = true,
                         ValidIssuer = jwtConfiguration["Issuer"],
 
+                        // Lifetime
                         ValidateLifetime = true,
                         LifetimeValidator = (before, expires, token, parameters) => expires > DateTime.UtcNow,
 
+                        // Signing key
                         IssuerSigningKey = securityKey
                     };
 
@@ -175,6 +179,7 @@ namespace Tpr.Chat.Web
             app.UseMvc(routes =>
             {
                 routes.MapRoute("Home", "{appealId:guid}", new { controller = "Home", action = "Index" });
+                routes.MapRoute("Modal", "{controller}/{action}", new { controller = "Modal" });
             });
         }
     }
