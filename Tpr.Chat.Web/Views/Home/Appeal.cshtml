@@ -1,10 +1,8 @@
 ﻿@using Tpr.Chat.Core.Models
-@model Tpr.Chat.Web.Models.IndexViewModel
+@model Tpr.Chat.Web.Models.AppealViewModel
 
 @{
-    ViewData["Title"] = "Home Page";
-
-    var currentExpert = Model.Session.CurrentExpertKey;
+    var chatSession = Model.SessionModel.Session;
 }
 
 @section Styles {
@@ -13,26 +11,25 @@
 
 @section Scripts {
     <script>
-        var appealId = @Json.Serialize(Model.AppealId);
-        var clientId = @Json.Serialize(ViewBag.ClientId);
+        var appealId = @Json.Serialize(Model.SessionModel.AppealId);
         var isWaiting = @Json.Serialize(Model.IsWaiting);
     </script>
     <script src="~/js/appeal.js"></script>
 }
 
-<partial name="Sidemenu" />
+<partial name="Sidemenu" model="@Model.SessionModel"/>
 
 <div class="container">
-    <partial name="Header" />
+    <partial name="Header" model="@Model.SessionModel"/>
     <div class="content">
-        <partial name="Sidebar" />
+        <partial name="Sidebar" model="@Model.SessionModel"/>
         <div class="main">
             <div class="main-header">
                 <button id="sideMobileButton" class="custom-button side-button" title="Меню">
                     <img src="~/images/chat/three-dots.svg" alt="Меню" />
                 </button>
                 <div class="title-status">
-                    <div class="title">Член КК <span id="expertNumber">@(currentExpert.HasValue ? "№ " + currentExpert : "отсутствует")</span></div>
+                    <div class="title">Член КК <span id="expertNumber">@(chatSession.CurrentExpertKey != null ? "№ " + chatSession.CurrentExpertKey : "отсутствует")</span></div>
                     <div class="status-block">
                         <div class="online-status" id="onlineStatus"></div>
                         <div class="write-status" id="writeStatus">Печатает...</div>
@@ -42,7 +39,7 @@
                     <div id="mobileRemainingTime" class="remaining-value">00:00</div>
                     <div class="remaining-caption">минуты осталось</div>
                 </div>
-                <button id="mobileChangeButton" class="custom-button switch-button" title="Сменить консультанта" @(Model.IsExpertChanged ? "disabled" : "")><img src="~/images/chat/businessman.png" alt="Сменить консультанта" /></button>
+                <button id="mobileChangeButton" class="custom-button switch-button" title="Сменить консультанта"><img src="~/images/chat/businessman.png" alt="Сменить консультанта" /></button>
             </div>
             <div style="flex: auto; display: flex; min-height: 0;">
                 <ul id="messagesList" class="message-history">

@@ -8,14 +8,19 @@ namespace Tpr.Chat.Web.Models
 {
     public class SessionViewModel
     {
+        // 
         public Guid AppealId { get; set; }
 
+        //
         public ChatSession Session { get; set; }
 
+        //
         public bool IsBefore { get; set; }
 
+        //
         public bool IsAfter { get; set; }
 
-        public bool IsExpertChanged { get; set; }
+        //
+        public bool IsActive { get; set; }
     }
 }

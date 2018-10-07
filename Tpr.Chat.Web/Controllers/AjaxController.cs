@@ -52,7 +52,7 @@ namespace Tpr.Chat.Web.Controllers
         public async Task<IActionResult> ChangeExpert(Guid appealId)
         {
             // Member replacement
-            var replacement = await chatRepository.GetMemberReplacement(appealId);
+            var replacement = await chatRepository.GetReplacement(appealId);
 
             if (replacement.OldMember != null)
             {
@@ -80,7 +80,7 @@ namespace Tpr.Chat.Web.Controllers
             replacement.RequestTime = DateTime.Now;
 
             // Update member replacement
-            var replacementResult = await chatRepository.UpdateMemberReplacement(replacement);
+            var replacementResult = await chatRepository.UpdateReplacement(replacement);
 
             if (!replacementResult)
             {
@@ -206,17 +206,17 @@ namespace Tpr.Chat.Web.Controllers
 
         private async Task LeaveFromChat(Guid appealId, string expertKey, CancellationToken token)
         {
+            // Sender type
+            var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
+
+            // Nick name
+            var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
+
             try
             {
                 await Task.Delay(TimeSpan.FromSeconds(30), token);
 
                 logger.LogWarning("Appeal {appealId} left", appealId);
-
-                // Sender type
-                var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
-
-                // Nick name
-                var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
 
                 // Write message to database
                 await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Leave);
@@ -227,35 +227,14 @@ namespace Tpr.Chat.Web.Controllers
                 // 
                 //await chatContext.Clients.User(appealId.ToString()).OnlineStatus(false);
             }
-            catch (TaskCanceledException exception)
+            catch (TaskCanceledException)
             {
-                logger.LogError(exception, "Task canceled");
+                logger.LogInformation("{appealId}: {nickName} already online", appealId, nickName);
             }
-        }
-
-        [HttpGet("closepage")]
-        public async Task ClosePage(Guid appealId, string expertKey = null)
-        {
-            //var chatSession = await chatRepository.GetChatSession(appealId);
-
-            //if(expertKey != null && expertKey == chatSession.CurrentExpertKey)
-
-            //
-            //var clientResult = clientService.RemoveAppeal(appealId);
-
-            // Sender type
-            var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
-
-            // Nick name
-            var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
-
-            // Write message to database
-            await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Leave);
-
-            // 
-            await chatContext.Clients.User(appealId.ToString()).Leave(DateTime.Now, nickName);
-
-            await chatContext.Clients.User(appealId.ToString()).OnlineStatus(false);
+            catch (Exception ex)
+            {
+                logger.LogError(ex, ex.Message);
+            }
         }
 
         //public string CreateToken(Guid appealId, string expertKey = null)

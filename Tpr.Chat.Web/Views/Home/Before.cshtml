@@ -1,8 +1,4 @@
-﻿@model IndexViewModel
-
-@{
-    ViewData["Title"] = "Система онлайн консультирования по вопросам";
-}
+﻿@model SessionViewModel
 
 @section Styles{
     <link rel="stylesheet" type="text/css" href="~/css/before-after.css" />
@@ -10,7 +6,7 @@
 
 @section Scripts {
     <script type="text/javascript">
-        var appealId = "@Model.AppealId";
+        var appealId = @Json.Serialize(Model.AppealId);
     </script>
     <script type="text/javascript" src="~/js/before.js"></script>
 }
@@ -55,12 +51,12 @@
         }
 </style>
 
-<partial name="Sidemenu" />
+<partial name="Sidemenu"/>
 
 <div class="container">
-    <partial name="Header" />
+    <partial name="Header"/>
     <div class="content">
-        <partial name="Sidebar" />
+        <partial name="Sidebar"/>
         <div class="main">
             <div style="margin: auto;">
                 <div class="main-header">

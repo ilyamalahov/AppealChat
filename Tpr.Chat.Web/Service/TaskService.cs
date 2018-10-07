@@ -10,7 +10,7 @@ namespace Tpr.Chat.Web.Service
 {
     public class CancellationTask
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; }
 
         public CancellationTokenSource TokenSource { get; }
 
@@ -24,27 +24,24 @@ namespace Tpr.Chat.Web.Service
 
             TaskMethod = taskMethod;
         }
-    }
 
-    public interface ITaskService
-    {
-        bool AddOrUpdate(Guid appealId, Func<CancellationToken, Task> method);
-        CancellationTokenSource GetTokenSource(Guid appealId);
-        bool RemoveByItem(CancellationTokenSource tokenSource);
+        //public void Dispose()
+        //{
+        //    TokenSource.Dispose();
+        //}
     }
 
     public class TaskService : ITaskService
     {
         private readonly ConcurrentDictionary<Guid, CancellationTokenSource> tokens = new ConcurrentDictionary<Guid, CancellationTokenSource>();
-        private readonly ILogger<TaskService> logger;
 
-        public IBackgroundTaskQueue TaskQueue { get; }
+        private readonly ILogger<TaskService> logger;
+        private readonly IBackgroundTaskQueue taskQueue;
 
         public TaskService(IBackgroundTaskQueue taskQueue, ILogger<TaskService> logger)
         {
             this.logger = logger;
-
-            TaskQueue = taskQueue;
+            this.taskQueue = taskQueue;
         }
 
         public bool AddOrUpdate(Guid appealId, Func<CancellationToken, Task> method)
@@ -57,7 +54,7 @@ namespace Tpr.Chat.Web.Service
 
                 if (tokenSource == null) return false;
 
-                TaskQueue.Queue(new CancellationTask(method, tokenSource));
+                taskQueue.Queue(new CancellationTask(method, tokenSource));
 
                 return true;
             }

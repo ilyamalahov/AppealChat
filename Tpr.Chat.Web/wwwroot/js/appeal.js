@@ -29,7 +29,7 @@ const onReceiveMessage = (message) => {
 
 // 
 const onJoinUser = (messageDate, nickName, isAppealOnline, isExpertOnline) => {
-    //changeStatus(isExpertOnline);
+    changeStatus(isExpertOnline);
 
     const isSender = nickName === 'Апеллянт';
 
@@ -43,7 +43,7 @@ const onJoinUser = (messageDate, nickName, isAppealOnline, isExpertOnline) => {
 
 // 
 const onLeaveUser = (messageDate, nickName) => {
-    //changeStatus(false);
+    changeStatus(false);
 
     const isSender = nickName === 'Апеллянт';
 
@@ -115,7 +115,7 @@ const onReceiveInfo = (currentDate, remainingTime, isAlarm, isFinished) => {
 
 // Send message
 const sendMessage = (message) => {
-    chatConnection.send('SendMessage', message);
+    chatConnection.send('SendMessage', appealId, message);
 
     // 
     $('#messageText').val('').trigger('input');
@@ -208,16 +208,7 @@ const onMessageTextInput = function (e) {
 // Receive information response event
 infoConnection.on("ReceiveInfo", onReceiveInfo);
 
-// Window subscribe events
-//$(window).on('beforeunload', () =>  sendDisconnectRequest(appealId));
-
-//window.onbeforeunload = function () {
-//    sendDisconnectRequest(appealId);
-//};
-
-$(window)
-    //.on('beforeunload', () => sendDisconnectRequest(appealId))
-    .on('resize', scrollToLast);
+$(window).on('resize', scrollToLast);
 
 // Document ready event
 $(document).ready(() => {
@@ -275,9 +266,6 @@ getJwtToken(appealId)
 
         // Complete change expert
         chatConnection.on("CompleteChange", onCompleteChange);
-
-        // Online status
-        chatConnection.on("OnlineStatus", changeStatus);
 
         // Start chat connection
         return chatConnection.start();

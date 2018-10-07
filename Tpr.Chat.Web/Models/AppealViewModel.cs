@@ -6,9 +6,11 @@ using Tpr.Chat.Core.Models;
 
 namespace Tpr.Chat.Web.Models
 {
-    public class AppealViewModel : SessionViewModel
+    public class AppealViewModel
     {
-        public ICollection<ChatMessage> Messages { get; set; }
+        public SessionViewModel SessionModel { get; set; }
+
+        public IEnumerable<ChatMessage> Messages { get; set; }
 
         public bool IsWaiting { get; set; }
     }

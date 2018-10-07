@@ -146,7 +146,7 @@ namespace Tpr.Chat.Core.Repositories
 
         #region Member Replacement
 
-        public async Task<MemberReplacement> GetMemberReplacement(Guid appealId)
+        public async Task<MemberReplacement> GetReplacement(Guid appealId)
         {
             try
             {
@@ -162,7 +162,7 @@ namespace Tpr.Chat.Core.Repositories
                     {
                         replacement = new MemberReplacement { AppealId = appealId };
 
-                        var replacementResult = await AddMemberReplacement(replacement);
+                        var replacementResult = await AddReplacement(replacement);
 
                         if (!replacementResult) return null;
                     }
@@ -178,7 +178,7 @@ namespace Tpr.Chat.Core.Repositories
             }
         }
 
-        public async Task<bool> AddMemberReplacement(MemberReplacement replacement)
+        public async Task<bool> AddReplacement(MemberReplacement replacement)
         {
             try
             {
@@ -201,7 +201,7 @@ namespace Tpr.Chat.Core.Repositories
             }
         }
 
-        public async Task<bool> UpdateMemberReplacement(MemberReplacement replacement)
+        public async Task<bool> UpdateReplacement(MemberReplacement replacement)
         {
             try
             {

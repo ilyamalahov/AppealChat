@@ -27,97 +27,112 @@ namespace Tpr.Chat.Web.Hubs
         //
         //public Task SendDisconnectMessage(Guid appealId, string expertKey)
         //{
-            // Sender type
-            //var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
+        // Sender type
+        //var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
 
-            // Nick name
-            //var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
+        // Nick name
+        //var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
 
-            // 
-            //if (senderType == ContextType.Expert)
-            //{
-            //    // 
-            //    var chatSession = await chatRepository.GetChatSession(appealId);
+        // 
+        //if (senderType == ContextType.Expert)
+        //{
+        //    // 
+        //    var chatSession = await chatRepository.GetChatSession(appealId);
 
-            //    if (chatSession.CurrentExpertKey == null)
-            //    {
-            //        return;
-            //    }
+        //    if (chatSession.CurrentExpertKey == null)
+        //    {
+        //        return;
+        //    }
 
-            //    // 
-            //    if (expertKey != chatSession.CurrentExpertKey.ToString())
-            //    {
-            //        return;
-            //    }
-            //}
+        //    // 
+        //    if (expertKey != chatSession.CurrentExpertKey.ToString())
+        //    {
+        //        return;
+        //    }
+        //}
 
-            // Remove caller's connection ID
-            //connectionService.RemoveConnectionId(appealId, senderType);
+        // Remove caller's connection ID
+        //connectionService.RemoveConnectionId(appealId, senderType);
 
-            // Write message to database
-            //await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Leave);
+        // Write message to database
+        //await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Leave);
 
-            // Send "Leave" message to specified user clients 
-            //await Clients.User(Context.UserIdentifier).Leave(DateTime.Now, nickName);
+        // Send "Leave" message to specified user clients 
+        //await Clients.User(Context.UserIdentifier).Leave(DateTime.Now, nickName);
         //}
 
         //
         //public async Task SendConnectMessage(Guid appealId, string expertKey)
         //{
-            // Sender type
-            //var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
+        // Sender type
+        //var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
 
-            // Nick name
-            //var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
+        // Nick name
+        //var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
 
-            // Expert welcome message
-            //if (senderType == ContextType.Expert)
-            //{
-                // 
-                //var chatSession = await chatRepository.GetChatSession(appealId);
+        // Expert welcome message
+        //if (senderType == ContextType.Expert)
+        //{
+        // 
+        //var chatSession = await chatRepository.GetChatSession(appealId);
 
-                //if (chatSession.CurrentExpertKey == null)
-                //{
-                //    return;
-                //}
-
-                //// 
-                //if (expertKey != chatSession.CurrentExpertKey.ToString())
-                //{
-                //    return;
-                //}
-
-                //var welcomeResult = await SendWelcomeMessage(appealId, expertKey);
-
-                //if (welcomeResult != null) return;
-            //}
-
-            // Add connection ID to collection
-            //connectionService.AddConnectionId(appealId, Context.ConnectionId, senderType);
-
-            // Write message to database
-            //await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Joined);
-
-            // Check if appeal is online
-            //var isAppealOnline = connectionService.isOnline(appealId);
-
-            // Check if current expert is online
-            //var isExpertOnline = connectionService.isOnline(appealId, ContextType.Expert);
-
-            // Send "Join" message to specified user clients
-            //await Clients.User(Context.UserIdentifier).Join(DateTime.Now, nickName, isAppealOnline, isExpertOnline);
+        //if (chatSession.CurrentExpertKey == null)
+        //{
+        //    return;
         //}
 
+        //// 
+        //if (expertKey != chatSession.CurrentExpertKey.ToString())
+        //{
+        //    return;
+        //}
+
+        //var welcomeResult = await SendWelcomeMessage(appealId, expertKey);
+
+        //if (welcomeResult != null) return;
+        //}
+
+        // Add connection ID to collection
+        //connectionService.AddConnectionId(appealId, Context.ConnectionId, senderType);
+
+        // Write message to database
+        //await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Joined);
+
+        // Check if appeal is online
+        //var isAppealOnline = connectionService.isOnline(appealId);
+
+        // Check if current expert is online
+        //var isExpertOnline = connectionService.isOnline(appealId, ContextType.Expert);
+
+        // Send "Join" message to specified user clients
+        //await Clients.User(Context.UserIdentifier).Join(DateTime.Now, nickName, isAppealOnline, isExpertOnline);
+        //}
+
+        private async Task Join(Guid appealId, string expertKey = null)
+        {
+            // Sender type
+            var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
+
+            // Nick name
+            var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
+
+            // Write message to database
+            await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Joined);
+
+            // Send "Join" message to specified user clients
+            await Clients.User(appealId.ToString()).Join(DateTime.Now, nickName, false, false);
+        }
+
         //
-        public async Task SendMessage(string message)
+        public async Task SendMessage(Guid appealId, string message, string expertKey = null)
         {
             try
             {
-                // Appeal ID from JWT token
-                var appealId = Guid.Parse(Context.User.FindFirstValue(ClaimTypes.NameIdentifier));
+                //// Appeal ID from JWT token
+                //var appealId = Guid.Parse(Context.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-                // Expert key from JWT token
-                var expertKey = Context.User.FindFirstValue("expertkey");
+                //// Expert key from JWT token
+                //var expertKey = Context.User.FindFirstValue("expertkey");
 
                 // Sender type
                 var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;

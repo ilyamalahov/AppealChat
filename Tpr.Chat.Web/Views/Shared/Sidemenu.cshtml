@@ -1,4 +1,6 @@
-﻿<div id="sideMenu" class="overlay" style="display: none;">
+﻿@model SessionViewModel
+
+<div id="sideMenu" class="overlay" style="display: none;">
     <div class="sidemenu">
         <div class="sidemenu-header">
             <button id="closeSideButton" class="custom-button" style="margin: 10px;">
@@ -11,7 +13,7 @@
             <a href="~/files/manual.pdf" target="_blank" class="sidemenu-item"><div><img src="~/images/sidemenu/help.png" alt="Инструкция по работе с чатом" /><div>Инструкция по работе с чатом</div></div></a>
         </div>
         <div class="sidemenu-footer">
-            @if (ViewBag.IsActive)
+            @if (Model.IsActive)
             {
                 <a id="completeMobileButton" href="#" class="sidemenu-item">
                     <div>
