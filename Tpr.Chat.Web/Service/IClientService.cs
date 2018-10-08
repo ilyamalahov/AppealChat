@@ -11,6 +11,10 @@ namespace Tpr.Chat.Web.Service
         //bool Remove(Guid appealId);
         //string Get(Guid appealId);
 
+        ChatClient Get(Guid appealId, string expertKey = null);
+        bool AddOrUpdate(Guid appealId, string expertKey = null);
+        bool Remove(Guid appealId, string expertKey = null);
+
         Client GetClient(Guid appealId);
 
         bool AddExpert(Guid appealId, int expertKey);
