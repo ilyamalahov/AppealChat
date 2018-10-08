@@ -54,11 +54,15 @@ namespace Tpr.Chat.Web.Service
         }
     }
 
+    public class ChatClient
+    {
+        public List<Guid> AppealClientIds { get; set; }
+        public Dictionary<string, List<Guid>> ExpertClientIds { get; set; }
+    }
+
     public class ClientService : IClientService
     {
-        private readonly Dictionary<Guid, Client> clients = new Dictionary<Guid, Client>();
-
-        //private readonly Dictionary<Guid, string> clients = new Dictionary<Guid, string>();
+        private readonly ConcurrentDictionary<Guid, ChatClient> clients = new ConcurrentDictionary<Guid, ChatClient>();
 
         private readonly ILogger<ClientService> logger;
 
@@ -68,6 +72,26 @@ namespace Tpr.Chat.Web.Service
         }
 
         private ConcurrentDictionary<Guid, Client> concurrentClients = new ConcurrentDictionary<Guid, Client>();
+
+        public ChatClient Get(Guid appealId, string expertKey = null)
+        {
+            if(expertKey == null)
+            {
+                try
+                {
+                    if (appealId == null) throw new ArgumentNullException(nameof(appealId));
+
+                    return clients.GetOrAdd(appealId, appeal => new ChatClient());
+                }
+                catch (Exception exception)
+                {
+                    logger.LogError(exception, exception.Message);
+
+                    return null;
+                }
+            }
+            return null;
+        }
 
         public Client GetClient(Guid appealId)
         {
@@ -139,74 +163,6 @@ namespace Tpr.Chat.Web.Service
             client.AppealClientId = null;
 
             return true;
-        }
-
-        public bool Add(Guid appealId, string clientId)
-        {
-            try
-            {
-                if (appealId == null) throw new ArgumentNullException(nameof(appealId));
-
-                var client = Get(appealId);
-
-                if (client != null) throw new Exception("Client already exists");
-
-                lock (clients)
-                {
-                    //return clients.TryAdd(appealId, clientId);
-                }
-                return true;
-            }
-            catch (Exception exception)
-            {
-                logger.LogError(exception, exception.Message);
-
-                return false;
-            }
-        }
-
-        public string Get(Guid appealId)
-        {
-            try
-            {
-                if (appealId == null) throw new ArgumentNullException(nameof(appealId));
-
-                var clientResult = clients.TryGetValue(appealId, out var clientId);
-
-                if (!clientResult) throw new Exception("Client does not exists");
-
-                //return clientId;
-                return "";
-            }
-            catch (Exception exception)
-            {
-                logger.LogError(exception, exception.Message);
-
-                return null;
-            }
-        }
-
-        public bool Remove(Guid appealId)
-        {
-            try
-            {
-                if (appealId == null) throw new ArgumentNullException(nameof(appealId));
-
-                var client = Get(appealId);
-
-                if (client == null) throw new Exception("Client does not exists");
-
-                lock (clients)
-                {
-                    return clients.Remove(appealId);
-                }
-            }
-            catch (Exception exception)
-            {
-                logger.LogError(exception, exception.Message);
-
-                return false;
-            }
         }
     }
 }
