@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Tpr.Chat.Web.Service
+namespace Tpr.Chat.Web.Services
 {
     public enum ContextType
     {
@@ -59,11 +59,11 @@ namespace Tpr.Chat.Web.Service
         public ChatClient()
         {
             AppealClientIds = new ConcurrentBag<Guid>();
-            ExpertClientIds = new ConcurrentDictionary<string, ConcurrentBag<Guid>>();
+            ExpertClientIds = new ConcurrentBag<Guid>();
         }
 
         public ConcurrentBag<Guid> AppealClientIds { get; set; }
-        public ConcurrentDictionary<string, ConcurrentBag<Guid>> ExpertClientIds { get; set; }
+        public ConcurrentBag<Guid> ExpertClientIds { get; set; }
     }
 
     public class ClientService : IClientService
@@ -83,18 +83,11 @@ namespace Tpr.Chat.Web.Service
         {
             try
             {
+                // 
                 if (appealId == null) throw new ArgumentNullException(nameof(appealId));
 
-                var client = clients.GetOrAdd(appealId, key => new ChatClient());
-
-                if (expertKey == null)
-                {
-                    //client.AppealClientIds.
-                }
-                else
-                {
-
-                }
+                // 
+                return clients.GetOrAdd(appealId, key => new ChatClient());
             }
             catch (Exception exception)
             {
@@ -102,41 +95,36 @@ namespace Tpr.Chat.Web.Service
 
                 return null;
             }
-            //if(expertKey == null)
-            //{
-            //    try
-            //    {
-            //        
-
-            //        return clients.GetOrAdd(appealId, appeal => new ChatClient());
-            //    }
-            //    catch (Exception exception)
-            //    {
-            //        
-            //    }
-            //}
-            return null;
         }
 
-        public bool AddOrUpdate(Guid appealId, string expertKey = null)
+        public bool Add(Guid appealId, Guid clientId, string expertKey = null)
         {
+            // 
             var client = Get(appealId, expertKey);
 
+            if (client == null) return false;
+
+            // 
             if (expertKey == null)
             {
-                client.AppealClientIds.Add(Guid.NewGuid());
+                client.AppealClientIds.Add(clientId);
             }
             else
             {
-                //client.ExpertClientIds.Add(expertKey, )
+                client.ExpertClientIds.Add(clientId);
             }
 
-            return false;
+            return true;
         }
 
         public bool Remove(Guid appealId, string expertKey = null)
         {
-            throw new NotImplementedException();
+            // 
+            var client = Get(appealId, expertKey);
+
+            if (client == null) return false;
+
+            return true;
         }
 
         public Client GetClient(Guid appealId)

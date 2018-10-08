@@ -1,27 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 using Tpr.Chat.Core.Repositories;
 using Tpr.Chat.Web.Hubs;
-using Tpr.Chat.Web.Providers;
-using Tpr.Chat.Web.Service;
+using Tpr.Chat.Web.Services;
 
 namespace Tpr.Chat.Web
 {
@@ -50,7 +42,7 @@ namespace Tpr.Chat.Web
 
             // Client service
             services.AddSingleton<IClientService, ClientService>();
-            
+
             // Task service
             services.AddSingleton<ITaskService, TaskService>();
 
@@ -59,7 +51,7 @@ namespace Tpr.Chat.Web
 
             // Background task hosted service
             services.AddHostedService<QueuedHostedService>();
-            
+
             // SignalR
             services.AddSignalR();
 
@@ -179,7 +171,7 @@ namespace Tpr.Chat.Web
             app.UseMvc(routes =>
             {
                 routes.MapRoute("Home", "{appealId:guid}", new { controller = "Home", action = "Index" });
-                routes.MapRoute("Modal", "{controller}/{action}", new { controller = "Modal" });
+                routes.MapRoute("Modal", "{controller=Modal}/{action}");
             });
         }
     }

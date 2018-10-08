@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Tpr.Chat.Web.Service
+namespace Tpr.Chat.Web.Services
 {
     public interface IClientService
     {
@@ -12,7 +12,7 @@ namespace Tpr.Chat.Web.Service
         //string Get(Guid appealId);
 
         ChatClient Get(Guid appealId, string expertKey = null);
-        bool AddOrUpdate(Guid appealId, string expertKey = null);
+        bool Add(Guid appealId, string expertKey = null);
         bool Remove(Guid appealId, string expertKey = null);
 
         Client GetClient(Guid appealId);

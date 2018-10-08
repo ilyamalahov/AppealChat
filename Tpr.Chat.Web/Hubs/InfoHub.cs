@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Tpr.Chat.Core.Repositories;
-using Tpr.Chat.Web.Service;
+using Tpr.Chat.Web.Services;
 
 namespace Tpr.Chat.Web.Hubs
 {

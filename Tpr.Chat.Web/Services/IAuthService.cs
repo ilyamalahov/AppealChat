@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Claims;
 
-namespace Tpr.Chat.Web.Service
+namespace Tpr.Chat.Web.Services
 {
     public interface IAuthService
     {

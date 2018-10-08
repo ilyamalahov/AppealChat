@@ -15,7 +15,7 @@ using Tpr.Chat.Core.Models;
 using Tpr.Chat.Core.Repositories;
 using Tpr.Chat.Web.Hubs;
 using Tpr.Chat.Web.Models;
-using Tpr.Chat.Web.Service;
+using Tpr.Chat.Web.Services;
 using Microsoft.AspNetCore.Http;
 using System.Threading;
 using Microsoft.Extensions.Logging;
@@ -47,14 +47,21 @@ namespace Tpr.Chat.Web.Controllers
             this.logger = logger;
         }
 
-        public async Task<IActionResult> Index(Guid appealId, int key = 0, string secretKey = null)
+        public async Task<IActionResult> Index(Guid appealId, Guid? clientId = null, int? key = null, string secretKey = null)
         {
             // Check if chat session is exists
             var chatSession = await chatRepository.GetChatSession(appealId);
 
             if (chatSession == null)
             {
-                return BadRequest("Сессии по данному ID апеллянта не существует");
+                return BadRequest("Сессии по данному идентификатору апеллянта не существует");
+            }
+
+            if(clientId == null)
+            {
+                clientId = Guid.NewGuid();
+
+                return RedirectToAction("Index", new { clientId, key, secretKey });
             }
 
             //
@@ -136,6 +143,8 @@ namespace Tpr.Chat.Web.Controllers
                     sessionModel.IsActive = false;
                 }
 
+                sessionModel.ClientId = Guid.NewGuid();
+
                 var expertModel = new ExpertViewModel
                 {
                     SessionModel = sessionModel,
@@ -143,9 +152,6 @@ namespace Tpr.Chat.Web.Controllers
                     Messages = await chatRepository.GetChatMessages(appealId),
                     QuickReplies = await chatRepository.GetQuickReplies()
                 };
-
-                // 
-                //await chatContext.Clients.User(appealId.ToString()).OnlineStatus(true);
 
                 //
                 return View("Expert", expertModel);

@@ -15,7 +15,7 @@ namespace Tpr.Chat.Web.Hubs
 
         // Expert send methods
         Task InitializeChange(string messageText);
-        Task CompleteChange(int expertKey);
+        Task CompleteChange(int? expertKey);
 
         Task FirstJoinExpert(string expertKey);
         Task CompleteChat();
