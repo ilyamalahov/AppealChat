@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Tpr.Chat.Web.Service
+namespace Tpr.Chat.Web.Services
 {
     public interface ITaskService
     {

@@ -15,7 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Tpr.Chat.Core.Models;
 using Tpr.Chat.Core.Repositories;
 using Tpr.Chat.Web.Hubs;
-using Tpr.Chat.Web.Service;
+using Tpr.Chat.Web.Services;
 
 namespace Tpr.Chat.Web.Controllers
 {
@@ -154,15 +154,15 @@ namespace Tpr.Chat.Web.Controllers
 
         [Produces("application/json")]
         [HttpGet("token")]
-        public IActionResult Token(Guid appealId, Guid? clientId = null, string expertKey = null)
+        public IActionResult Token(Guid appealId, Guid clientId, string expertKey = null)
         {
             if (expertKey == null)
             {
-                var tokenSource = taskService.GetTokenSource(appealId);
+                var tokenSource = taskService.GetTokenSource(clientId);
 
                 tokenSource?.Cancel();
 
-                taskService.AddOrUpdate(appealId, async canceltoken => await LeaveFromChat(appealId, expertKey, canceltoken));
+                taskService.AddOrUpdate(clientId, async canceltoken => await LeaveFromChat(appealId, expertKey, canceltoken));
             }
 
             // JWT token configuration
@@ -204,16 +204,6 @@ namespace Tpr.Chat.Web.Controllers
             return Ok(accessToken);
         }
 
-        public IActionResult CreateClient(Guid appealId, Guid? clientId = null, string expertKey = null)
-        {
-            if(clientId == null)
-            {
-                clientId = null;
-            }
-
-            return Ok(clientId);
-        }
-
         private async Task LeaveFromChat(Guid appealId, string expertKey, CancellationToken token)
         {
             // Sender type
@@ -226,6 +216,8 @@ namespace Tpr.Chat.Web.Controllers
             {
                 await Task.Delay(TimeSpan.FromSeconds(30), token);
 
+                var client = clientService.Get(appealId, expertKey);
+
                 logger.LogWarning("Appeal {appealId} left", appealId);
 
                 // Write message to database
@@ -233,9 +225,6 @@ namespace Tpr.Chat.Web.Controllers
 
                 // 
                 await chatContext.Clients.User(appealId.ToString()).Leave(DateTime.Now, nickName);
-
-                // 
-                //await chatContext.Clients.User(appealId.ToString()).OnlineStatus(false);
             }
             catch (TaskCanceledException)
             {
@@ -246,44 +235,5 @@ namespace Tpr.Chat.Web.Controllers
                 logger.LogError(ex, ex.Message);
             }
         }
-
-        //public string CreateToken(Guid appealId, string expertKey = null)
-        //{
-        //    try
-        //    {
-        //        var jwtConfiguration = Configuration.GetSection("JWT");
-
-        //        var claims = new List<Claim>
-        //        {
-        //            new Claim(ClaimTypes.NameIdentifier, appealId.ToString())
-        //        };
-
-        //        // Expert
-        //        if (expertKey != null)
-        //        {
-        //            claims.Add(new Claim("expertkey", expertKey));
-        //        }
-
-        //        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration["SecretKey"]));
-
-        //        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-        //        var token = new JwtSecurityToken(
-        //            jwtConfiguration["Issuer"],
-        //            jwtConfiguration["Audience"],
-        //            claims,
-        //            expires: DateTime.UtcNow.AddSeconds(30),
-        //            signingCredentials: credentials
-        //        );
-
-        //        return new JwtSecurityTokenHandler().WriteToken(token);
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        Console.WriteLine(exception.Message);
-
-        //        return null;
-        //    }
-        //}
     }
 }

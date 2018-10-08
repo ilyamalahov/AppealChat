@@ -206,9 +206,7 @@ const onMessageTextInput = function (e) {
 };
 
 const connectToChat = () => {
-    chatConnection.send('Join', appealId);
-
-    setTimeout(() => refreshToken(appealId), tokenInterval);
+    chatConnection.send('Join').then(() => setTimeout(() => refreshToken(appealId), tokenInterval));
 };
 
 // Receive information response event
@@ -276,8 +274,9 @@ getJwtToken(appealId)
         // Start chat connection
         return chatConnection.start();
     })
-    .then(connectToChat)
-    .catch(error => console.error(error.toString()));
+    .then(() => chatConnection.invoke('Join'))
+    .then(() => setTimeout(() => refreshToken(appealId), tokenInterval))
+    .catch(error => alert(error.toString()));
 
 //
 $(document).on('click', '#okChangeButton, #okChangeMobileButton', () => { $('#modal').hideModal(); changeExpert(appealId); });

@@ -285,5 +285,6 @@ getJwtToken(appealId, expertKey)
         // Start chat connection
         return chatConnection.start();
     })
+    .then(() => chatConnection.invoke('Join'))
     .then(() => setTimeout(() => refreshToken(appealId), tokenInterval))
     .catch(error => { console.error(error.toString()); blockChat(); });

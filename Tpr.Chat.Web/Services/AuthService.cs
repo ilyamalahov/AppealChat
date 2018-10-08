@@ -9,7 +9,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tpr.Chat.Web.Service
+namespace Tpr.Chat.Web.Services
 {
     public class AuthService : IAuthService
     {
