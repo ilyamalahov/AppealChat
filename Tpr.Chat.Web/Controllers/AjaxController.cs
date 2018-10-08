@@ -154,7 +154,7 @@ namespace Tpr.Chat.Web.Controllers
 
         [Produces("application/json")]
         [HttpGet("token")]
-        public IActionResult Token(Guid appealId, string expertKey = null)
+        public IActionResult Token(Guid appealId, Guid? clientId = null, string expertKey = null)
         {
             if (expertKey == null)
             {
@@ -202,6 +202,16 @@ namespace Tpr.Chat.Web.Controllers
 
             // Response
             return Ok(accessToken);
+        }
+
+        public IActionResult CreateClient(Guid appealId, Guid? clientId = null, string expertKey = null)
+        {
+            if(clientId == null)
+            {
+                clientId = null;
+            }
+
+            return Ok(clientId);
         }
 
         private async Task LeaveFromChat(Guid appealId, string expertKey, CancellationToken token)

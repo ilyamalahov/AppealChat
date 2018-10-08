@@ -205,6 +205,12 @@ const onMessageTextInput = function (e) {
     $('#sendButton').prop('disabled', isDisabled);
 };
 
+const connectToChat = () => {
+    chatConnection.send('Join', appealId);
+
+    setTimeout(() => refreshToken(appealId), tokenInterval);
+};
+
 // Receive information response event
 infoConnection.on("ReceiveInfo", onReceiveInfo);
 
@@ -270,7 +276,7 @@ getJwtToken(appealId)
         // Start chat connection
         return chatConnection.start();
     })
-    .then(() => setTimeout(() => refreshToken(appealId), tokenInterval))
+    .then(connectToChat)
     .catch(error => console.error(error.toString()));
 
 //
