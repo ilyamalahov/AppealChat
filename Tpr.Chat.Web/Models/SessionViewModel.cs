@@ -16,7 +16,7 @@ namespace Tpr.Chat.Web.Models
         /// <summary>
         /// Unique identifier of client
         /// </summary>
-        public Guid ClientId { get; set; }
+        //public Guid ClientId { get; set; }
 
         /// <summary>
         /// Chat session object

@@ -10,15 +10,15 @@ namespace Tpr.Chat.Web.Services
 {
     public class CancellationTask
     {
-        public Guid Id { get; }
+        public Guid ClientId { get; }
 
         public CancellationTokenSource TokenSource { get; }
 
         public Func<CancellationToken, Task> TaskMethod { get; }
 
-        public CancellationTask(Func<CancellationToken, Task> taskMethod, CancellationTokenSource tokenSource)
+        public CancellationTask(Guid clientId, Func<CancellationToken, Task> taskMethod, CancellationTokenSource tokenSource)
         {
-            Id = Guid.NewGuid();
+            ClientId = clientId;
 
             TokenSource = tokenSource;
 
@@ -33,7 +33,7 @@ namespace Tpr.Chat.Web.Services
 
     public class TaskService : ITaskService
     {
-        private readonly ConcurrentDictionary<Guid, CancellationTokenSource> tokens = new ConcurrentDictionary<Guid, CancellationTokenSource>();
+        private readonly ConcurrentDictionary<Guid, CancellationTokenSource> tokenSources = new ConcurrentDictionary<Guid, CancellationTokenSource>();
 
         private readonly ILogger<TaskService> logger;
         private readonly IBackgroundTaskQueue taskQueue;
@@ -44,17 +44,23 @@ namespace Tpr.Chat.Web.Services
             this.taskQueue = taskQueue;
         }
 
-        public bool AddOrUpdate(Guid appealId, Func<CancellationToken, Task> method)
+        public bool Add(Guid clientId, Func<CancellationToken, Task> method)
         {
             try
             {
-                if (appealId == null) throw new ArgumentNullException(nameof(appealId));
-                
-                var tokenSource = tokens.AddOrUpdate(appealId, new CancellationTokenSource(), (key, current) => new CancellationTokenSource());
+                if (clientId == null) throw new ArgumentNullException(nameof(clientId));
 
-                if (tokenSource == null) return false;
+                // 
+                var tokenSource = new CancellationTokenSource();
 
-                taskQueue.Queue(new CancellationTask(method, tokenSource));
+                if(!tokenSources.TryAdd(clientId, tokenSource)) return false;
+
+                //var tokenSource = tokenSources.AddOrUpdate(clientId, new CancellationTokenSource(), (key, current) => new CancellationTokenSource());
+
+                //if (tokenSource == null) return false;
+
+                // 
+                taskQueue.Queue(new CancellationTask(clientId, method, tokenSource));
 
                 return true;
             }
@@ -66,13 +72,14 @@ namespace Tpr.Chat.Web.Services
             }
         }
 
-        public CancellationTokenSource GetTokenSource(Guid appealId)
+        public CancellationTokenSource GetTokenSource(Guid clientId)
         {
             try
             {
-                if (appealId == null) throw new ArgumentNullException(nameof(appealId));
-                
-                if (!tokens.TryGetValue(appealId, out var tokenSource)) return null;
+                if (clientId == null) throw new ArgumentNullException(nameof(clientId));
+
+                //return tokens.GetOrAdd(clientId, new CancellationTokenSource());
+                if (!tokenSources.TryGetValue(clientId, out var tokenSource)) return null;
 
                 return tokenSource;
             }
@@ -84,15 +91,24 @@ namespace Tpr.Chat.Web.Services
             }
         }
 
-        public bool RemoveByItem(CancellationTokenSource tokenSource)
+        public bool Remove(Guid clientId)
         {
-            var item = tokens.First(v => v.Value == tokenSource);
+            var sourceResult = tokenSources.TryRemove(clientId, out var tokenSource);
 
-            var sourceResult = tokens.TryRemove(item.Key, out var removedSource);
-
-            removedSource.Dispose();
+            tokenSource.Dispose();
 
             return sourceResult;
         }
+
+        //public bool RemoveByItem(CancellationTokenSource tokenSource)
+        //{
+        //    var item = tokens.First(v => v.Value == tokenSource);
+
+        //    var sourceResult = tokens.TryRemove(item.Key, out var removedSource);
+
+        //    removedSource.Dispose();
+
+        //    return sourceResult;
+        //}
     }
 }

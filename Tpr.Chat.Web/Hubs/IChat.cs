@@ -17,7 +17,7 @@ namespace Tpr.Chat.Web.Hubs
         Task InitializeChange(string messageText);
         Task CompleteChange(int? expertKey);
 
-        Task FirstJoinExpert(string expertKey);
+        Task FirstJoinExpert(int? expertKey, bool isAppealOnline, bool isExpertOnline);
         Task CompleteChat();
 
         Task OnlineStatus(bool isOnline);

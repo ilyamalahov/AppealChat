@@ -66,7 +66,7 @@ const changeStatus = (isOnline) => $('#onlineStatus').toggleClass('online', isOn
 
 // Send message
 const sendMessage = (message) => {
-    chatConnection.send('SendMessage', appealId, message, expertKey);
+    chatConnection.send('SendMessage', message);
 
     $('#messageText').val('').trigger('input');
 };
@@ -103,7 +103,9 @@ const onLeaveUser = (messageDate, nickName) => {
 };
 
 // First join expert to chat callback
-const onFirstJoinExpert = (expert) => {
+const onFirstJoinExpert = (expert, isAppealOnline, isExpertOnline) => {
+    changeStatus(isAppealOnline);
+
     const messageItem = firstJoinMessage(expert, true);
 
     $("#messagesList").append(messageItem).scrollTo(messageItem);
@@ -221,7 +223,7 @@ const onMessageTextInput = function (e) {
 };
 
 // Refresh access token
-const refreshToken = (appeal, expert) => getJwtToken(appeal, expert).then(token => { accessToken = token; setTimeout(() => refreshToken(appeal), tokenInterval); });
+const refreshToken = (appeal, client, expert) => getJwtToken(appeal, client, expert).then(token => { accessToken = token; setTimeout(() => refreshToken(appeal, client, expertKey), tokenInterval); });
 
 // Receive information event handler
 infoConnection.on("ReceiveInfo", onReceiveInfo);
@@ -253,7 +255,7 @@ $(document).ready(() => {
 infoConnection.start().then(updateInfo);
 
 // 
-getJwtToken(appealId, expertKey)
+getJwtToken(appealId, clientId, expertKey)
     .then(token => {
         accessToken = token;
 
@@ -286,5 +288,5 @@ getJwtToken(appealId, expertKey)
         return chatConnection.start();
     })
     .then(() => chatConnection.invoke('Join'))
-    .then(() => setTimeout(() => refreshToken(appealId), tokenInterval))
-    .catch(error => { console.error(error.toString()); blockChat(); });
+    .then(() => { $('#messagesList').scrollToLast(); setTimeout(() => refreshToken(appealId, clientId, expertKey), tokenInterval); })
+    .catch(error => { alert(error.toString()); blockChat(); });

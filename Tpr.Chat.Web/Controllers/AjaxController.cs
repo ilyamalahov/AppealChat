@@ -27,8 +27,7 @@ namespace Tpr.Chat.Web.Controllers
         private readonly IClientService clientService;
         private readonly ITaskService taskService;
         private readonly ILogger<AjaxController> logger;
-
-        public IConfiguration Configuration { get; }
+        private readonly IConfiguration configuration;
 
         public AjaxController(
             IConfiguration configuration,
@@ -42,10 +41,8 @@ namespace Tpr.Chat.Web.Controllers
             this.chatContext = chatContext;
             this.clientService = clientService;
             this.taskService = taskService;
-
             this.logger = logger;
-
-            Configuration = configuration;
+            this.configuration = configuration;
         }
 
         [HttpPost("change/expert")]
@@ -154,24 +151,41 @@ namespace Tpr.Chat.Web.Controllers
 
         [Produces("application/json")]
         [HttpGet("token")]
-        public IActionResult Token(Guid appealId, Guid clientId, string expertKey = null)
+        public async Task<IActionResult> Token(Guid appealId, int? expertKey, Guid clientId)
         {
-            if (expertKey == null)
+            // 
+            if (clientId == null) return BadRequest("Отсутствует уникальный идентификатор клиента");
+
+            //
+            var session = await chatRepository.GetChatSession(appealId);
+
+            if (session == null) return BadRequest("Сессия не найдена");
+
+            // Client type
+            var clientType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
+
+            // 
+            var isCurrentExpert = (clientType == ContextType.Expert && expertKey == session.CurrentExpertKey);
+
+            // 
+            if (clientType == ContextType.Appeal || isCurrentExpert)
             {
+                // 
                 var tokenSource = taskService.GetTokenSource(clientId);
 
                 tokenSource?.Cancel();
 
-                taskService.AddOrUpdate(clientId, async canceltoken => await LeaveFromChat(appealId, expertKey, canceltoken));
+                taskService.Add(clientId, async canceltoken => await LeaveFromChat(appealId, expertKey, clientId, canceltoken));
             }
 
             // JWT token configuration
-            var jwtConfiguration = Configuration.GetSection("JWT");
+            var jwtConfiguration = configuration.GetSection("JWT");
 
             // Token identifier (Appeal Id)
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, appealId.ToString())
+                new Claim(ClaimTypes.NameIdentifier, appealId.ToString()),
+                new Claim("clientid", clientId.ToString())
             };
 
             // Expert key
@@ -181,7 +195,7 @@ namespace Tpr.Chat.Web.Controllers
             }
 
             // Expiration time
-            var expiryInterval = jwtConfiguration.GetValue<TimeSpan>("Expires");
+            var expires = jwtConfiguration.GetValue<TimeSpan>("Expires");
 
             // Credentials
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration["SecretKey"]));
@@ -193,7 +207,7 @@ namespace Tpr.Chat.Web.Controllers
                 jwtConfiguration["Issuer"],
                 jwtConfiguration["Audience"],
                 claims,
-                expires: DateTime.UtcNow.Add(expiryInterval),
+                expires: DateTime.UtcNow.Add(expires),
                 signingCredentials: credentials
             );
 
@@ -204,36 +218,48 @@ namespace Tpr.Chat.Web.Controllers
             return Ok(accessToken);
         }
 
-        private async Task LeaveFromChat(Guid appealId, string expertKey, CancellationToken token)
+        private async Task LeaveFromChat(Guid appealId, int? expertKey, Guid clientId, CancellationToken token)
         {
-            // Sender type
-            var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
-
-            // Nick name
-            var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
-
             try
             {
                 await Task.Delay(TimeSpan.FromSeconds(30), token);
 
-                var client = clientService.Get(appealId, expertKey);
-
-                logger.LogWarning("Appeal {appealId} left", appealId);
-
-                // Write message to database
-                await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Leave);
+                // Client type
+                var clientType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
 
                 // 
-                await chatContext.Clients.User(appealId.ToString()).Leave(DateTime.Now, nickName);
+                var client = clientService.Get(appealId);
+
+                if (client == null) return;
+
+                if (!client.TryRemove(clientId, clientType)) return;
+
+                if (client.IsOnline(clientType)) return;
+
+                //logger.LogInformation("Appeal {appealId} left", appealId);
+
+                await SendDisconnectMessage(appealId, expertKey);
             }
             catch (TaskCanceledException)
             {
-                logger.LogInformation("{appealId}: {nickName} already online", appealId, nickName);
+                logger.LogWarning("Client {clientId} already online", clientId);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, ex.Message);
             }
+        }
+
+        private async Task SendDisconnectMessage(Guid appealId, int? expertKey)
+        {
+            // Nick name
+            var nickName = expertKey == null ? "Апеллянт" : "Член КК № " + expertKey;
+
+            // Write message to database
+            await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Leave);
+
+            // 
+            await chatContext.Clients.User(appealId.ToString()).Leave(DateTime.Now, nickName);
         }
     }
 }

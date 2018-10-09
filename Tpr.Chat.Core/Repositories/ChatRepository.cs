@@ -45,7 +45,7 @@ namespace Tpr.Chat.Core.Repositories
 
         #region Messages
 
-        public async Task<ChatMessage> GetWelcomeMessage(Guid appealId, string expertKey)
+        public async Task<ChatMessage> GetWelcomeMessage(Guid appealId, int? expertKey)
         {
             var nickname = "Член КК № " + expertKey;
             var messageType = (int)ChatMessageTypes.FirstExpert;

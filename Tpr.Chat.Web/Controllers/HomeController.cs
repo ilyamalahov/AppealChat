@@ -1,24 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Xml;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Tpr.Chat.Core.Models;
 using Tpr.Chat.Core.Repositories;
 using Tpr.Chat.Web.Hubs;
 using Tpr.Chat.Web.Models;
 using Tpr.Chat.Web.Services;
-using Microsoft.AspNetCore.Http;
-using System.Threading;
-using Microsoft.Extensions.Logging;
 
 namespace Tpr.Chat.Web.Controllers
 {
@@ -47,7 +38,7 @@ namespace Tpr.Chat.Web.Controllers
             this.logger = logger;
         }
 
-        public async Task<IActionResult> Index(Guid appealId, Guid? clientId = null, int? key = null, string secretKey = null)
+        public async Task<IActionResult> Index(Guid appealId, Guid? clientId, int? key, string secretKey)
         {
             // Check if chat session is exists
             var chatSession = await chatRepository.GetChatSession(appealId);
@@ -57,30 +48,21 @@ namespace Tpr.Chat.Web.Controllers
                 return BadRequest("Сессии по данному идентификатору апеллянта не существует");
             }
 
-            if(clientId == null)
-            {
-                clientId = Guid.NewGuid();
-
-                return RedirectToAction("Index", new { clientId, key, secretKey });
-            }
-
             //
             var isBefore = DateTime.Now < chatSession.StartTime;
 
             //
             var isAfter = DateTime.Now > chatSession.FinishTime;
-            
+
             // 
             var sessionModel = new SessionViewModel
             {
                 AppealId = appealId,
                 Session = chatSession,
                 IsAfter = isAfter,
-                IsBefore = isBefore
+                IsBefore = isBefore,
+                IsActive = !isBefore && !isAfter && !chatSession.IsEarlyCompleted
             };
-
-            // 
-            sessionModel.IsActive = !isBefore && !isAfter && !chatSession.IsEarlyCompleted;
 
             // Check if current date less than chat start time
             if (isBefore)
@@ -94,23 +76,34 @@ namespace Tpr.Chat.Web.Controllers
             // Expert checkings
             if (clientType == ContextType.Expert)
             {
-                // Member replacement check
-                var replacement = await chatRepository.GetReplacement(appealId);
-
-                if (replacement.OldMember == null && chatSession.CurrentExpertKey == null)
+                // 
+                if (clientId == null)
                 {
-                    chatSession.CurrentExpertKey = key;
+                    clientId = Guid.NewGuid();
 
-                    var sessionResult = await chatRepository.UpdateSession(chatSession);
-
-                    if (!sessionResult)
-                    {
-                        return BadRequest("Не удалось обновить запись бд");
-                    }
+                    return RedirectToRoute("Home", new { clientId, key, secretKey });
                 }
 
-                if (replacement.OldMember != null && replacement.NewMember == null)
+                // Get member replacement from database
+                var replacement = await chatRepository.GetReplacement(appealId);
+
+                if (replacement.OldMember == null)
                 {
+                    // Before expert replacement
+                    if (chatSession.CurrentExpertKey == null)
+                    {
+                        chatSession.CurrentExpertKey = key;
+
+                        if (!await chatRepository.UpdateSession(chatSession))
+                        {
+                            return BadRequest("Не удалось обновить запись бд");
+                        }
+                    }
+                }
+                else if (replacement.OldMember != key && replacement.NewMember == null)
+                {
+                    // After expert replacement
+                    
                     // 
                     replacement.NewMember = key;
                     replacement.ReplaceTime = DateTime.Now;
@@ -143,12 +136,11 @@ namespace Tpr.Chat.Web.Controllers
                     sessionModel.IsActive = false;
                 }
 
-                sessionModel.ClientId = Guid.NewGuid();
-
                 var expertModel = new ExpertViewModel
                 {
                     SessionModel = sessionModel,
                     ExpertKey = key,
+                    ClientId = clientId,
                     Messages = await chatRepository.GetChatMessages(appealId),
                     QuickReplies = await chatRepository.GetQuickReplies()
                 };
@@ -165,14 +157,12 @@ namespace Tpr.Chat.Web.Controllers
                 }
 
                 // 
-                //var client = clientService.GetClient(appealId);
+                if (clientId == null)
+                {
+                    clientId = Guid.NewGuid();
 
-                //if (client.AppealClientId != null) return BadRequest("Пользователь уже существует");
-
-                //clientService.AddAppeal(appealId, Guid.NewGuid());
-
-                //
-                //await SendConnectMessage(appealId);
+                    return RedirectToRoute("Home", new { clientId, key, secretKey });
+                }
 
                 // Member replacement check
                 var replacement = await chatRepository.GetReplacement(appealId);
@@ -183,47 +173,14 @@ namespace Tpr.Chat.Web.Controllers
                 {
                     SessionModel = sessionModel,
                     Messages = await chatRepository.GetChatMessages(appealId),
-                    IsWaiting = isWaiting
+                    IsWaiting = isWaiting,
+                    ClientId = clientId
                 };
 
                 return View("Appeal", appealModel);
             }
 
             return BadRequest();
-        }
-
-        private async Task SendConnectMessage(Guid appealId, string expertKey = null)
-        {
-            // Sender type
-            var senderType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
-
-            // Nick name
-            var nickName = senderType == ContextType.Appeal ? "Апеллянт" : "Член КК № " + expertKey;
-
-            // Write message to database
-            await chatRepository.WriteChatMessage(appealId, nickName, null, ChatMessageTypes.Joined);
-
-            // Send "Join" message to specified user clients
-            await chatContext.Clients.User(appealId.ToString()).Join(DateTime.Now, nickName, false, false);
-        }
-
-        public async Task<ChatMessage> SendWelcomeMessage(Guid appealId, string expertKey)
-        {
-            //
-            var welcomeMessage = await chatRepository.GetWelcomeMessage(appealId, expertKey);
-
-            if (welcomeMessage != null) { return null; }
-
-            //
-            var expertNickname = "Член КК № " + expertKey;
-
-            // 
-            await chatRepository.WriteChatMessage(appealId, expertNickname, null, ChatMessageTypes.FirstExpert);
-
-            // 
-            await chatContext.Clients.User(appealId.ToString()).FirstJoinExpert(expertKey);
-
-            return welcomeMessage;
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

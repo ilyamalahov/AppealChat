@@ -13,5 +13,7 @@ namespace Tpr.Chat.Web.Models
         public IEnumerable<ChatMessage> Messages { get; set; }
 
         public bool IsWaiting { get; set; }
+
+        public Guid? ClientId { get; set; }
     }
 }
