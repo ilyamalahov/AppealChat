@@ -20,12 +20,12 @@
 //};
 
 // Get JWT Bearer access token
-const getJwtToken = (appeal, expert) => {
+const getJwtToken = (appeal, client, expert) => {
     return new Promise((resolve, reject) => {
         $.ajax({
             method: 'get',
             url: 'ajax/token',
-            data: { appealId: appeal, expertKey: expert },
+            data: { appealId: appeal, expertKey: expert, clientId: client },
             beforeSend: () => console.info('Request new access token'),
             success: resolve,
             error: reject
@@ -170,6 +170,15 @@ jQuery.fn.expandRows = function (textarea) {
 
     return this;
 };
+
+// 
+jQuery.fn.scrollToLast = function () {
+    const lastItem = $(this).children(':last-child');
+
+    $(this).scrollTo(lastItem);
+
+    return this;
+}
 
 // Show modal window
 jQuery.fn.showModal = function (url, data) {

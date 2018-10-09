@@ -10,18 +10,16 @@ namespace Tpr.Chat.Web.Services
 {
     public class QueuedHostedService : BackgroundService
     {
+        private readonly IBackgroundTaskQueue taskQueue;
         private readonly ILogger logger;
         private readonly ITaskService taskService;
 
         public QueuedHostedService(IBackgroundTaskQueue taskQueue, ITaskService taskService, ILogger<QueuedHostedService> logger)
         {
-            TaskQueue = taskQueue;
-
+            this.taskQueue = taskQueue;
             this.logger = logger;
             this.taskService = taskService;
         }
-
-        public IBackgroundTaskQueue TaskQueue { get; }
 
         protected async override Task ExecuteAsync(CancellationToken cancellationToken)
         {
@@ -29,17 +27,13 @@ namespace Tpr.Chat.Web.Services
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                var cancellationTask = await TaskQueue.DequeueAsync(cancellationToken);
-
-                var tokenSource = cancellationTask?.TokenSource;
+                var task = await taskQueue.DequeueAsync(cancellationToken);
 
                 try
                 {
-                    if (tokenSource == null) throw new NullReferenceException();
-
-                    using (var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, tokenSource.Token))
+                    using (var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, task.TokenSource.Token))
                     {
-                        await cancellationTask.TaskMethod(linkedSource.Token);
+                        await task.TaskMethod(linkedSource.Token);
                     }
                 }
                 //catch(OperationCanceledException exception)
@@ -48,13 +42,13 @@ namespace Tpr.Chat.Web.Services
                 //}
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, $"Error occurred executing {nameof(cancellationTask.TaskMethod)}.");
+                    logger.LogError(ex, $"Error occurred executing {nameof(task.TaskMethod)}.");
                 }
                 finally
                 {
-                    if(taskService.RemoveByItem(tokenSource))
+                    if (!taskService.Remove(task.ClientId))
                     {
-                        logger.LogWarning("Cancellation token source removed");
+                        logger.LogError("Error occurred removing task row");
                     }
                 }
             }

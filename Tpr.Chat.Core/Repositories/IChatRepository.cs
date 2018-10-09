@@ -13,7 +13,7 @@ namespace Tpr.Chat.Core.Repositories
 
         // Messages
         Task<IEnumerable<ChatMessage>> GetChatMessages(Guid appealId);
-        Task<ChatMessage> GetWelcomeMessage(Guid appealId, string expertKey);
+        Task<ChatMessage> GetWelcomeMessage(Guid appealId, int? expertKey);
         
         Task<bool> WriteChatMessage(Guid appealId, string nickName, string messageString, ChatMessageTypes messageType);
         Task<bool> WriteChatMessage(ChatMessage message);

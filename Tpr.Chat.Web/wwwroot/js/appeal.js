@@ -54,7 +54,9 @@ const onLeaveUser = (messageDate, nickName) => {
     $("#messagesList").append(messageItem).scrollTo(messageItem);
 };
 
-const onFirstJoinExpert = (expertKey) => {
+const onFirstJoinExpert = (expertKey, isAppealOnline, isExpertOnline) => {
+    changeStatus(isExpertOnline);
+
     // Expert text
     const expertText = '№' + expertKey;
 
@@ -75,7 +77,7 @@ const onInitializeChange = (messageText) => {
 
 // 
 const onCompleteChange = (expertKey) => {
-    refreshToken(appealId);
+    //refreshToken(appealId);
 
     waitChange(false);
 };
@@ -115,22 +117,17 @@ const onReceiveInfo = (currentDate, remainingTime, isAlarm, isFinished) => {
 
 // Send message
 const sendMessage = (message) => {
-    chatConnection.send('SendMessage', appealId, message);
+    chatConnection.send('SendMessage', message);
 
     // 
     $('#messageText').val('').trigger('input');
 };
 
-// 
-const scrollToLast = function () {
-    const targetHeight = $(this).height();
+const onWindowResize = (e) => {
+    const targetHeight = $(e.target).height();
 
-    if (targetHeight !== originalHeight) {
-        const lastItem = $('#messagesList').children(':last-child');
-
-        $('#messagesList').scrollTo(lastItem);
-    }
-};
+    if (targetHeight !== originalHeight) { $('#messagesList').scrollToLast(); }
+}
 
 // 
 const changeStatus = (isOnline) => $('#onlineStatus').toggleClass('online', isOnline);
@@ -170,10 +167,14 @@ const completeChat = (appeal) => {
 // 
 const waitChange = (isWait) => {
     if (isWait) {
+        infoConnection.stop();
+
         $('#messageForm').hide();
 
         $('#modal').showModal('modal/waitchange');
     } else {
+        infoConnection.start().then(updateInfo);
+
         $('#messageForm').show();
 
         $('#modal').hideModal();
@@ -184,7 +185,7 @@ const waitChange = (isWait) => {
 const updateInfo = () => infoConnection.send("MainUpdate", appealId);
 
 // Refresh access token
-const refreshToken = (appeal) => getJwtToken(appeal).then(token => { accessToken = token; setTimeout(() => refreshToken(appeal), tokenInterval); });
+const refreshToken = (appeal, client) => getJwtToken(appeal, client).then(token => { accessToken = token; setTimeout(() => refreshToken(appeal, client), tokenInterval); });
 
 // 
 const onMessageTextKeyup = function (e) {
@@ -212,7 +213,8 @@ const connectToChat = () => {
 // Receive information response event
 infoConnection.on("ReceiveInfo", onReceiveInfo);
 
-$(window).on('resize', scrollToLast);
+// 
+$(window).on('resize', onWindowResize);
 
 // Document ready event
 $(document).ready(() => {
@@ -238,11 +240,8 @@ $(document).ready(() => {
     waitChange(isWaiting);
 });
 
-// Start info connection
-infoConnection.start().then(updateInfo);
-
 // Chat connection
-getJwtToken(appealId)
+getJwtToken(appealId, clientId)
     .then(token => {
         accessToken = token;
 
@@ -275,7 +274,7 @@ getJwtToken(appealId)
         return chatConnection.start();
     })
     .then(() => chatConnection.invoke('Join'))
-    .then(() => setTimeout(() => refreshToken(appealId), tokenInterval))
+    .then(() => { $('#messagesList').scrollToLast(); setTimeout(() => refreshToken(appealId, clientId), tokenInterval); })
     .catch(error => alert(error.toString()));
 
 //
