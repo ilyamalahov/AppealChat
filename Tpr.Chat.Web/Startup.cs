@@ -53,7 +53,7 @@ namespace Tpr.Chat.Web
             services.AddHostedService<QueuedHostedService>();
 
             // SignalR
-            services.AddSignalR();
+            services.AddSignalR(options => options.EnableDetailedErrors = true);
 
             // CORS (Cross-Origin Request Sharing)
             services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
@@ -171,7 +171,8 @@ namespace Tpr.Chat.Web
             app.UseMvc(routes =>
             {
                 routes.MapRoute("Home", "{appealId:guid}", new { controller = "Home", action = "Index" });
-                routes.MapRoute("Modal", "{controller=Modal}/{action}");
+                routes.MapRoute("Modal", "modal/{action}", new { controller = "Modal" });
+                routes.MapRoute("Ajax", "ajax/{action}", new { controller = "Ajax" });
             });
         }
     }

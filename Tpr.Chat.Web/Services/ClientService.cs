@@ -117,45 +117,26 @@ namespace Tpr.Chat.Web.Services
             return clientCount > 0;
         }
 
-        //public bool IsExists(Guid clientId, ContextType clientType)
-        //{
-        //    try
-        //    {
-        //        if (clientId == null) throw new ArgumentNullException(nameof(clientId));
-
-        //        switch (clientType)
-        //        {
-        //            case ContextType.Appeal:
-        //                return appealClientIds.Contains(clientId);
-        //            case ContextType.Expert:
-        //                return expertClientIds.Contains(clientId);
-        //        }
-
-        //        return false;
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        logger.LogError(exception, exception.Message);
-
-        //        return false;
-        //    }
-        //}
-
-        public bool IsExistsExcept(Guid clientId, ContextType clientType)
+        public bool IsExistsExcept(Guid? clientId, ContextType clientType)
         {
+            List<Guid> tempClientIds = null;
+
             try
             {
+                // 
                 if (clientId == null) throw new ArgumentNullException(nameof(clientId));
 
                 switch (clientType)
                 {
                     case ContextType.Appeal:
-                        return appealClientIds.Count(value => value != clientId) > 0;
+                        tempClientIds = appealClientIds;
+                        break;
                     case ContextType.Expert:
-                        return expertClientIds.Count(value => value != clientId) > 0;
+                        tempClientIds = expertClientIds;
+                        break;
                 }
 
-                return false;
+                return tempClientIds.Any(value => value != clientId);
             }
             catch (Exception exception)
             {
@@ -193,18 +174,6 @@ namespace Tpr.Chat.Web.Services
 
                 return null;
             }
-        }
-
-        public bool Remove(Guid appealId, int? expertKey)
-        {
-            // 
-            var client = Get(appealId);
-
-            if (client == null) return false;
-
-
-
-            return true;
         }
 
         public bool RemoveItem(Guid appealId, int? expertKey, Guid clientId)

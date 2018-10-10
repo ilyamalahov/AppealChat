@@ -156,18 +156,18 @@ namespace Tpr.Chat.Core.Repositories
 
                     var sql = "SELECT * FROM dbo.MemberReplacements WHERE AppealId = @appealId";
 
-                    var replacement = await connection.QuerySingleOrDefaultAsync<MemberReplacement>(sql, new { appealId });
+                    return await connection.QuerySingleOrDefaultAsync<MemberReplacement>(sql, new { appealId });
 
-                    if(replacement == null)
-                    {
-                        replacement = new MemberReplacement { AppealId = appealId };
+                    //if(replacement == null)
+                    //{
+                    //    replacement = new MemberReplacement { AppealId = appealId };
 
-                        var replacementResult = await AddReplacement(replacement);
+                    //    var replacementResult = await AddReplacement(replacement);
 
-                        if (!replacementResult) return null;
-                    }
+                    //    if (!replacementResult) return null;
+                    //}
 
-                    return replacement;
+                    //return replacement;
                 }
             }
             catch (Exception exception)
@@ -209,6 +209,27 @@ namespace Tpr.Chat.Core.Repositories
 
                     return await connection.UpdateAsync(replacement);
                 }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
+
+                return false;
+            }
+        }
+
+        public async Task<bool> AddReplacement(Guid appeaId, int oldMember)
+        {
+            try
+            {
+                var replacement = new MemberReplacement
+                {
+                    AppealId = appeaId,
+                    OldMember = oldMember,
+                    RequestTime = DateTime.Now
+                };
+
+                return await AddReplacement(replacement);
             }
             catch (Exception exception)
             {

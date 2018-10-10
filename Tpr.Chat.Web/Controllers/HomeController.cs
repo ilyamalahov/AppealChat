@@ -65,7 +65,7 @@ namespace Tpr.Chat.Web.Controllers
                 IsAfter = isAfter,
                 IsBefore = isBefore,
                 IsActive = !isBefore && !isAfter && !chatSession.IsEarlyCompleted,
-                IsReplaced = replacement.OldMember != null && replacement.NewMember != null
+                IsReplaced = replacement?.OldMember != null && replacement?.NewMember != null
             };
 
             // Check if current date less than chat start time
@@ -80,15 +80,7 @@ namespace Tpr.Chat.Web.Controllers
             // Expert checkings
             if (clientType == ContextType.Expert)
             {
-                // 
-                if (clientId == null)
-                {
-                    clientId = Guid.NewGuid();
-
-                    return RedirectToRoute("Home", new { clientId, key, secretKey });
-                }
-
-                if (replacement.OldMember == null)
+                if (replacement?.OldMember == null)
                 {
                     // Before expert replacement
                     if (chatSession.CurrentExpertKey == null)
@@ -108,23 +100,21 @@ namespace Tpr.Chat.Web.Controllers
                     // 
                     replacement.NewMember = key;
                     replacement.ReplaceTime = DateTime.Now;
-
-                    var replacementResult = await chatRepository.UpdateReplacement(replacement);
-
-                    if (!replacementResult)
+                    
+                    // Update member replacement
+                    if (!await chatRepository.UpdateReplacement(replacement))
                     {
                         return BadRequest("Не удалось обновить запись бд");
                     }
 
                     // 
-                    var waitTime = replacement.ReplaceTime.Value.Subtract(replacement.RequestTime.Value);
+                    var waitingTime = replacement.ReplaceTime.Value.Subtract(replacement.RequestTime.Value);
 
-                    chatSession.FinishTime = chatSession.FinishTime.Add(waitTime);
+                    chatSession.FinishTime = chatSession.FinishTime.Add(waitingTime);
                     chatSession.CurrentExpertKey = key;
-
-                    var sessionResult = await chatRepository.UpdateSession(chatSession);
-
-                    if (!sessionResult)
+                    
+                    // Update session
+                    if (!await chatRepository.UpdateSession(chatSession))
                     {
                         return BadRequest("Не удалось обновить запись бд");
                     }
@@ -156,16 +146,8 @@ namespace Tpr.Chat.Web.Controllers
                 {
                     return View("After", sessionModel);
                 }
-
-                // 
-                if (clientId == null)
-                {
-                    clientId = Guid.NewGuid();
-
-                    return RedirectToRoute("Home", new { clientId, key, secretKey });
-                }
                 
-                var isWaiting = replacement.OldMember != null && replacement.NewMember == null;
+                var isWaiting = replacement?.OldMember != null && replacement?.NewMember == null;
 
                 var appealModel = new AppealViewModel
                 {
