@@ -72,14 +72,9 @@
         vertical-align: middle;
     }
 
-    .webcast-text {
+    .webcast-link {
         margin-bottom: 10px;
         color: #000;
-    }
-
-    .webcast-link {
-        color: #3487dc;
-        text-decoration: underline;
     }
 
     .webcast-button {
@@ -101,7 +96,7 @@
         }
 
     @@media screen and (max-width: 767px) {
-        .webcast-text {
+        .webcast-link {
             display: none;
         }
     }
@@ -142,9 +137,7 @@
                         <div class="item-title">Запланированное время рассмотрения Вашей аппеляции</div>
                         <div class="item-content"><img src="~/images/after/clock.svg" alt="Время" /><b>@Model.Session.CommissionStartTime.ToShortTimeString() - @Model.Session.CommissionFinishTime.ToShortTimeString()</b></div>
                     </div>
-                    <div class="webcast-text">Онлайн трансляцию заседания конфликтной комиссии Вы сможете посмотреть, перейдя по 
-                    <a class="webcast-link" href="@Model.Session.CommissionLink">данной ссылке</a>
-                    </div>
+                    <div class="webcast-link">Онлайн трансляцию заседания конфликтной комиссии Вы сможете посмотреть, перейдя по <a href="@Model.Session.CommissionLink">данной ссылке</a></div>
 
                     <div>По итогам рассмотрения аппеляции Вам будет направлено Решение конфликтной комисии, ознакомиться с которым Вы сможете в личном кабинете на Портале.</div>
                 </div>
