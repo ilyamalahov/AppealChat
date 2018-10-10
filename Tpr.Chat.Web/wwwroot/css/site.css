@@ -215,7 +215,7 @@ a {
     .header .title {
         flex: auto;
         padding: 10px;
-        font-size: 20px;
+        font-size: 23px;
         font-weight: bold;
         color: #3387dd;
         line-height: 1;
@@ -230,8 +230,10 @@ a {
     }
 
         .header .moscow-time img {
-            height: 25px;
+            height: 30px;
             vertical-align: middle;
+            margin-right: 5px;
+            margin-bottom: 7px;
         }
 
 .moscow-time {
@@ -242,11 +244,11 @@ a {
 .moscow-value {
     color: #000;
     font-weight: bold;
-    font-size: 22px;
+    font-size: 24px;
 }
 
 .moscow-caption {
-    font-size: 12px;
+    font-size: 13px;
     color: #8c8c8c;
 }
 
@@ -390,9 +392,13 @@ a {
     top: 100px;
     bottom: 10px;
     /*left: 370px;*/
-    width: 400px;
-    max-height: 660px;
-    background: #2b7bde;
+    width: 475px;
+    max-height: 630px;
+    /* background: #2b7bde;*/
+    background-image: url(/images/sidebar/sidebar-background.png);
+    background-repeat: no-repeat;
+    background-clip: border-box;
+    background-size: cover;
     color: #fff;
     border-radius: 5px;
     z-index: 1;
@@ -406,7 +412,7 @@ a {
         transform: rotate(45deg);
         border-bottom: inherit;
         border-right: inherit;
-        background: inherit;
+        background: #007DE4;
     }
 
     /*.contacts-tooltip::before {
@@ -425,6 +431,7 @@ a {
     .contacts-tooltip .tooltip-header {
         text-align: right;
         padding: 5px;
+
     }
 
     .contacts-tooltip .tooltip-content {
@@ -460,11 +467,23 @@ a {
         height: 20px;
         vertical-align: middle;
         margin-right: 10px;
+        margin-left: 5px;
+        margin-right: 5px;
     }
 
 .contact-title {
     margin-bottom: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
 }
+
+.contact-text {
+   
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 10px;
+}
+
 
 .arrow-chevron {
     width: 15px;
