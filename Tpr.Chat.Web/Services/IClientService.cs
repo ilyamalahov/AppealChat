@@ -12,10 +12,10 @@ namespace Tpr.Chat.Web.Services
         //string Get(Guid appealId);
 
         ChatClient Get(Guid appealId);
-        IEnumerable<Guid> GetClients(Guid appealId, int? expertKey);
+        //IEnumerable<Guid> GetClients(Guid appealId, int? expertKey);
 
-        bool AddItem(Guid appealId, int? expertKey, Guid clientId);
-        bool Remove(Guid appealId, int? expertKey);
+        //bool AddItem(Guid appealId, int? expertKey, Guid clientId);
+        //bool Remove(Guid appealId, int? expertKey);
 
         //Client GetClient(Guid appealId);
 
@@ -25,6 +25,6 @@ namespace Tpr.Chat.Web.Services
         //bool RemoveExpert(Guid appealId, int expertKey);
         //bool RemoveAppeal(Guid appealId);
 
-        bool RemoveItem(Guid appealId, int? expertKey, Guid clientId);
+        //bool RemoveItem(Guid appealId, int? expertKey, Guid clientId);
     }
 }

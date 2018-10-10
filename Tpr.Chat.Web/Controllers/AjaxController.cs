@@ -19,7 +19,6 @@ using Tpr.Chat.Web.Services;
 
 namespace Tpr.Chat.Web.Controllers
 {
-    [Route("ajax")]
     public class AjaxController : Controller
     {
         private readonly IChatRepository chatRepository;
@@ -45,41 +44,31 @@ namespace Tpr.Chat.Web.Controllers
             this.configuration = configuration;
         }
 
-        [HttpPost("change/expert")]
-        public async Task<IActionResult> ChangeExpert(Guid appealId)
+        //[HttpPost("change")]
+        [HttpPost]
+        public async Task<IActionResult> Change(Guid appealId)
         {
             // Member replacement
             var replacement = await chatRepository.GetReplacement(appealId);
 
-            if (replacement.OldMember != null)
+            if (replacement?.OldMember != null)
             {
                 return BadRequest("Замена консультанта уже была произведена");
             }
 
             // Chat session
             var chatSession = await chatRepository.GetChatSession(appealId);
-
-            if (chatSession == null)
-            {
-                return BadRequest("Сессия для данного апеллянта не найдена");
-            }
-
-            // Current expert
-            if (chatSession.CurrentExpertKey == null)
+            
+            if (chatSession?.CurrentExpertKey == null)
             {
                 return BadRequest("Консультант еще не подключился к чату");
             }
 
             // 
             var oldExpertKey = chatSession.CurrentExpertKey.Value;
-
-            replacement.OldMember = oldExpertKey;
-            replacement.RequestTime = DateTime.Now;
-
-            // Update member replacement
-            var replacementResult = await chatRepository.UpdateReplacement(replacement);
-
-            if (!replacementResult)
+            
+            // Add member replacement
+            if (!await chatRepository.AddReplacement(appealId, oldExpertKey))
             {
                 return BadRequest("Не удалось вставить запись в таблицу");
             }
@@ -87,15 +76,17 @@ namespace Tpr.Chat.Web.Controllers
             //
             chatSession.CurrentExpertKey = null;
 
-            var sessionResult = await chatRepository.UpdateSession(chatSession);
-
-
+            if(!await chatRepository.UpdateSession(chatSession))
+            {
+                return BadRequest("Не удалось обновить таблицу");
+            }
 
             // 
             var nickname = "Член КК № " + oldExpertKey;
 
             var messageText = "Произведена замена члена КК № " + oldExpertKey;
 
+            // 
             var messageResult = await chatRepository.WriteChatMessage(appealId, nickname, messageText, ChatMessageTypes.ChangeExpert);
 
             if (!messageResult)
@@ -105,12 +96,13 @@ namespace Tpr.Chat.Web.Controllers
 
             await chatContext.Clients.User(appealId.ToString()).InitializeChange(messageText);
 
-            // Return Success result to client
+            // Return success response
             return Ok();
         }
 
-        [HttpPost("chat/complete")]
-        public async Task<IActionResult> CompleteChat(Guid appealId)
+        //[HttpPost("complete")]
+        [HttpPost]
+        public async Task<IActionResult> Complete(Guid appealId)
         {
             // Chat session
             var chatSession = await chatRepository.GetChatSession(appealId);
@@ -122,53 +114,71 @@ namespace Tpr.Chat.Web.Controllers
 
             //
             chatSession.IsEarlyCompleted = true;
-
             chatSession.EarlyCompleteTime = DateTime.Now;
 
             // Update session record
-            var sessionResult = await chatRepository.UpdateSession(chatSession);
-
-            if (!sessionResult)
+            if (!await chatRepository.UpdateSession(chatSession))
             {
-                return BadRequest("Не удалось добавить запись таблицы 'Сессия'");
+                return BadRequest("Не удалось добавить запись в таблицу");
             }
 
             // Add message
             var nickname = "Аппелянт";
 
-            bool messageResult = await chatRepository.WriteChatMessage(appealId, nickname, "", ChatMessageTypes.EarlyComplete);
+            // 
+            bool messageResult = await chatRepository.WriteChatMessage(appealId, nickname, null, ChatMessageTypes.EarlyComplete);
 
-            if (!sessionResult)
+            if (!messageResult)
             {
-                return BadRequest("Не удалось добавить запись в таблицу 'Сообщения'");
+                return BadRequest("Не удалось добавить запись в таблицу");
             }
 
             await chatContext.Clients.User(appealId.ToString()).CompleteChat();
 
-            // Return Success result to client
+            // Return success response
             return Ok();
         }
 
-        [Produces("application/json")]
-        [HttpGet("token")]
+        [HttpGet]
+        public IActionResult Client(Guid appealId, int? expertKey, Guid? clientId)
+        {
+            // 
+            if (clientId == null)
+            {
+                clientId = Guid.NewGuid();
+            }
+
+            // 
+            var client = clientService.Get(appealId);
+
+            // 
+            var isExistsExcept = client.IsExistsExcept(clientId, ContextType.Appeal);
+
+            if (expertKey == null && isExistsExcept)
+            {
+                return BadRequest("Пользователь все еще онлайн");
+            }
+
+            return Ok(clientId);
+        }
+        
+        [HttpGet]
         public async Task<IActionResult> Token(Guid appealId, int? expertKey, Guid clientId)
         {
             // 
-            if (clientId == null) return BadRequest("Отсутствует уникальный идентификатор клиента");
+            if (clientId == null)
+            {
+                return BadRequest("Отсутствует уникальный идентификатор клиента");
+            }
 
             //
-            var session = await chatRepository.GetChatSession(appealId);
+            var chatSession = await chatRepository.GetChatSession(appealId);
 
-            if (session == null) return BadRequest("Сессия не найдена");
-
-            // Client type
-            var clientType = expertKey == null ? ContextType.Appeal : ContextType.Expert;
+            // Is current expert?
+            var isCurrentExpert = expertKey != null && expertKey == chatSession?.CurrentExpertKey;
 
             // 
-            var isCurrentExpert = (clientType == ContextType.Expert && expertKey == session.CurrentExpertKey);
-
-            // 
-            if (clientType == ContextType.Appeal || isCurrentExpert)
+            if (expertKey == null || isCurrentExpert)
             {
                 // 
                 var tokenSource = taskService.GetTokenSource(clientId);
@@ -181,7 +191,7 @@ namespace Tpr.Chat.Web.Controllers
             // JWT token configuration
             var jwtConfiguration = configuration.GetSection("JWT");
 
-            // Token identifier (Appeal Id)
+            // Token identifier
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, appealId.ToString()),
@@ -214,7 +224,7 @@ namespace Tpr.Chat.Web.Controllers
             // Token string
             var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
 
-            // Response
+            // Return success response with access token
             return Ok(accessToken);
         }
 
@@ -229,20 +239,19 @@ namespace Tpr.Chat.Web.Controllers
 
                 // 
                 var client = clientService.Get(appealId);
-
-                if (client == null) return;
-
+                
                 if (!client.TryRemove(clientId, clientType)) return;
 
-                if (client.IsOnline(clientType)) return;
+                if (!client.IsOnline(clientType))
+                {
+                    logger.LogInformation("Appeal {appealId} left chat", appealId);
 
-                //logger.LogInformation("Appeal {appealId} left", appealId);
-
-                await SendDisconnectMessage(appealId, expertKey);
+                    await SendDisconnectMessage(appealId, expertKey);
+                }
             }
             catch (TaskCanceledException)
             {
-                logger.LogWarning("Client {clientId} already online", clientId);
+                logger.LogInformation("Client {clientId} already online", clientId);
             }
             catch (Exception ex)
             {

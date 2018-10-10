@@ -135,8 +135,8 @@ const changeStatus = (isOnline) => $('#onlineStatus').toggleClass('online', isOn
 // Change expert functionality
 const changeExpert = (appeal) => {
     $.ajax({
-        method: "POST",
-        url: "ajax/change/expert",
+        method: "post",
+        url: "ajax/change",
         data: { appealId: appeal },
         beforeSend: () => $('#changeButton, #changeMobileButton').prop('disabled', true),
         success: () => waitChange(true),
@@ -151,8 +151,8 @@ const changeExpert = (appeal) => {
 // 
 const completeChat = (appeal) => {
     $.ajax({
-        method: "POST",
-        url: "ajax/chat/complete",
+        method: "post",
+        url: "ajax/complete",
         data: { appealId: appeal },
         beforeSend: () => $('#completeButton, #completeMobileButton').prop('disabled', true),
         success: () => location.reload(),
@@ -185,7 +185,14 @@ const waitChange = (isWait) => {
 const updateInfo = () => infoConnection.send("MainUpdate", appealId);
 
 // Refresh access token
-const refreshToken = (appeal, client) => getJwtToken(appeal, client).then(token => { accessToken = token; setTimeout(() => refreshToken(appeal, client), tokenInterval); });
+const refreshToken = (appeal, clientId) => {
+    getJwtToken(appeal, clientId)
+        .then(token => {
+            accessToken = token;
+            
+            setTimeout(() => refreshToken(appeal, clientId), tokenInterval);
+        });
+};
 
 // 
 const onMessageTextKeyup = function (e) {
@@ -206,8 +213,16 @@ const onMessageTextInput = function (e) {
     $('#sendButton').prop('disabled', isDisabled);
 };
 
-const connectToChat = () => {
-    chatConnection.send('Join').then(() => setTimeout(() => refreshToken(appealId), tokenInterval));
+// 
+const completeLoad = () => {
+    // 
+    $('#messagesList').scrollToLast();
+
+    //
+    const clientId = sessionStorage.getItem("clientId");
+
+    // 
+    setTimeout(() => refreshToken(appealId, clientId), tokenInterval);
 };
 
 // Receive information response event
@@ -240,11 +255,13 @@ $(document).ready(() => {
     waitChange(isWaiting);
 });
 
-// Chat connection
-getJwtToken(appealId, clientId)
+createClient(appealId)
+    .then(clientId => getJwtToken(appealId, clientId))
     .then(token => {
+        // Set access token
         accessToken = token;
 
+        // Chat connection
         const options = { accessTokenFactory: () => accessToken };
 
         chatConnection = new signalR.HubConnectionBuilder()
@@ -273,8 +290,8 @@ getJwtToken(appealId, clientId)
         // Start chat connection
         return chatConnection.start();
     })
-    .then(() => chatConnection.invoke('Join'))
-    .then(() => { $('#messagesList').scrollToLast(); setTimeout(() => refreshToken(appealId, clientId), tokenInterval); })
+    .then(() => chatConnection.send('Join'))
+    .then(completeLoad)
     .catch(error => alert(error.toString()));
 
 //

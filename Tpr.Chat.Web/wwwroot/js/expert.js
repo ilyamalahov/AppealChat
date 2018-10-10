@@ -171,6 +171,8 @@ const onFilterTextKeyup = (e) => {
             // 
             previousItem.addClass('selected');
 
+            $('#replyList').scrollTo(previousItem);
+
             return;
         case 40:
             const nextItem = selectedItem.nextAll(':visible').first();
@@ -183,6 +185,8 @@ const onFilterTextKeyup = (e) => {
 
             // 
             nextItem.addClass('selected');
+
+            $('#replyList').scrollTo(nextItem);
 
             return;
     }
@@ -223,7 +227,26 @@ const onMessageTextInput = function (e) {
 };
 
 // Refresh access token
-const refreshToken = (appeal, client, expert) => getJwtToken(appeal, client, expert).then(token => { accessToken = token; setTimeout(() => refreshToken(appeal, client, expertKey), tokenInterval); });
+const refreshToken = (appeal, client, expert) => {
+    getJwtToken(appeal, client, expert)
+        .then(token => {
+            // 
+            accessToken = token;
+
+            // 
+            setTimeout(() => refreshToken(appeal, client, expert), tokenInterval);
+        });
+}
+
+const completeLoad = () => {
+    $('#messagesList').scrollToLast();
+
+    // 
+    const clientId = sessionStorage.getItem('clientId');
+
+    //
+    setTimeout(() => refreshToken(appealId, clientId, expertKey), tokenInterval);
+};
 
 // Receive information event handler
 infoConnection.on("ReceiveInfo", onReceiveInfo);
@@ -254,11 +277,13 @@ $(document).ready(() => {
 // Start info connection
 infoConnection.start().then(updateInfo);
 
-// 
-getJwtToken(appealId, clientId, expertKey)
+createClient(appealId, expertKey)
+    .then(clientId => getJwtToken(appealId, clientId, expertKey))
     .then(token => {
+        // Set access token
         accessToken = token;
 
+        // Chat connection
         const options = { accessTokenFactory: () => accessToken };
 
         chatConnection = new signalR.HubConnectionBuilder()
@@ -288,5 +313,5 @@ getJwtToken(appealId, clientId, expertKey)
         return chatConnection.start();
     })
     .then(() => chatConnection.invoke('Join'))
-    .then(() => { $('#messagesList').scrollToLast(); setTimeout(() => refreshToken(appealId, clientId, expertKey), tokenInterval); })
+    .then(completeLoad)
     .catch(error => { alert(error.toString()); blockChat(); });

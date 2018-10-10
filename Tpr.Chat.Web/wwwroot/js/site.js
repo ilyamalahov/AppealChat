@@ -19,6 +19,20 @@
 //    });
 //};
 
+// 
+const createClient = (appeal, expert) => {
+    const clientId = sessionStorage.getItem("clientId");
+
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: "ajax/client",
+            data: { appealId: appeal, expertKey: expert, clientId: clientId },
+            success: (client) => { sessionStorage.setItem("clientId", client); resolve(client); },
+            error: (error) => reject(error.responseText)
+        });
+    });
+};
+
 // Get JWT Bearer access token
 const getJwtToken = (appeal, client, expert) => {
     return new Promise((resolve, reject) => {
@@ -110,7 +124,7 @@ const addMessage = (html, isSender, isStatusMessage = true) => {
 
 // Scroll to element
 jQuery.fn.scrollTo = function (element) {
-    if (element === undefined) { return; }
+    if (element.length == 0) { return; }
 
     $(this).scrollTop($(this).scrollTop() - $(this).offset().top + $(element).offset().top);
 

@@ -25,5 +25,6 @@ namespace Tpr.Chat.Core.Repositories
         Task<bool> AddReplacement(MemberReplacement replacement);
         Task<bool> UpdateReplacement(MemberReplacement replacement);
         Task<MemberReplacement> GetReplacement(Guid appealId);
+        Task<bool> AddReplacement(Guid appealId, int oldExpertKey);
     }
 }
