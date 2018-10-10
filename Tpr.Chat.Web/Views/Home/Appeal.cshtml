@@ -7,6 +7,8 @@
 
 @section Styles {
     <link rel="stylesheet" type="text/css" href="~/css/appeal.css" />
+    <meta name="theme-color" content="#4d97e2">
+    <link rel="icon" sizes="192x192" type="image/png" href="~/images/chat/appeal-icon.png">
 }
 
 @section Scripts {
@@ -18,12 +20,12 @@
     <script src="~/js/appeal.js"></script>
 }
 
-<partial name="Sidemenu" model="@Model.SessionModel"/>
+<partial name="Sidemenu" model="@Model.SessionModel" />
 
 <div class="container">
-    <partial name="Header" model="@Model.SessionModel"/>
+    <partial name="Header" model="@Model.SessionModel" />
     <div class="content">
-        <partial name="Sidebar" model="@Model.SessionModel"/>
+        <partial name="Sidebar" model="@Model.SessionModel" />
         <div class="main">
             <div class="main-header">
                 <button id="sideMobileButton" class="custom-button side-button" title="Меню">

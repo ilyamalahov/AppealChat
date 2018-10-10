@@ -2,6 +2,9 @@
 
 @section Styles{
     <link rel="stylesheet" type="text/css" href="~/css/before-after.css" />
+    <meta name="theme-color" content="#fff">
+    <link rel="icon" sizes="192x192" type="image/png" href="~/images/before/before-icon.png">
+
 }
 
 @section Scripts {
@@ -38,25 +41,28 @@
             font-weight: bold;
             font-size: 20px;
         }
+
     .main-content .title {
         font-weight: bold;
         font-size: 20px;
     }
+
     .main-content .remaining-time {
         color: #8c8d8f;
     }
+
         .main-content .remaining-time b {
             font-size: 20px;
             color: #000;
         }
 </style>
 
-<partial name="Sidemenu"/>
+<partial name="Sidemenu" />
 
 <div class="container">
-    <partial name="Header"/>
+    <partial name="Header" />
     <div class="content">
-        <partial name="Sidebar"/>
+        <partial name="Sidebar" />
         <div class="main">
             <div style="margin: auto;">
                 <div class="main-header">
