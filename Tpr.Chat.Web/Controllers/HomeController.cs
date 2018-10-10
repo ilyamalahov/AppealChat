@@ -54,6 +54,9 @@ namespace Tpr.Chat.Web.Controllers
             //
             var isAfter = DateTime.Now > chatSession.FinishTime;
 
+            // Member replacement check
+            var replacement = await chatRepository.GetReplacement(appealId);
+
             // 
             var sessionModel = new SessionViewModel
             {
@@ -61,7 +64,8 @@ namespace Tpr.Chat.Web.Controllers
                 Session = chatSession,
                 IsAfter = isAfter,
                 IsBefore = isBefore,
-                IsActive = !isBefore && !isAfter && !chatSession.IsEarlyCompleted
+                IsActive = !isBefore && !isAfter && !chatSession.IsEarlyCompleted,
+                IsReplaced = replacement.OldMember != null && replacement.NewMember != null
             };
 
             // Check if current date less than chat start time
@@ -83,9 +87,6 @@ namespace Tpr.Chat.Web.Controllers
 
                     return RedirectToRoute("Home", new { clientId, key, secretKey });
                 }
-
-                // Get member replacement from database
-                var replacement = await chatRepository.GetReplacement(appealId);
 
                 if (replacement.OldMember == null)
                 {
@@ -163,10 +164,7 @@ namespace Tpr.Chat.Web.Controllers
 
                     return RedirectToRoute("Home", new { clientId, key, secretKey });
                 }
-
-                // Member replacement check
-                var replacement = await chatRepository.GetReplacement(appealId);
-
+                
                 var isWaiting = replacement.OldMember != null && replacement.NewMember == null;
 
                 var appealModel = new AppealViewModel

@@ -37,5 +37,10 @@ namespace Tpr.Chat.Web.Models
         /// Is active chat?
         /// </summary>
         public bool IsActive { get; set; }
+
+        /// <summary>
+        /// Expert is replaced?
+        /// </summary>
+        public bool IsReplaced { get; set; }
     }
 }
