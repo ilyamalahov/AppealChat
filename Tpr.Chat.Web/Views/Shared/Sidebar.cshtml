@@ -5,7 +5,7 @@
         @if (Model.IsActive)
         {
             <div class="switch-expert">
-                <button id="changeButton" class="custom-button expert-button"><img src="~/images/sidebar/switch.svg" alt="Сменить собеседника" /><span>Сменить собеседника</span></button>
+                <button id="changeButton" class="custom-button expert-button" @(Model.IsReplaced ? "disabled" : "")><img src="~/images/sidebar/switch.svg" alt="Сменить собеседника" /><span>Сменить собеседника</span></button>
             </div>
             <div class="sidebar-block remaining-time"><img src="~/images/sidebar/stopwatch.svg" alt="Оставшееся время" /><span><b id="remainingTime" class="remaining-value">00</b> минуты осталось</span></div>
         }

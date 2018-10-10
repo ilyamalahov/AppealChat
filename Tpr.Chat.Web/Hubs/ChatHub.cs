@@ -63,7 +63,7 @@ namespace Tpr.Chat.Web.Hubs
                     if (welcomeMessage == null)
                     {
                         // Check if expert is still online
-                        if (client.IsOnline(senderType)) return;
+                        //if (client.IsOnline(senderType)) return;
 
                         // Add unique identifier of client
                         if (!client.TryAdd(clientId, senderType)) return;
