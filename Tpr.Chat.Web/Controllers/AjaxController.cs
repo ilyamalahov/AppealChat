@@ -22,89 +22,93 @@ namespace Tpr.Chat.Web.Controllers
     public class AjaxController : Controller
     {
         private readonly IChatRepository chatRepository;
-        private readonly IHubContext<ChatHub, IChat> chatContext;
         private readonly IClientService clientService;
         private readonly ITaskService taskService;
-        private readonly ILogger<AjaxController> logger;
+        private readonly IHubContext<ChatHub, IChat> chatContext;
         private readonly IConfiguration configuration;
+        private readonly ILogger<AjaxController> logger;
 
         public AjaxController(
-            IConfiguration configuration,
             IChatRepository chatRepository,
-            IHubContext<ChatHub, IChat> chatContext,
             IClientService clientService,
             ITaskService taskService,
+            IHubContext<ChatHub, IChat> chatContext,
+            IConfiguration configuration,
             ILogger<AjaxController> logger)
         {
             this.chatRepository = chatRepository;
-            this.chatContext = chatContext;
             this.clientService = clientService;
             this.taskService = taskService;
-            this.logger = logger;
+            this.chatContext = chatContext;
             this.configuration = configuration;
+            this.logger = logger;
         }
-
-        //[HttpPost("change")]
+        
         [HttpPost]
         public async Task<IActionResult> Change(Guid appealId)
         {
-            // Member replacement
+            // Get member replacement from database
             var replacement = await chatRepository.GetReplacement(appealId);
 
+            // Check if member replacement or old member is null
             if (replacement?.OldMember != null)
             {
                 return BadRequest("Замена Члена КК уже была произведена");
             }
 
-            // Chat session
+            // Get chat session from database
             var chatSession = await chatRepository.GetChatSession(appealId);
             
+            // Check if chat session or current expert is null
             if (chatSession?.CurrentExpertKey == null)
             {
                 return BadRequest("Член КК еще не подключился к онлайн-чату");
             }
 
-            // 
+            // Key of old expert
             var oldExpertKey = chatSession.CurrentExpertKey.Value;
-            
-            // Add member replacement
+
+            // Add member replacement to database and check if this member replacement has been added
             if (!await chatRepository.AddReplacement(appealId, oldExpertKey))
             {
-                return BadRequest("Не удалось вставить запись в таблицу");
+                return BadRequest("Не удалось добавить запись в таблицу");
             }
 
-            //
+            // Set value of current expert of chat session to null
             chatSession.CurrentExpertKey = null;
 
+            // Update chat session and check if this chat session has been updated
             if(!await chatRepository.UpdateSession(chatSession))
             {
                 return BadRequest("Не удалось обновить таблицу");
             }
 
-            // 
+            // Expert nickname of message
             var nickname = "Член КК № " + oldExpertKey;
 
+            // Text of message
             var messageText = "Произведена замена члена КК № " + oldExpertKey;
 
-            // 
+            // Add "Replace expert" message to database
             var messageResult = await chatRepository.WriteChatMessage(appealId, nickname, messageText, ChatMessageTypes.ChangeExpert);
 
+            // Check if message has been added to database
             if (!messageResult)
             {
-                return BadRequest("Не удалось вставить запись в таблицу");
+                return BadRequest("Не удалось добавить запись в таблицу");
             }
 
+            // Send "Initialize expert replacement" message to all connected clients of this appeal
             await chatContext.Clients.User(appealId.ToString()).InitializeChange(messageText);
 
             // Return success response
             return Ok();
         }
-
-        //[HttpPost("complete")]
+        
         [HttpPost]
         public async Task<IActionResult> Complete(Guid appealId)
         {
-            // Chat session
+            // Get chat session from database
             var chatSession = await chatRepository.GetChatSession(appealId);
 
             if (chatSession == null)
@@ -156,7 +160,11 @@ namespace Tpr.Chat.Web.Controllers
 
             if (expertKey == null && isExistsExcept)
             {
-                return BadRequest("Пользователь все еще онлайн");
+                var url = string.Format("{0}://{1}/{2}", HttpContext.Request.Scheme, HttpContext.Request.Host, HttpContext.Request.Query["appealId"]);
+
+                var messageText = string.Format("<a href=\"{0}\">{0}</a> открыта на другом устройстве или вкладке.</br>Для продолжения работы в новой вкладке, закройте старую вкладку и повторите повторный переход через 30 секунд.", url);
+
+                return BadRequest(messageText);
             }
 
             return Ok(clientId);

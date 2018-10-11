@@ -293,7 +293,7 @@ a {
     flex: none;
     display: flex;
     flex-flow: column;
-    max-width: 400px;
+    width: 350px;
 }
 
 .sidebar-content {

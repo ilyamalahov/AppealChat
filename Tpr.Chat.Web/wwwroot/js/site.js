@@ -28,7 +28,7 @@ const createClient = (appeal, expert) => {
             url: "ajax/client",
             data: { appealId: appeal, expertKey: expert, clientId: clientId },
             success: (client) => { sessionStorage.setItem("clientId", client); resolve(client) },
-            error: (error) => { alert(error.responseText); window.location.replace("/error") },
+            error: (error) => window.location.replace("/error?message=" + error.responseText),
             async: false
         });
     });

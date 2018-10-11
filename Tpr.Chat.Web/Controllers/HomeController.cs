@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -38,23 +39,24 @@ namespace Tpr.Chat.Web.Controllers
             this.logger = logger;
         }
 
-        public async Task<IActionResult> Index(Guid appealId, Guid? clientId, int? key, string secretKey)
+        public async Task<IActionResult> Index(Guid appealId, int? key, string secretKey)
         {
-            // Check if chat session is exists
+            // Get chat session from database
             var chatSession = await chatRepository.GetChatSession(appealId);
 
+            // Check if chat session is null
             if (chatSession == null)
             {
-                return BadRequest("Сессии по данному идентификатору апеллянта не существует");
+                return NotFound("Сессии по данному идентификатору апеллянта не существует");
             }
 
-            //
+            // Set varable: current date less than start time of chat
             var isBefore = DateTime.Now < chatSession.StartTime;
 
-            //
+            // 
             var isAfter = DateTime.Now > chatSession.FinishTime;
 
-            // Member replacement check
+            // Get member replacement from database
             var replacement = await chatRepository.GetReplacement(appealId);
 
             // 
@@ -68,7 +70,7 @@ namespace Tpr.Chat.Web.Controllers
                 IsReplaced = replacement?.OldMember != null
             };
 
-            // Check if current date less than chat start time
+            // Check if current date less than start time of chat
             if (isBefore)
             {
                 return View("Before", sessionModel);
@@ -76,8 +78,8 @@ namespace Tpr.Chat.Web.Controllers
 
             // 
             var clientType = key > 0 ? ContextType.Expert : ContextType.Appeal;
-
-            // Expert checkings
+            
+            // 
             if (clientType == ContextType.Expert)
             {
                 if (replacement?.OldMember == null)
@@ -89,14 +91,13 @@ namespace Tpr.Chat.Web.Controllers
 
                         if (!await chatRepository.UpdateSession(chatSession))
                         {
-                            return BadRequest("Не удалось обновить запись бд");
+                            return BadRequest("Не удалось обновить запись таблицы");
                         }
                     }
                 }
                 else if (replacement.OldMember != key && replacement.ReplaceTime == null)
                 {
                     // During expert replacement
-
                     if (replacement.NewMember == null)
                     {
                         replacement.NewMember = key;
@@ -108,34 +109,39 @@ namespace Tpr.Chat.Web.Controllers
                     // Update member replacement
                     if (!await chatRepository.UpdateReplacement(replacement))
                     {
-                        return BadRequest("Не удалось обновить запись бд");
+                        return BadRequest("Не удалось обновить запись таблицы");
                     }
 
                     // 
                     var waitingTime = replacement.ReplaceTime.Value.Subtract(replacement.RequestTime.Value);
 
+                    // 
                     chatSession.FinishTime = chatSession.FinishTime.Add(waitingTime);
+
+                    // 
                     chatSession.CurrentExpertKey = key;
                     
                     // Update session
                     if (!await chatRepository.UpdateSession(chatSession))
                     {
-                        return BadRequest("Не удалось обновить запись бд");
+                        return BadRequest("Не удалось обновить запись таблицы");
                     }
 
+                    // 
                     await chatContext.Clients.User(appealId.ToString()).CompleteChange(key);
                 }
 
+                // 
                 if (key != chatSession.CurrentExpertKey)
                 {
                     sessionModel.IsActive = false;
                 }
 
+                // 
                 var expertModel = new ExpertViewModel
                 {
                     SessionModel = sessionModel,
                     ExpertKey = key,
-                    ClientId = clientId,
                     Messages = await chatRepository.GetChatMessages(appealId),
                     QuickReplies = await chatRepository.GetQuickReplies()
                 };
@@ -145,22 +151,24 @@ namespace Tpr.Chat.Web.Controllers
             }
             else if (clientType == ContextType.Appeal)
             {
-                // Check if current date more than chat finish time
+                // Check if current date more than chat finish time or chat has been early completed
                 if (isAfter || chatSession.IsEarlyCompleted)
                 {
                     return View("After", sessionModel);
                 }
                 
+                // 
                 var isWaiting = replacement?.OldMember != null && replacement?.NewMember == null;
 
+                // 
                 var appealModel = new AppealViewModel
                 {
                     SessionModel = sessionModel,
                     Messages = await chatRepository.GetChatMessages(appealId),
-                    IsWaiting = isWaiting,
-                    ClientId = clientId
+                    IsWaiting = isWaiting
                 };
 
+                // 
                 return View("Appeal", appealModel);
             }
 
@@ -168,9 +176,15 @@ namespace Tpr.Chat.Web.Controllers
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public IActionResult Error(string message = null)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var errorModel = new ErrorViewModel
+            {
+                Message = message,
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            };
+
+            return View(errorModel);
         }
     }
 }

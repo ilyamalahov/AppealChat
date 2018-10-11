@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -19,15 +20,14 @@ namespace Tpr.Chat.Web
 {
     public class Startup
     {
+        public ILogger<Startup> Logger { get; }
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
             Logger = logger;
         }
-
-        public ILogger<Startup> Logger { get; }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -53,7 +53,7 @@ namespace Tpr.Chat.Web
             services.AddHostedService<QueuedHostedService>();
 
             // SignalR
-            services.AddSignalR(options => options.EnableDetailedErrors = true);
+            services.AddSignalR();
 
             // CORS (Cross-Origin Request Sharing)
             services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
@@ -74,11 +74,6 @@ namespace Tpr.Chat.Web
                     policy.RequireClaim(ClaimTypes.NameIdentifier);
                 });
             });
-
-            // Session
-            //services.AddDistributedMemoryCache();
-
-            //services.AddSession();
 
             // Authentication
             var jwtConfiguration = Configuration.GetSection("JWT");
@@ -143,7 +138,6 @@ namespace Tpr.Chat.Web
                 app.UseHsts();
             }
 
-            //
             app.UseStatusCodePagesWithRedirects("/error");
 
             // HTTPS rediretion
@@ -156,13 +150,11 @@ namespace Tpr.Chat.Web
             app.UseCors("CorsPolicy");
 
             // SignalR
-            app.UseSignalR(routes =>
+            app.UseSignalR(configure =>
             {
-                routes.MapHub<ChatHub>("/chat");
-                routes.MapHub<InfoHub>("/info");
+                configure.MapHub<ChatHub>("/chat");
+                configure.MapHub<InfoHub>("/info");
             });
-
-            //app.UseSession();
 
             // Authentication
             app.UseAuthentication();
