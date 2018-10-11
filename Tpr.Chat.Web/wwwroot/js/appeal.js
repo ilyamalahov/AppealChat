@@ -192,11 +192,13 @@ const refreshToken = () => {
 };
 
 // 
-const onMessageTextKeyup = function (e) {
+const onMessageTextKeydown = (e) => {
     if (e.keyCode === 13 && !e.shiftKey) {
         e.preventDefault();
 
-        if ($(this).val().length > 0) { sendMessage($(this).val()); }
+        const value = $(e.target).val();
+
+        if (value.length > 0) { sendMessage(value); }
     }
 };
 
@@ -245,7 +247,7 @@ $(document).ready(() => {
 
     // Textarea auto rows count
     $('#messageText')
-        .on('keyup', onMessageTextKeyup)
+        .on('keydown', onMessageTextKeydown)
         .on('input', onMessageTextInput)
         .trigger('input');
 

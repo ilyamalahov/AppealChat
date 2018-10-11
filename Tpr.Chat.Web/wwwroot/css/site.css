@@ -261,17 +261,14 @@ a {
     }
 
     .appeal-list li {
+        display: flex;
+        align-items: center;
         padding: 20px 0;
-        border-bottom: 1px solid #dddddd
+        border-bottom: 1px solid #dddddd;
     }
 
         .appeal-list li:last-child {
             border: none;
-        }
-
-        .appeal-list li div {
-            display: inline-block;
-            vertical-align: middle;
         }
 
     .appeal-list .label {
@@ -296,7 +293,7 @@ a {
     flex: none;
     display: flex;
     flex-flow: column;
-    min-width: 350px;
+    max-width: 400px;
 }
 
 .sidebar-content {
@@ -317,11 +314,11 @@ a {
         padding: 0 15px;
     }
 
-.switch-expert {
+.change-box {
     margin-left: 15px;
 }
 
-.expert-button {
+.change-btn {
     width: 100%;
     border-radius: 5px;
     padding: 15px;
@@ -330,22 +327,22 @@ a {
     color: #fff;
 }
 
-    .expert-button:hover {
+    .change-btn:hover {
         background: #2b6eb0;
     }
 
-    .expert-button:disabled {
+    .change-btn:disabled {
         background: #d7dbde;
         color: #fefefe;
     }
 
-    .expert-button img {
+    .change-btn img {
         height: 25px;
         vertical-align: middle;
         margin-right: 10px;
     }
 
-    .expert-button span {
+    .change-btn span {
         vertical-align: middle;
     }
 

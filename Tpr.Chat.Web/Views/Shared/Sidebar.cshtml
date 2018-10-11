@@ -4,8 +4,8 @@
     <div class="sidebar-content">
         @if (Model.IsActive)
         {
-            <div class="switch-expert">
-                <button id="changeButton" class="custom-button expert-button" @(Model.IsReplaced ? "disabled" : "")><img src="~/images/sidebar/switch.svg" alt="Сменить собеседника" /><span>Сменить собеседника</span></button>
+            <div class="change-box">
+                <button id="changeButton" class="custom-button change-btn" @(Model.IsReplaced ? "disabled" : "")><img src="~/images/sidebar/switch.svg" alt="Сменить собеседника" />Сменить собеседника</button>
             </div>
             <div class="sidebar-block remaining-time"><img src="~/images/sidebar/stopwatch.svg" alt="Оставшееся время" /><span><b id="remainingTime" class="remaining-value">00</b> минуты осталось</span></div>
         }

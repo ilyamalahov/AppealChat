@@ -207,7 +207,7 @@ const onFilterTextInput = (e) => {
 };
 
 // 
-const onMessageTextKeyup = (e) => {
+const onMessageTextKeydown = (e) => {
     if (e.keyCode === 13 && !e.shiftKey) {
         e.preventDefault();
 
@@ -258,7 +258,7 @@ $(document).ready(() => {
     
     // Message form textarea
     $('#messageText')
-        .on('keyup', onMessageTextKeyup)
+        .on('keydown', onMessageTextKeydown)
         .on('input', onMessageTextInput)
         .trigger('input');
 
