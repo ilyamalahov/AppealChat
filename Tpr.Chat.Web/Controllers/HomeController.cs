@@ -93,12 +93,16 @@ namespace Tpr.Chat.Web.Controllers
                         }
                     }
                 }
-                else if (replacement.OldMember != key && replacement.NewMember == null)
+                else if (replacement.OldMember != key && replacement.ReplaceTime == null)
                 {
-                    // After expert replacement
-                    
+                    // During expert replacement
+
+                    if (replacement.NewMember == null)
+                    {
+                        replacement.NewMember = key;
+                    }
+
                     // 
-                    replacement.NewMember = key;
                     replacement.ReplaceTime = DateTime.Now;
                     
                     // Update member replacement

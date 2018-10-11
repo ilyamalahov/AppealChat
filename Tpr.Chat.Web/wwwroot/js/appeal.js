@@ -256,7 +256,7 @@ $(document).ready(() => {
 });
 
 createClient(appealId)
-    .then(clientId => getJwtToken(appealId, clientId))
+    .then(clientId => getJwtToken(appealId, null, clientId))
     .then(token => {
         // Set access token
         accessToken = token;
