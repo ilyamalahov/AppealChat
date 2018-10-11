@@ -185,13 +185,10 @@ const waitChange = (isWait) => {
 const updateInfo = () => infoConnection.send("MainUpdate", appealId);
 
 // Refresh access token
-const refreshToken = (appeal, clientId) => {
-    getJwtToken(appeal, clientId)
-        .then(token => {
-            accessToken = token;
-            
-            setTimeout(() => refreshToken(appeal, clientId), tokenInterval);
-        });
+const refreshToken = () => {
+    const clientId = sessionStorage.getItem('clientId');
+
+    getJwtToken(appealId, null, clientId).then(token => { accessToken = token; setTimeout(refreshToken, tokenInterval); });
 };
 
 // 
@@ -217,22 +214,23 @@ const onMessageTextInput = function (e) {
 const completeLoad = () => {
     // 
     $('#messagesList').scrollToLast();
-
-    //
-    const clientId = sessionStorage.getItem("clientId");
-
+    
     // 
-    setTimeout(() => refreshToken(appealId, clientId), tokenInterval);
+    setTimeout(refreshToken, tokenInterval);
 };
 
 // Receive information response event
 infoConnection.on("ReceiveInfo", onReceiveInfo);
 
-// 
-$(window).on('resize', onWindowResize);
+const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 // Document ready event
 $(document).ready(() => {
+    // 
+    $(window).on('resize', onWindowResize);
+
     // Send message
     $('#sendButton').on('click', () => sendMessage($('#messageText').val()));
 

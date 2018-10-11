@@ -139,12 +139,12 @@ namespace Tpr.Chat.Web
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/error");
                 app.UseHsts();
             }
 
             //
-            app.UseStatusCodePages();
+            app.UseStatusCodePagesWithRedirects("/error");
 
             // HTTPS rediretion
             app.UseHttpsRedirection();
@@ -171,6 +171,7 @@ namespace Tpr.Chat.Web
             app.UseMvc(routes =>
             {
                 routes.MapRoute("Home", "{appealId:guid}", new { controller = "Home", action = "Index" });
+                routes.MapRoute("Error", "error", new { controller = "Home", action = "Error" });
                 routes.MapRoute("Modal", "modal/{action}", new { controller = "Modal" });
                 routes.MapRoute("Ajax", "ajax/{action}", new { controller = "Ajax" });
             });

@@ -227,25 +227,17 @@ const onMessageTextInput = function (e) {
 };
 
 // Refresh access token
-const refreshToken = (appeal, client, expert) => {
-    getJwtToken(appeal, client, expert)
-        .then(token => {
-            // 
-            accessToken = token;
+const refreshToken = () => {
+    const clientId = sessionStorage.getItem('clientId');
 
-            // 
-            setTimeout(() => refreshToken(appeal, client, expert), tokenInterval);
-        });
+    getJwtToken(appealId, expertKey, clientId).then(token => { accessToken = token; setTimeout(refreshToken, tokenInterval); });
 }
 
 const completeLoad = () => {
     $('#messagesList').scrollToLast();
 
-    // 
-    const clientId = sessionStorage.getItem('clientId');
-
     //
-    setTimeout(() => refreshToken(appealId, clientId, expertKey), tokenInterval);
+    setTimeout(refreshToken, tokenInterval);
 };
 
 // Receive information event handler
@@ -278,7 +270,7 @@ $(document).ready(() => {
 infoConnection.start().then(updateInfo);
 
 createClient(appealId, expertKey)
-    .then(clientId => getJwtToken(appealId, clientId, expertKey))
+    .then(clientId => getJwtToken(appealId, expertKey, clientId))
     .then(token => {
         // Set access token
         accessToken = token;

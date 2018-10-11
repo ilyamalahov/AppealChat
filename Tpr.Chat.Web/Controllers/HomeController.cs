@@ -65,7 +65,7 @@ namespace Tpr.Chat.Web.Controllers
                 IsAfter = isAfter,
                 IsBefore = isBefore,
                 IsActive = !isBefore && !isAfter && !chatSession.IsEarlyCompleted,
-                IsReplaced = replacement?.OldMember != null && replacement?.NewMember != null
+                IsReplaced = replacement?.OldMember != null
             };
 
             // Check if current date less than chat start time

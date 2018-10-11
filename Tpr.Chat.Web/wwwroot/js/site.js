@@ -23,18 +23,19 @@
 const createClient = (appeal, expert) => {
     const clientId = sessionStorage.getItem("clientId");
 
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
         $.ajax({
             url: "ajax/client",
             data: { appealId: appeal, expertKey: expert, clientId: clientId },
-            success: (client) => { sessionStorage.setItem("clientId", client); resolve(client); },
-            error: (error) => reject(error.responseText)
+            success: (client) => { sessionStorage.setItem("clientId", client); resolve(client) },
+            error: (error) => { alert(error.responseText); window.location.replace("/error") },
+            async: false
         });
     });
 };
 
 // Get JWT Bearer access token
-const getJwtToken = (appeal, client, expert) => {
+const getJwtToken = (appeal, expert, client) => {
     return new Promise((resolve, reject) => {
         $.ajax({
             method: 'get',
