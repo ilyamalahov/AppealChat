@@ -222,7 +222,7 @@ a {
     }
 
         .header .title::after {
-            content: "Онлайн консультации по результатам рассмотрения апелляций о несогласии с выставленными баллами ГИА";
+            content: "Онлайн-чат по результатам рассмотрения апелляций о несогласии с выставленными баллами ГИА";
         }
 
     .header .moscow-time {
@@ -389,7 +389,7 @@ a {
     top: 100px;
     bottom: 10px;
     /*left: 370px;*/
-    width: 475px;
+    width: 550px;
     max-height: 630px;
     /* background: #2b7bde;*/
     background-image: url(/images/sidebar/sidebar-background.png);
@@ -699,7 +699,7 @@ a {
     }
 
     .header .title::after {
-        content: "Онлайн консультации по апелляциям";
+        content: "Онлайн-чат по апелляциям";
     }
 
     .side-button {

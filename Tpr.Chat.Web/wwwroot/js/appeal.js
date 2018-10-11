@@ -107,7 +107,7 @@ const onReceiveInfo = (currentDate, remainingTime, isAlarm, isFinished) => {
 
     // Alarm after minutes (5 minutes default)
     if (isAlarm) {
-        var alarmText = 'До окончания консультации осталось ' + remainingText + ' минут(-ы)';
+        var alarmText = 'До окончания онлайн-чата осталось ' + remainingText + ' минут(-ы)';
 
         $('#alarm').text(alarmText).show();
     }
