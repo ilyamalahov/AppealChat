@@ -16,7 +16,7 @@
 
 <div class="main">
     <div class="main-header">
-        <div class="title">Участник аппеляции</div>
+        <div class="title">Участник апелляции</div>
         <div class="status-block">
             <div class="online-status" id="onlineStatus"></div>
             <div class="write-status" id="writeStatus">Печатает...</div>
@@ -35,7 +35,7 @@
                 @switch (message.ChatMessageTypeId)
                 {
                     case ChatMessageTypes.Joined:
-                        message.MessageString = isCurrent ? "Вы подключились к консультации" : message.NickName + " подключился к консультации";
+                        message.MessageString = isCurrent ? "Вы подключились к онлайн-чату" : message.NickName + " подключился к онлайн-чату";
 
                         <li class="message-status"><div class="message @(isExpert ? "place-left" : "place-right")">@message.MessageString <b class="message-date">@messageDate</b></div></li>
                         break;
@@ -49,7 +49,7 @@
                         </li>
                         break;
                     case ChatMessageTypes.Leave:
-                        message.MessageString = isCurrent ? "Вы покинули консультацию" : message.NickName + " покинул консультацию";
+                        message.MessageString = isCurrent ? "Вы покинули онлайн-чат" : message.NickName + " покинул онлайн-чат";
 
                         <li class="message-status"><div class="message @(isExpert ? "place-left" : "place-right")">@message.MessageString <b class="message-date">@messageDate</b></div></li>
                         break;
@@ -57,10 +57,10 @@
                         <li class="message-status"><div class="message place-left">@message.MessageString</div></li>
                         break;
                     case ChatMessageTypes.FirstExpert:
-                        <li class="message-status"><div class="message @(isExpert ? "place-left" : "place-right")">@message.NickName подключился к консультации. Вы можете задать ему свои вопросы</div></li>
+                        <li class="message-status"><div class="message @(isExpert ? "place-left" : "place-right")">@message.NickName подключился к онлайн-чату. Вы можете задать ему свои вопросы</div></li>
                         break;
                     case ChatMessageTypes.EarlyComplete:
-                        <li class="message-status"><div class="message @(isCurrent ? "place-left" : "place-right")">Апеллянт досрочно завершил консультацию</div></li>
+                        <li class="message-status"><div class="message @(isCurrent ? "place-left" : "place-right")">Апеллянт досрочно завершил онлайн-чат</div></li>
                         break;
                 }
             }

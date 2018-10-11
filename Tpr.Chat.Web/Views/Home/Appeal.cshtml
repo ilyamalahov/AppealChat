@@ -42,7 +42,7 @@
                     <div id="mobileRemainingTime" class="remaining-value">00:00</div>
                     <div class="remaining-caption">минуты осталось</div>
                 </div>
-                <button id="mobileChangeButton" class="custom-button switch-button" title="Сменить консультанта" @(Model.SessionModel.IsReplaced ? "disabled" : "")><img src="~/images/chat/businessman.png" alt="Сменить консультанта" /></button>
+                <button id="mobileChangeButton" class="custom-button switch-button" title="Сменить Члена КК" @(Model.SessionModel.IsReplaced ? "disabled" : "")><img src="~/images/chat/businessman.png" alt="Сменить Члена КК" /></button>
             </div>
             <div style="flex: auto; display: flex; min-height: 0;">
                 <ul id="messagesList" class="message-history">
@@ -64,23 +64,23 @@
                             case ChatMessageTypes.Joined:
                                 @if (isCurrent)
                                 {
-                                    <li class="message-status"><div class="message place-left">Вы подключились к консультации <b class="message-date">@messageDate</b></div></li>
+                                    <li class="message-status"><div class="message place-left">Вы подключились к онлайн-чату <b class="message-date">@messageDate</b></div></li>
                                 }
                                 break;
                             case ChatMessageTypes.Leave:
                                 @if (isCurrent)
                                 {
-                                    <li class="message-status"><div class="message place-left">Вы покинули консультацию <b class="message-date">@messageDate</b></div></li>
+                                    <li class="message-status"><div class="message place-left">Вы покинули онлайн-чат <b class="message-date">@messageDate</b></div></li>
                                 }
                                 break;
                             case ChatMessageTypes.ChangeExpert:
                                 <li class="message-status"><div class="message place-left">@message.MessageString</div></li>
                                 break;
                             case ChatMessageTypes.FirstExpert:
-                                <li class="message-status"><div class="message @(isCurrent ? "place-left" : "place-right")">@message.NickName подключился к консультации. Вы можете задать ему свои вопросы</div></li>
+                                <li class="message-status"><div class="message @(isCurrent ? "place-left" : "place-right")">@message.NickName подключился к онлайн-чату. Вы можете задать ему свои вопросы</div></li>
                                 break;
                             case ChatMessageTypes.EarlyComplete:
-                                <li class="message-status"><div class="message @(isCurrent ? "place-left" : "place-right")">Апеллянт досрочно завершил консультацию</div></li>
+                                <li class="message-status"><div class="message @(isCurrent ? "place-left" : "place-right")">Апеллянт досрочно завершил онлайн-чат</div></li>
                                 break;
                         }
                     }

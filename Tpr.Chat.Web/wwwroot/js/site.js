@@ -74,7 +74,7 @@ const receiveMessage = (message, isSender) => {
 const joinMessage = (messageDate, nickName, isSender) => {
     const messageDateObj = luxon.DateTime.fromISO(messageDate);
     
-    const messageText = isSender ? 'Вы подключились к консультации' : nickName + ' подключился к консультации';
+    const messageText = isSender ? 'Вы подключились к онлайн-чату' : nickName + ' подключился к онлайн-чату';
 
     const html = messageText + ' <b class="message-date">' + messageDateObj.toFormat("tt") + '</b>';
 
@@ -85,7 +85,7 @@ const joinMessage = (messageDate, nickName, isSender) => {
 const leaveMessage = (messageDate, nickName, isSender) => {
     const messageDateObj = luxon.DateTime.fromISO(messageDate);
 
-    const messageText = isSender ? 'Вы покинули консультацию' : nickName + ' покинул консультацию';
+    const messageText = isSender ? 'Вы покинули онлайн-чат' : nickName + ' покинул онлайн-чат';
 
     const html = messageText + ' <b class="message-date">' + messageDateObj.toFormat("tt") + '</b>';
 
@@ -94,7 +94,7 @@ const leaveMessage = (messageDate, nickName, isSender) => {
 
 // 
 const firstJoinMessage = (expertKey, isSender) => {
-    const messageText = 'Член КК № ' + expertKey + ' подключился к консультации. Вы можете задать ему свои вопросы';
+    const messageText = 'Член КК № ' + expertKey + ' подключился к онлайн-чату. Вы можете задать ему свои вопросы';
 
     return addMessage(messageText, isSender);
 };
@@ -106,7 +106,7 @@ const changeExpertMessage = (messageText) => addMessage(messageText, true);
 
 // Return "Change expert" message
 const completeChatMessage = (isSender) => {
-    const messageText = 'Апеллянт досрочно завершил консультацию';
+    const messageText = 'Апеллянт досрочно завершил онлайн-чат';
 
     return addMessage(messageText, isSender);
 };

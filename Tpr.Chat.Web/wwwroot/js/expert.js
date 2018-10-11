@@ -36,7 +36,7 @@ const onReceiveInfo = (currentDate, remainingTime, isAlarm, isFinished) => {
 
     // Alarm
     if (isAlarm) {
-        const alarmText = 'До окончания консультации осталось ' + remainingText;
+        const alarmText = 'До окончания онлайн-чата осталось ' + remainingText;
 
         $('#alarm').text(alarmText).show();
     }

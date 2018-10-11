@@ -53,7 +53,7 @@ namespace Tpr.Chat.Web.Controllers
 
             if (replacement?.OldMember != null)
             {
-                return BadRequest("Замена консультанта уже была произведена");
+                return BadRequest("Замена Члена КК уже была произведена");
             }
 
             // Chat session
@@ -61,7 +61,7 @@ namespace Tpr.Chat.Web.Controllers
             
             if (chatSession?.CurrentExpertKey == null)
             {
-                return BadRequest("Консультант еще не подключился к чату");
+                return BadRequest("Член КК еще не подключился к онлайн-чату");
             }
 
             // 

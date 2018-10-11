@@ -114,7 +114,7 @@
         <partial name="Sidebar" />
         <div class="main">
             <div style="margin: auto;">
-                <div class="title">Консультация по аппеляции завершена</div>
+                <div class="title">Онлайн-чат по апелляции завершен</div>
 
                 <div class="webcast-box" style="margin: auto; max-width: 350px; padding: 20px;">
                     <a class="webcast-button" href="@Model.Session.CommissionLink">
@@ -130,16 +130,16 @@
                     <div class="info-title">Сведения о заседании конфликтной комиссии</div>
 
                     <div class="info-item">
-                        <div class="item-title">Заседание конфликтной комиссии, в рамках которой будет вынесено<br />Решение по Вашей аппеляции состоится</div>
+                        <div class="item-title">Заседание конфликтной комиссии, в рамках которой будет вынесено<br />Решение по Вашей апелляции состоится</div>
                         <div class="item-content"><img src="~/images/after/calendar.svg" alt="Календарь" /><b>@Model.Session.ApplicationDate</b></div>
                     </div>
                     <div class="info-item">
-                        <div class="item-title">Запланированное время рассмотрения Вашей аппеляции</div>
+                        <div class="item-title">Запланированное время рассмотрения Вашей апелляции</div>
                         <div class="item-content"><img src="~/images/after/clock.svg" alt="Время" /><b>@Model.Session.CommissionStartTime.ToShortTimeString() - @Model.Session.CommissionFinishTime.ToShortTimeString()</b></div>
                     </div>
                     <div class="webcast-link">Онлайн трансляцию заседания конфликтной комиссии Вы сможете посмотреть, перейдя по <a href="@Model.Session.CommissionLink">данной ссылке</a></div>
 
-                    <div>По итогам рассмотрения аппеляции Вам будет направлено Решение конфликтной комисии, ознакомиться с которым Вы сможете в личном кабинете на Портале.</div>
+                    <div>По итогам рассмотрения апелляции Вам будет направлено Решение конфликтной комисии, ознакомиться с которым Вы сможете в личном кабинете на Портале.</div>
                 </div>
             </div>
         </div>

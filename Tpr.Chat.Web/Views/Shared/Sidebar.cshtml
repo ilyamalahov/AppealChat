@@ -11,11 +11,11 @@
         }
         <div class="sidebar-block">
             <ul class="appeal-list">
-                <li class="title">Сведения об аппеляции</li>
-                <li><div class="label">Начало онлайн консультации</div><div class="value">@Model.Session.StartTime.ToString("g")</div></li>
+                <li class="title">Сведения об апелляции</li>
+                <li><div class="label">Начало онлайн-чата</div><div class="value">@Model.Session.StartTime.ToString("g")</div></li>
                 @if (Model.IsBefore)
                 {
-                    <li><div class="label">Завершение онлайн консультации</div><div class="value">@Model.Session.FinishTime.ToString("g")</div></li>
+                    <li><div class="label">Завершение онлайн-чата</div><div class="value">@Model.Session.FinishTime.ToString("g")</div></li>
                 }
                 <li><div class="label">Апелляция</div><div class="value">@Model.Session.AppealNumber от @Model.Session.RegistrationDate.ToShortDateString()</div></li>
                 <li><div class="label">Предмет</div><div class="value">@Model.Session.SubjectName</div></li>
