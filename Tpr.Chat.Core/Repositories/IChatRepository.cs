@@ -13,7 +13,7 @@ namespace Tpr.Chat.Core.Repositories
 
         // Messages
         Task<IEnumerable<ChatMessage>> GetChatMessages(Guid appealId);
-        Task<ChatMessage> GetWelcomeMessage(Guid appealId, string expertKey);
+        Task<ChatMessage> GetWelcomeMessage(Guid appealId, int? expertKey);
         
         Task<bool> WriteChatMessage(Guid appealId, string nickName, string messageString, ChatMessageTypes messageType);
         Task<bool> WriteChatMessage(ChatMessage message);
@@ -22,11 +22,9 @@ namespace Tpr.Chat.Core.Repositories
         Task<IEnumerable<QuickReply>> GetQuickReplies();
 
         // Member replacements
-        Task<bool> AddMemberReplacement(MemberReplacement replacement);
-        Task<bool> AddMemberReplacement(Guid appealId, int expertKey);
-
-        Task<bool> UpdateMemberReplacement(MemberReplacement replacement);
-
-        Task<MemberReplacement> GetMemberReplacement(Guid appealId);
+        Task<bool> AddReplacement(MemberReplacement replacement);
+        Task<bool> UpdateReplacement(MemberReplacement replacement);
+        Task<MemberReplacement> GetReplacement(Guid appealId);
+        Task<bool> AddReplacement(Guid appealId, int oldExpertKey);
     }
 }

@@ -1,53 +1,61 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 using Tpr.Chat.Core.Repositories;
 using Tpr.Chat.Web.Hubs;
-using Tpr.Chat.Web.Providers;
-using Tpr.Chat.Web.Service;
+using Tpr.Chat.Web.Services;
 
 namespace Tpr.Chat.Web
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public ILogger<Startup> Logger { get; }
+        public IConfiguration Configuration { get; }
+
+        public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
+            Logger = logger;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectionString = Configuration.GetConnectionString("DefaultConnection");
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
 
             // Chat repository
             services.AddTransient<IChatRepository, ChatRepository>(repository => new ChatRepository(connectionString));
 
-            //services.AddHostedService<QueuedHostedService>();
-            //services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            // Authentication service
+            services.AddTransient<IAuthService, AuthService>();
 
-            // Common service
-            services.AddTransient<ICommonService, CommonService>();
+            // Client service
+            services.AddSingleton<IClientService, ClientService>();
 
-            // Connections service
-            services.AddSingleton<IConnectionService, ConnectionService>();
+            // Task service
+            services.AddSingleton<ITaskService, TaskService>();
 
-            // Cross-Origin Request Sharing
+            // Background task queue service
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+
+            // Background task hosted service
+            services.AddHostedService<QueuedHostedService>();
+
+            // SignalR
+            services.AddSignalR();
+
+            // CORS (Cross-Origin Request Sharing)
             services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
             {
                 builder.AllowAnyMethod()
@@ -57,72 +65,56 @@ namespace Tpr.Chat.Web
             })
             );
 
-            // SignalR
-            services.AddSignalR(options =>
+            // Authorization
+            services.AddAuthorization(options =>
             {
-                options.EnableDetailedErrors = true;
-            }).AddJsonProtocol();
-
-            services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
-
-            // Session
-            //services.AddDistributedMemoryCache();
-
-            //services.AddSession();
-
-            // Authentication
-            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            //    .AddCookie();
+                options.AddPolicy(JwtBearerDefaults.AuthenticationScheme, policy =>
+                {
+                    policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireClaim(ClaimTypes.NameIdentifier);
+                });
+            });
 
             // Authentication
             var jwtConfiguration = Configuration.GetSection("JWT");
+
+            var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfiguration["SecretKey"]));
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        // Validate the issuer when validating the token
-                        ValidateIssuer = true,
-                        // Token issuer
-                        ValidIssuer = jwtConfiguration["Issuer"],
-
-                        // Validate the token audience
+                        // Audience
                         ValidateAudience = true,
-                        // Token audience
                         ValidAudience = jwtConfiguration["Audience"],
 
-                        // Validate signing key
-                        ValidateIssuerSigningKey = true,
-                        // Issuer Signing Key
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfiguration["SecretKey"])),
+                        // Issuer
+                        ValidateIssuer = true,
+                        ValidIssuer = jwtConfiguration["Issuer"],
 
-                        // Validate token lifetime
+                        // Lifetime
                         ValidateLifetime = true,
-                        // Skew
-                        ClockSkew = TimeSpan.Zero
+                        LifetimeValidator = (before, expires, token, parameters) => expires > DateTime.UtcNow,
+
+                        // Signing key
+                        IssuerSigningKey = securityKey
                     };
 
                     options.Events = new JwtBearerEvents
                     {
                         OnMessageReceived = context =>
                         {
-                            var result = context.Request.Query.TryGetValue("access_token", out var token);
+                            var tokenResult = context.Request.Query.TryGetValue("access_token", out var accessToken);
 
-                            var isContainsChatPath = context.HttpContext.Request.Path.StartsWithSegments("/chat");
-                            var isContainsInfoPath = context.HttpContext.Request.Path.StartsWithSegments("/info");
+                            var isWebsocketRequest = context.HttpContext.WebSockets.IsWebSocketRequest;
 
-                            // If the request is for our hub...
-                            if (result && (isContainsChatPath || isContainsInfoPath))
+                            var isEventStreamRequest = context.Request.Headers["Accept"] == "text/event-stream";
+
+                            if (tokenResult && (isWebsocketRequest || isEventStreamRequest))
                             {
-                                // Read the token out of the query string
-                                context.Token = token;
+                                context.Token = accessToken;
                             }
-                            return Task.CompletedTask;
-                        },
-                        OnAuthenticationFailed = context =>
-                        {
-                            Console.WriteLine(context.Exception.Message);
 
                             return Task.CompletedTask;
                         }
@@ -142,12 +134,11 @@ namespace Tpr.Chat.Web
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/error");
                 app.UseHsts();
             }
 
-            //
-            app.UseStatusCodePages();
+            app.UseStatusCodePagesWithRedirects("/error");
 
             // HTTPS rediretion
             app.UseHttpsRedirection();
@@ -159,13 +150,11 @@ namespace Tpr.Chat.Web
             app.UseCors("CorsPolicy");
 
             // SignalR
-            app.UseSignalR(routes =>
+            app.UseSignalR(configure =>
             {
-                routes.MapHub<ChatHub>("/chat");
-                routes.MapHub<InfoHub>("/info");
+                configure.MapHub<ChatHub>("/chat");
+                configure.MapHub<InfoHub>("/info");
             });
-
-            //app.UseSession();
 
             // Authentication
             app.UseAuthentication();
@@ -173,9 +162,10 @@ namespace Tpr.Chat.Web
             // MVC
             app.UseMvc(routes =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute("Home", "{appealId:guid}", new { controller = "Home", action = "Index" });
+                routes.MapRoute("Error", "error", new { controller = "Home", action = "Error" });
+                routes.MapRoute("Modal", "modal/{action}", new { controller = "Modal" });
+                routes.MapRoute("Ajax", "ajax/{action}", new { controller = "Ajax" });
             });
         }
     }

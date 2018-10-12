@@ -8,50 +8,18 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Tpr.Chat.Core.Repositories;
-using Tpr.Chat.Web.Service;
+using Tpr.Chat.Web.Services;
 
 namespace Tpr.Chat.Web.Hubs
 {
     public class InfoHub : Hub
     {
         private readonly IChatRepository chatRepository;
-        //private readonly IBackgroundTaskQueue queue;
-        private readonly ILogger logger;
 
-        public InfoHub(IChatRepository chatRepository, ILoggerFactory loggerFactory)
+        public InfoHub(IChatRepository chatRepository)
         {
             this.chatRepository = chatRepository;
-            //this.queue = queue;
-            logger = loggerFactory.CreateLogger<InfoHub>();
         }
-
-        public override Task OnConnectedAsync()
-        {
-            //queue.QueueBackgroundWorkItem(Update);
-
-            return base.OnConnectedAsync();
-        }
-
-        public override Task OnDisconnectedAsync(Exception exception)
-        {
-            return base.OnDisconnectedAsync(exception);
-        }
-
-        //private async Task Update(CancellationToken token)
-        //{
-        //    var taskId = Guid.NewGuid();
-
-        //    logger.LogInformation("Task: {0} is started", taskId);
-
-        //    while (!token.IsCancellationRequested)
-        //    {
-        //        logger.LogDebug("Task: {0}, Current date: {1}", taskId, DateTime.Now);
-
-        //        await Task.Delay(TimeSpan.FromMinutes(1), token);
-        //    }
-
-        //    logger.LogInformation("Task: {0} is completed", taskId);
-        //}
 
         //[Authorize(AuthenticationSchemes = "Bearer")]
         public async Task MainUpdate(Guid appealId)

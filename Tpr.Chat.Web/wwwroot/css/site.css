@@ -1,9 +1,87 @@
-﻿html, body {
+﻿@font-face {
+    font-family: Roboto;
+    src: url(/fonts/Roboto/Thin.ttf);
+    font-weight: 100;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url(/fonts/Roboto/ThinItalic.ttf);
+    font-weight: 100;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url(/fonts/Roboto/Light.ttf);
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url(/fonts/Roboto/LightItalic.ttf);
+    font-weight: 300;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url(/fonts/Roboto/Regular.ttf);
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url(/fonts/Roboto/Italic.ttf);
+    font-weight: 400;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url(/fonts/Roboto/Medium.ttf);
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url(/fonts/Roboto/MediumItalic.ttf);
+    font-weight: 500;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url(/fonts/Roboto/Bold.ttf);
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url(/fonts/Roboto/BoldItalic.ttf);
+    font-weight: 700;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url(/fonts/Roboto/Black.ttf);
+    font-weight: 900;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url(/fonts/Roboto/BlackItalic.ttf);
+    font-weight: 900;
+    font-style: italic;
+}
+
+html, body {
     margin: 0;
     padding: 0;
     height: 100%;
     width: 100%;
-    font-family: Calibri;
+    font-family: Roboto;
 }
 
 ul {
@@ -144,7 +222,7 @@ a {
     }
 
         .header .title::after {
-            content: "Онлайн консультации по результатам рассмотрения апелляций о несогласии с выставленными баллами ГИА";
+            content: "Онлайн-чат по результатам рассмотрения апелляций о несогласии с выставленными баллами ГИА";
         }
 
     .header .moscow-time {
@@ -183,17 +261,14 @@ a {
     }
 
     .appeal-list li {
+        display: flex;
+        align-items: center;
         padding: 20px 0;
-        border-bottom: 1px solid #dddddd
+        border-bottom: 1px solid #dddddd;
     }
 
         .appeal-list li:last-child {
             border: none;
-        }
-
-        .appeal-list li div {
-            display: inline-block;
-            vertical-align: middle;
         }
 
     .appeal-list .label {
@@ -218,7 +293,7 @@ a {
     flex: none;
     display: flex;
     flex-flow: column;
-    min-width: 350px;
+    width: 350px;
 }
 
 .sidebar-content {
@@ -239,11 +314,11 @@ a {
         padding: 0 15px;
     }
 
-.switch-expert {
+.change-box {
     margin-left: 15px;
 }
 
-.expert-button {
+.change-btn {
     width: 100%;
     border-radius: 5px;
     padding: 15px;
@@ -252,22 +327,22 @@ a {
     color: #fff;
 }
 
-    .expert-button:hover {
+    .change-btn:hover {
         background: #2b6eb0;
     }
 
-    .expert-button:disabled {
+    .change-btn:disabled {
         background: #d7dbde;
         color: #fefefe;
     }
 
-    .expert-button img {
+    .change-btn img {
         height: 25px;
         vertical-align: middle;
         margin-right: 10px;
     }
 
-    .expert-button span {
+    .change-btn span {
         vertical-align: middle;
     }
 
@@ -314,7 +389,7 @@ a {
     top: 100px;
     bottom: 10px;
     /*left: 370px;*/
-    width: 475px;
+    width: 550px;
     max-height: 630px;
     /* background: #2b7bde;*/
     background-image: url(/images/sidebar/sidebar-background.png);
@@ -489,7 +564,8 @@ a {
 
     .place-right .message-bubble {
         border-radius: 5px 5px 0 5px;
-        background: #ddedfa;
+        background: #ceffce
+        /*background: #ddedfa;*/
     }
 
 .sidemenu {
@@ -624,7 +700,7 @@ a {
     }
 
     .header .title::after {
-        content: "Онлайн консультации по апелляциям";
+        content: "Онлайн-чат по апелляциям";
     }
 
     .side-button {

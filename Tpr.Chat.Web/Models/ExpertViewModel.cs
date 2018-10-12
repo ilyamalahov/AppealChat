@@ -14,8 +14,8 @@ namespace Tpr.Chat.Web.Models
 
         public IEnumerable<QuickReply> QuickReplies { get; set; }
 
-        public int ExpertKey { get; set; }
+        public int? ExpertKey { get; set; }
 
-        public bool IsReadonly { get; set; }
+        public Guid? ClientId { get; set; }
     }
 }

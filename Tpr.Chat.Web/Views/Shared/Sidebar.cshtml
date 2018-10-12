@@ -1,19 +1,21 @@
-﻿<div class="sidebar">
+﻿@model SessionViewModel
+
+<div class="sidebar">
     <div class="sidebar-content">
-        @if (ViewBag.IsActive)
+        @if (Model.IsActive)
         {
-            <div class="switch-expert">
-                <button id="changeButton" class="custom-button expert-button" @(Model.IsExpertChanged ? "disabled" : "")><img src="~/images/sidebar/switch.svg" alt="Сменить собеседника" /><span>Сменить собеседника</span></button>
+            <div class="change-box">
+                <button id="changeButton" class="custom-button change-btn" @(Model.IsReplaced ? "disabled" : "")><img src="~/images/sidebar/switch.svg" alt="Сменить собеседника" />Сменить собеседника</button>
             </div>
             <div class="sidebar-block remaining-time"><img src="~/images/sidebar/stopwatch.svg" alt="Оставшееся время" /><span><b id="remainingTime" class="remaining-value">00</b> минуты осталось</span></div>
         }
         <div class="sidebar-block">
             <ul class="appeal-list">
-                <li class="title">Сведения об аппеляции</li>
-                <li><div class="label">Начало онлайн консультации</div><div class="value">@Model.Session.StartTime.ToString("g")</div></li>
+                <li class="title">Сведения об апелляции</li>
+                <li><div class="label">Начало онлайн-чата</div><div class="value">@Model.Session.StartTime.ToString("g")</div></li>
                 @if (Model.IsBefore)
                 {
-                    <li><div class="label">Завершение онлайн консультации</div><div class="value">@Model.Session.FinishTime.ToString("g")</div></li>
+                    <li><div class="label">Завершение онлайн-чата</div><div class="value">@Model.Session.FinishTime.ToString("g")</div></li>
                 }
                 <li><div class="label">Апелляция</div><div class="value">@Model.Session.AppealNumber от @Model.Session.RegistrationDate.ToShortDateString()</div></li>
                 <li><div class="label">Предмет</div><div class="value">@Model.Session.SubjectName</div></li>

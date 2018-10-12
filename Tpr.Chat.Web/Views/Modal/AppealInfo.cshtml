@@ -1,14 +1,14 @@
 ﻿<div class="modal-window" style="padding: 15px;">
     <div class="modal-header">
-        <div class="modal-title">Сведения об аппеляции</div>
+        <div class="modal-title">Сведения об апелляции</div>
         <button id="closeModalButton" class="custom-button close-button"><img src="~/images/modal-close.png" /></button>
     </div>
     <div class="modal-content">
         <ul class="appeal-list">
-            <li><div class="label">Начало онлайн консультации</div><div class="value">@ViewBag.Session.StartTime.ToString("g")</div></li>
+            <li><div class="label">Начало онлайн-чата</div><div class="value">@ViewBag.Session.StartTime.ToString("g")</div></li>
             @if (ViewBag.IsBefore)
             {
-                <li><div class="label">Завершение онлайн консультации</div><div class="value">@ViewBag.Session.FinishTime.ToString("g")</div></li>
+                <li><div class="label">Завершение онлайн-чата</div><div class="value">@ViewBag.Session.FinishTime.ToString("g")</div></li>
             }
             <li><div class="label">Апелляция</div><div class="value">@ViewBag.Session.AppealNumber от @ViewBag.Session.RegistrationDate.ToShortDateString()</div></li>
             <li><div class="label">Предмет</div><div class="value">@ViewBag.Session.SubjectName</div></li>

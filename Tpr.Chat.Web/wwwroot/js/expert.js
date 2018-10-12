@@ -6,15 +6,18 @@ var quickReplyIsVisible = false;
 // Update time interval in milliseconds
 const updateInterval = 1000;
 
-// Objects
+const tokenInterval = 20000;
 
 // Update info hub connection
-var infoConnection;
+var infoConnection = new signalR.HubConnectionBuilder()
+    .withUrl("/info")
+    .build();
 
 // Chat hub connection
 var chatConnection;
 
-// Functions
+// 
+var accessToken;
 
 // Update time info
 const updateInfo = () => infoConnection.invoke("MainUpdate", appealId);
@@ -33,7 +36,7 @@ const onReceiveInfo = (currentDate, remainingTime, isAlarm, isFinished) => {
 
     // Alarm
     if (isAlarm) {
-        const alarmText = 'До окончания консультации осталось ' + remainingText;
+        const alarmText = 'До окончания онлайн-чата осталось ' + remainingText;
 
         $('#alarm').text(alarmText).show();
     }
@@ -89,22 +92,24 @@ const onJoinUser = (messageDate, nickName, isAppealOnline, isExpertOnline) => {
 };
 
 // Leave user from chat callback
-const onLeaveUser = (message) => {
+const onLeaveUser = (messageDate, nickName) => {
     changeStatus(false);
 
-    const isSender = message.nickName === 'Член КК № ' + expertKey;
+    const isSender = nickName === 'Член КК № ' + expertKey;
 
-    const messageItem = leaveMessage(message, isSender);
+    const messageItem = leaveMessage(messageDate, nickName, isSender);
 
     $("#messagesList").append(messageItem).scrollTo(messageItem);
 };
 
 // First join expert to chat callback
-const onFirstJoinExpert = (expertKey) => {
-    const messageItem = firstJoinMessage(expertKey, true);
+const onFirstJoinExpert = (expert, isAppealOnline, isExpertOnline) => {
+    changeStatus(isAppealOnline);
+
+    const messageItem = firstJoinMessage(expert, true);
 
     $("#messagesList").append(messageItem).scrollTo(messageItem);
-}
+};
 
 //
 const onInitializeChange = (messageText) => {
@@ -137,7 +142,7 @@ const blockChat = () => {
 };
 
 // 
-const insertQuickReply = (replyText) => {
+const insertReply = (replyText) => {
     toggleQuickReply(false);
 
     $('#messageText').insertAtCursor(replyText)
@@ -151,7 +156,7 @@ const onFilterTextKeyup = (e) => {
 
     switch (e.keyCode) {
         case 13:
-            insertQuickReply(selectedItem.text());
+            insertReply(selectedItem.text());
 
             return;
         case 38:
@@ -166,6 +171,8 @@ const onFilterTextKeyup = (e) => {
             // 
             previousItem.addClass('selected');
 
+            $('#replyList').scrollTo(previousItem);
+
             return;
         case 40:
             const nextItem = selectedItem.nextAll(':visible').first();
@@ -178,6 +185,8 @@ const onFilterTextKeyup = (e) => {
 
             // 
             nextItem.addClass('selected');
+
+            $('#replyList').scrollTo(nextItem);
 
             return;
     }
@@ -198,7 +207,7 @@ const onFilterTextInput = (e) => {
 };
 
 // 
-const onMessageTextKeyup = (e) => {
+const onMessageTextKeydown = (e) => {
     if (e.keyCode === 13 && !e.shiftKey) {
         e.preventDefault();
 
@@ -217,71 +226,84 @@ const onMessageTextInput = function (e) {
     $('#sendButton').prop('disabled', isDisabled);
 };
 
-// Create new info hub connection
-infoConnection = new signalR.HubConnectionBuilder()
-    .withUrl("/info")
-    .build();
+// Refresh access token
+const refreshToken = () => {
+    const clientId = sessionStorage.getItem('clientId');
+
+    getJwtToken(appealId, expertKey, clientId).then(token => { accessToken = token; setTimeout(refreshToken, tokenInterval); });
+}
+
+const completeLoad = () => {
+    $('#messagesList').scrollToLast();
+
+    //
+    setTimeout(refreshToken, tokenInterval);
+};
 
 // Receive information event handler
 infoConnection.on("ReceiveInfo", onReceiveInfo);
 
-// Start info connection
-infoConnection.start().then(updateInfo);
-
-// 
-getAccessToken(appealId, expertKey).then(accessToken => {
-    // Create new chat hub connection
-    chatConnection = new signalR.HubConnectionBuilder()
-        .withUrl("/chat", { accessTokenFactory: () => accessToken })
-        .build();
-
-    // Event handlers
-
-    // Receive message from user handler
-    chatConnection.on("Receive", onReceiveMessage);
-
-    // Join user to chat handler
-    chatConnection.on("Join", onJoinUser);
-
-    // Leave user from chat handler
-    chatConnection.on("Leave", onLeaveUser);
-
-    // Join user to chat handler
-    chatConnection.on("FirstJoinExpert", onFirstJoinExpert);
-
-    // First join expert on chat handler
-    chatConnection.on("InitializeChange", onInitializeChange);
-
-    // Complete chat
-    chatConnection.on("CompleteChat", onCompleteChat);
-
-    // Start chat hub connection
-    chatConnection.start();
-}).catch(error => {
-        console.error(error.toString());
-
-        blockChat();
-    });
-
 // JQuery document ready
 $(document).ready(() => {
-    // 
-    $('#sendButton').on('click', () => sendMessage($("#messageText").val()));
-
-    // 
+    // Quick reply toggle
     $('#quickReplyButton').on('click', () => toggleQuickReply(!quickReplyIsVisible));
 
-    // 
-    $('#replyList li').on('click', (e) => insertQuickReply($(e.target).text()));
-
-    // 
+    // Quick reply filter text
     $('#filterText')
         .on('keyup', onFilterTextKeyup)
         .on('input', onFilterTextInput);
 
-    //
+    // Quick reply list
+    $('#replyList li').on('click', (e) => insertReply($(e.target).text()));
+    
+    // Message form textarea
     $('#messageText')
-        .on('keyup', onMessageTextKeyup)
+        .on('keydown', onMessageTextKeydown)
         .on('input', onMessageTextInput)
         .trigger('input');
+
+    // Message form send button
+    $('#sendButton').on('click', () => sendMessage($("#messageText").val()));
 });
+
+// Start info connection
+infoConnection.start().then(updateInfo);
+
+createClient(appealId, expertKey)
+    .then(clientId => getJwtToken(appealId, expertKey, clientId))
+    .then(token => {
+        // Set access token
+        accessToken = token;
+
+        // Chat connection
+        const options = { accessTokenFactory: () => accessToken };
+
+        chatConnection = new signalR.HubConnectionBuilder()
+            .withUrl('chat', options)
+            .configureLogging(signalR.LogLevel.Trace)
+            .build();
+
+        // Receiving message from user
+        chatConnection.on("Receive", onReceiveMessage);
+
+        // Joining user to chat
+        chatConnection.on("Join", onJoinUser);
+
+        // Leave user from chat
+        chatConnection.on("Leave", onLeaveUser);
+
+        // Join user to chat handler
+        chatConnection.on("FirstJoinExpert", onFirstJoinExpert);
+
+        // Initialize change expert
+        chatConnection.on("InitializeChange", onInitializeChange);
+
+        // Complete change expert
+        chatConnection.on("CompleteChat", onCompleteChat);
+
+        // Start chat connection
+        return chatConnection.start();
+    })
+    .then(() => chatConnection.invoke('Join'))
+    .then(completeLoad)
+    .catch(error => { alert(error.toString()); blockChat(); });

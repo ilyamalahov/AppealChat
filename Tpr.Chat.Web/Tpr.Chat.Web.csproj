@@ -155,7 +155,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Views\Error\" />
     <Folder Include="wwwroot\files\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.IdentityModel">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.IdentityModel.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

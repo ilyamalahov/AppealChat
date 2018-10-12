@@ -1,13 +1,19 @@
 ﻿// Update info hub connection
 var infoConnection = new signalR.HubConnectionBuilder()
-    .withUrl("/info")
+    .withUrl("info")
     .build();
 
 // 
 var chatConnection;
 
+// Jwt Bearer access token
+var accessToken;
+
+// Refresh token interval
+const tokenInterval = 20000;
+
 // Update intreval
-const interval = 10000;
+const infoInterval = 10000;
 
 // Original window height
 const originalHeight = $(window).height();
@@ -36,19 +42,21 @@ const onJoinUser = (messageDate, nickName, isAppealOnline, isExpertOnline) => {
 };
 
 // 
-const onLeaveUser = (message) => {
+const onLeaveUser = (messageDate, nickName) => {
     changeStatus(false);
 
-    const isSender = message.nickName === 'Апеллянт';
+    const isSender = nickName === 'Апеллянт';
 
     if (!isSender) { return; }
 
-    const messageItem = leaveMessage(message, isSender);
+    const messageItem = leaveMessage(messageDate, nickName, isSender);
 
     $("#messagesList").append(messageItem).scrollTo(messageItem);
 };
 
-const onFirstJoinExpert = (expertKey) => {
+const onFirstJoinExpert = (expertKey, isAppealOnline, isExpertOnline) => {
+    changeStatus(isExpertOnline);
+
     // Expert text
     const expertText = '№' + expertKey;
 
@@ -69,22 +77,9 @@ const onInitializeChange = (messageText) => {
 
 // 
 const onCompleteChange = (expertKey) => {
-    // Start info connection
-    infoConnection.start().then(updateInfo).catch(error => console.error(error.toString()));
-
-    generateToken(appealId).then(token => chatConnection.stop().then(() => createChatConnection("/chat", token)));
+    //refreshToken(appealId);
 
     waitChange(false);
-};
-
-const generateToken = () => {
-    return new Promise((resolve, reject) =>
-        $.post("ajax/token", { appealId }, (response) => {
-            sessionStorage.setItem("access_token", response.accessToken);
-
-            return resolve(response.accessToken);
-        })
-    );
 };
 
 // 
@@ -112,12 +107,12 @@ const onReceiveInfo = (currentDate, remainingTime, isAlarm, isFinished) => {
 
     // Alarm after minutes (5 minutes default)
     if (isAlarm) {
-        var alarmText = 'До окончания консультации осталось ' + remainingText + ' минут(-ы)';
+        var alarmText = 'До окончания онлайн-чата осталось ' + remainingText + ' минут(-ы)';
 
         $('#alarm').text(alarmText).show();
     }
 
-    setTimeout(updateInfo, interval);
+    setTimeout(updateInfo, infoInterval);
 };
 
 // Send message
@@ -128,16 +123,11 @@ const sendMessage = (message) => {
     $('#messageText').val('').trigger('input');
 };
 
-// 
-const scrollToLast = function () {
-    const targetHeight = $(this).height();
+const onWindowResize = (e) => {
+    const targetHeight = $(e.target).height();
 
-    if (targetHeight !== originalHeight) {
-        const lastItem = $('#messagesList').children(':last-child');
-
-        $('#messagesList').scrollTo(lastItem);
-    }
-};
+    if (targetHeight !== originalHeight) { $('#messagesList').scrollToLast(); }
+}
 
 // 
 const changeStatus = (isOnline) => $('#onlineStatus').toggleClass('online', isOnline);
@@ -145,11 +135,11 @@ const changeStatus = (isOnline) => $('#onlineStatus').toggleClass('online', isOn
 // Change expert functionality
 const changeExpert = (appeal) => {
     $.ajax({
-        method: "POST",
-        url: "ajax/change/expert",
+        method: "post",
+        url: "ajax/change",
         data: { appealId: appeal },
         beforeSend: () => $('#changeButton, #changeMobileButton').prop('disabled', true),
-        success: () => { infoConnection.stop(); waitChange(true); },
+        success: () => waitChange(true),
         error: (error) => {
             alert(error.responseText);
 
@@ -161,8 +151,8 @@ const changeExpert = (appeal) => {
 // 
 const completeChat = (appeal) => {
     $.ajax({
-        method: "POST",
-        url: "ajax/chat/complete",
+        method: "post",
+        url: "ajax/complete",
         data: { appealId: appeal },
         beforeSend: () => $('#completeButton, #completeMobileButton').prop('disabled', true),
         success: () => location.reload(),
@@ -177,10 +167,14 @@ const completeChat = (appeal) => {
 // 
 const waitChange = (isWait) => {
     if (isWait) {
+        infoConnection.stop();
+
         $('#messageForm').hide();
 
         $('#modal').showModal('modal/waitchange');
     } else {
+        infoConnection.start().then(updateInfo);
+
         $('#messageForm').show();
 
         $('#modal').hideModal();
@@ -190,45 +184,54 @@ const waitChange = (isWait) => {
 // 
 const updateInfo = () => infoConnection.send("MainUpdate", appealId);
 
-// 
-const createChatConnection = (url, accessToken) => {
-    chatConnection = new signalR.HubConnectionBuilder()
-        .withUrl(url, { accessTokenFactory: () => accessToken })
-        .configureLogging(signalR.LogLevel.Trace)
-        .build();
+// Refresh access token
+const refreshToken = () => {
+    const clientId = sessionStorage.getItem('clientId');
 
-    // Receiving message from user
-    chatConnection.on("Receive", onReceiveMessage);
-
-    // Joining user to chat
-    chatConnection.on("Join", onJoinUser);
-
-    // Leave user from chat
-    chatConnection.on("Leave", onLeaveUser);
-
-    // Join user to chat handler
-    chatConnection.on("FirstJoinExpert", onFirstJoinExpert);
-
-    // Initialize change expert
-    chatConnection.on("InitializeChange", onInitializeChange);
-
-    // Complete change expert
-    chatConnection.on("CompleteChange", onCompleteChange);
-
-    // Complete change expert
-    //chatConnection.onclose(() => createChatConnection(url, accessToken));
-
-    // Start chat connection
-    chatConnection.start().catch(error => console.error(error.toString()));
+    getJwtToken(appealId, null, clientId).then(token => { accessToken = token; setTimeout(refreshToken, tokenInterval); });
 };
 
 // 
-$(document).ready(() => {
-    // Receive information response event
-    infoConnection.on("ReceiveInfo", onReceiveInfo);
+const onMessageTextKeydown = (e) => {
+    if (e.keyCode === 13 && !e.shiftKey) {
+        e.preventDefault();
+
+        const value = $(e.target).val();
+
+        if (value.length > 0) { sendMessage(value); }
+    }
+};
+
+// 
+const onMessageTextInput = function (e) {
+    $(this).expandRows();
 
     // 
-    $(window).on('resize', scrollToLast);
+    const isDisabled = $(this).val().length === 0;
+
+    $('#sendButton').prop('disabled', isDisabled);
+};
+
+// 
+const completeLoad = () => {
+    // 
+    $('#messagesList').scrollToLast();
+    
+    // 
+    setTimeout(refreshToken, tokenInterval);
+};
+
+// Receive information response event
+infoConnection.on("ReceiveInfo", onReceiveInfo);
+
+const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Document ready event
+$(document).ready(() => {
+    // 
+    $(window).on('resize', onWindowResize);
 
     // Send message
     $('#sendButton').on('click', () => sendMessage($('#messageText').val()));
@@ -243,36 +246,53 @@ $(document).ready(() => {
     $('#completeButton, #completeMobileButton').on('click', () => $('#modal').showModal('modal/completechat'));
 
     // Textarea auto rows count
-    $('#messageText').on('input', function (e) {
-        $(this).expandRows();
-
-        // 
-        const isDisabled = $(this).val().length === 0;
-
-        $('#sendButton').prop('disabled', isDisabled);
-    });
-
-    // Message textarea keyup event
-    $('#messageText').on('keyup', function (e) {
-        if (e.keyCode === 13 && !e.shiftKey) {
-            e.preventDefault();
-
-            if ($(this).val().length > 0) { sendMessage($(this).val()); }
-        }
-    });
-
-    // 
-    $('#messageText').trigger('input');
+    $('#messageText')
+        .on('keydown', onMessageTextKeydown)
+        .on('input', onMessageTextInput)
+        .trigger('input');
 
     //
     waitChange(isWaiting);
-
-    // Start info connection
-    infoConnection.start().then(updateInfo).catch(error => console.error(error.toString()));
-
-    // 
-    getAccessToken(appealId).then(token => createChatConnection("/chat", token));
 });
+
+createClient(appealId)
+    .then(clientId => getJwtToken(appealId, null, clientId))
+    .then(token => {
+        // Set access token
+        accessToken = token;
+
+        // Chat connection
+        const options = { accessTokenFactory: () => accessToken };
+
+        chatConnection = new signalR.HubConnectionBuilder()
+            .withUrl('chat', options)
+            .configureLogging(signalR.LogLevel.Trace)
+            .build();
+
+        // Receiving message from user
+        chatConnection.on("Receive", onReceiveMessage);
+
+        // Joining user to chat
+        chatConnection.on("Join", onJoinUser);
+
+        // Leave user from chat
+        chatConnection.on("Leave", onLeaveUser);
+
+        // Join user to chat handler
+        chatConnection.on("FirstJoinExpert", onFirstJoinExpert);
+
+        // Initialize change expert
+        chatConnection.on("InitializeChange", onInitializeChange);
+
+        // Complete change expert
+        chatConnection.on("CompleteChange", onCompleteChange);
+
+        // Start chat connection
+        return chatConnection.start();
+    })
+    .then(() => chatConnection.send('Join'))
+    .then(completeLoad)
+    .catch(error => alert(error.toString()));
 
 //
 $(document).on('click', '#okChangeButton, #okChangeMobileButton', () => { $('#modal').hideModal(); changeExpert(appealId); });

@@ -11,13 +11,15 @@ namespace Tpr.Chat.Web.Hubs
         // Common send methods
         Task Receive(ChatMessage message);
         Task Join(DateTime messageDate, string nickname, bool isAppealOnline, bool isExpertOnline);
-        Task Leave(ChatMessage message, string onlineExpertKey);
+        Task Leave(DateTime messageDate, string nickname);
 
         // Expert send methods
         Task InitializeChange(string messageText);
-        Task CompleteChange(int expertKey);
+        Task CompleteChange(int? expertKey);
 
-        Task FirstJoinExpert(string expertKey);
+        Task FirstJoinExpert(int? expertKey, bool isAppealOnline, bool isExpertOnline);
         Task CompleteChat();
+
+        Task OnlineStatus(bool isOnline);
     }
 }

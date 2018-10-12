@@ -1,8 +1,4 @@
-﻿@model IndexViewModel
-
-@{
-    ViewData["Title"] = "Система онлайн консультирования по вопросам";
-}
+﻿@model SessionViewModel
 
 @section Styles{
     <link rel="stylesheet" type="text/css" href="~/css/before-after.css" />
@@ -12,7 +8,7 @@
 
 @section Scripts {
     <script type="text/javascript">
-        var appealId = "@Model.AppealId";
+        var appealId = @Json.Serialize(Model.AppealId);
     </script>
     <script type="text/javascript" src="~/js/before.js"></script>
 }
@@ -70,10 +66,10 @@
             <div style="margin: auto;">
                 <div class="main-header">
                     <div class="icon"><img src="~/images/before/hourglass.svg" /></div>
-                    <div class="title">Время онлайн консультации <br />по Вашей аппеляции еще не наступило</div>
+                    <div class="title">Время онлайн-чата <br />по Вашей апелляции еще не наступило</div>
                 </div>
                 <div class="main-content">
-                    <div class="title">Консультация начнется через</div>
+                    <div class="title">Онлайн-чат начнется через</div>
                     <div class="remaining-time"><b id="remainingDays">0</b> дней(-я) <b id="remainingHours">00</b> часа(-ов) <b id="remainingMinutes">00</b> минут(-ы)</div>
                 </div>
             </div>

@@ -15,9 +15,9 @@ namespace Tpr.Chat.Core.Models
         [ExplicitKey]
         public Guid AppealId { get; set; }
 
-        public DateTime RequestTime { get; set; }
+        public DateTime? RequestTime { get; set; }
 
-        public int OldMember { get; set; }
+        public int? OldMember { get; set; }
 
         public DateTime? ReplaceTime { get; set; }
 

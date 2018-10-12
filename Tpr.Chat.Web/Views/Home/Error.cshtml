@@ -1,18 +1,14 @@
 ﻿@model ErrorViewModel
 @{
-    ViewData["Title"] = "Error";
+    ViewData["Title"] = "Ошибка";
 }
-<style>
-    .container {
-        font-family: Calibri;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-</style>
 <div class="container">
-    <div style="padding: 30px;">
-        <h1>Ошибка</h1>
-        <h2>Во время обработки Вашего запроса произошла ошибка</h2>
+    <div style="padding: 30px; margin: auto;">
+        <h1>Внимание!</h1>
+        @*<h2>Во время обработки Вашего запроса произошла ошибка</h2>*@
+        @if(Model.Message != null)
+        { 
+            <h3>@Html.Raw(Model.Message)</h3>
+        }
     </div>
 </div>

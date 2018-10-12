@@ -1,21 +1,60 @@
 ﻿// Get JWT access token
-const getAccessToken = (appeal, expert) => {
-    return new Promise((resolve, reject) => {
-        const accessToken = sessionStorage.getItem('access_token');
+//const getAccessToken = (appeal, expert) => {
+//    return new Promise((resolve, reject) => {
+//        const accessToken = sessionStorage.getItem('access_token');
 
-        if (accessToken) { return resolve(accessToken); }
+//        if (accessToken) { return resolve(accessToken); }
 
+//        $.ajax({
+//            method: "post",
+//            url: "ajax/token",
+//            data: { appealId: appeal, expertKey: expert },
+//            success: (response) => {
+//                sessionStorage.setItem("access_token", response.accessToken);
+
+//                return resolve(response.accessToken);
+//            },
+//            error: reject
+//        });
+//    });
+//};
+
+// 
+const createClient = (appeal, expert) => {
+    const clientId = sessionStorage.getItem("clientId");
+
+    return new Promise(resolve => {
         $.ajax({
-            method: "post",
-            url: "ajax/token",
-            data: { appealId: appeal, expertKey: expert },
-            success: (response) => {
-                sessionStorage.setItem("access_token", response.accessToken);
+            url: "ajax/client",
+            data: { appealId: appeal, expertKey: expert, clientId: clientId },
+            success: (client) => { sessionStorage.setItem("clientId", client); resolve(client) },
+            error: (error) => window.location.replace("/error?message=" + error.responseText),
+            async: false
+        });
+    });
+};
 
-                return resolve(response.accessToken);
-            },
+// Get JWT Bearer access token
+const getJwtToken = (appeal, expert, client) => {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            method: 'get',
+            url: 'ajax/token',
+            data: { appealId: appeal, expertKey: expert, clientId: client },
+            beforeSend: () => console.info('Request new access token'),
+            success: resolve,
             error: reject
         });
+    });
+};
+
+//
+const sendDisconnectRequest = (appeal, expert) => {
+    $.ajax({
+        method: 'GET',
+        url: 'ajax/closepage',
+        data: { appealId: appeal, expertKey: expert },
+        async: false
     });
 };
 
@@ -35,12 +74,8 @@ const receiveMessage = (message, isSender) => {
 // Return new "Join user" message
 const joinMessage = (messageDate, nickName, isSender) => {
     const messageDateObj = luxon.DateTime.fromISO(messageDate);
-
-    var messageText = "";
-
-    //else if (isFirstJoined) messageText = nickName + ' подключился к консультации. Вы можете задать свои вопросы здесь.';
-    if (isSender) messageText = 'Вы подключились к консультации';
-    else messageText = nickName + ' подключился к консультации';
+    
+    const messageText = isSender ? 'Вы подключились к онлайн-чату' : nickName + ' подключился к онлайн-чату';
 
     const html = messageText + ' <b class="message-date">' + messageDateObj.toFormat("tt") + '</b>';
 
@@ -48,19 +83,19 @@ const joinMessage = (messageDate, nickName, isSender) => {
 };
 
 // Return new "Leave user" message
-const leaveMessage = (message, isSender) => {
-    const messageDate = luxon.DateTime.fromISO(message.createDate);
+const leaveMessage = (messageDate, nickName, isSender) => {
+    const messageDateObj = luxon.DateTime.fromISO(messageDate);
 
-    const messageText = isSender ? 'Вы покинули консультацию' : message.nickName + ' покинул консультацию';
+    const messageText = isSender ? 'Вы покинули онлайн-чат' : nickName + ' покинул онлайн-чат';
 
-    const html = messageText + ' <b class="message-date">' + messageDate.toFormat("tt") + '</b>';
+    const html = messageText + ' <b class="message-date">' + messageDateObj.toFormat("tt") + '</b>';
 
     return addMessage(html, isSender);
 };
 
 // 
 const firstJoinMessage = (expertKey, isSender) => {
-    const messageText = 'Член КК № ' + expertKey + ' подключился к консультации. Вы можете задать ему свои вопросы';
+    const messageText = 'Член КК № ' + expertKey + ' подключился к онлайн-чату. Вы можете задать ему свои вопросы';
 
     return addMessage(messageText, isSender);
 };
@@ -72,7 +107,7 @@ const changeExpertMessage = (messageText) => addMessage(messageText, true);
 
 // Return "Change expert" message
 const completeChatMessage = (isSender) => {
-    const messageText = 'Апеллянт досрочно завершил консультацию';
+    const messageText = 'Апеллянт досрочно завершил онлайн-чат';
 
     return addMessage(messageText, isSender);
 };
@@ -90,6 +125,8 @@ const addMessage = (html, isSender, isStatusMessage = true) => {
 
 // Scroll to element
 jQuery.fn.scrollTo = function (element) {
+    if (element.length == 0) { return; }
+
     $(this).scrollTop($(this).scrollTop() - $(this).offset().top + $(element).offset().top);
 
     return this;
@@ -148,6 +185,15 @@ jQuery.fn.expandRows = function (textarea) {
 
     return this;
 };
+
+// 
+jQuery.fn.scrollToLast = function () {
+    const lastItem = $(this).children(':last-child');
+
+    $(this).scrollTo(lastItem);
+
+    return this;
+}
 
 // Show modal window
 jQuery.fn.showModal = function (url, data) {

@@ -1,4 +1,6 @@
-﻿<div id="sideMenu" class="overlay" style="display: none;">
+﻿@model SessionViewModel
+
+<div id="sideMenu" class="overlay" style="display: none;">
     <div class="sidemenu">
         <div class="sidemenu-header">
             <button id="closeSideButton" class="custom-button" style="margin: 10px;">
@@ -6,17 +8,17 @@
             </button>
         </div>
         <div class="sidemenu-content">
-            <a id="appealInfoLink" href="#" class="sidemenu-item"><div><img src="~/images/sidemenu/info.png" alt="Сведения об аппеляции" /><div>Сведения об аппеляции</div></div></a>
+            <a id="appealInfoLink" href="#" class="sidemenu-item"><div><img src="~/images/sidemenu/info.png" alt="Сведения об апелляции" /><div>Сведения об апелляции</div></div></a>
             <a id="contactsLink" href="#" class="sidemenu-item"><div><img src="~/images/sidemenu/contacts.png" alt="Контакты" /><div>Контакты</div></div></a>
-            <a href="~/files/manual.pdf" target="_blank" class="sidemenu-item"><div><img src="~/images/sidemenu/help.png" alt="Инструкция по работе с чатом" /><div>Инструкция по работе с чатом</div></div></a>
+            <a href="~/files/manual.pdf" target="_blank" class="sidemenu-item"><div><img src="~/images/sidemenu/help.png" alt="Инструкция по работе с онлайн-чатом" /><div>Инструкция по работе с онлайн-чатом</div></div></a>
         </div>
         <div class="sidemenu-footer">
-            @if (ViewBag.IsActive)
+            @if (Model.IsActive)
             {
                 <a id="completeMobileButton" href="#" class="sidemenu-item">
                     <div>
-                        <img class="button-icon" src="~/images/sidemenu/complete.png" alt="Завершить консультацию" />
-                        <div>Завершить консультацию</div>
+                        <img class="button-icon" src="~/images/sidemenu/complete.png" alt="Завершить онлайн-чат" />
+                        <div>Завершить онлайн-чат</div>
                     </div>
                 </a>
             }

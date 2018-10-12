@@ -45,7 +45,7 @@ namespace Tpr.Chat.Core.Repositories
 
         #region Messages
 
-        public async Task<ChatMessage> GetWelcomeMessage(Guid appealId, string expertKey)
+        public async Task<ChatMessage> GetWelcomeMessage(Guid appealId, int? expertKey)
         {
             var nickname = "Член КК № " + expertKey;
             var messageType = (int)ChatMessageTypes.FirstExpert;
@@ -146,7 +146,7 @@ namespace Tpr.Chat.Core.Repositories
 
         #region Member Replacement
 
-        public async Task<MemberReplacement> GetMemberReplacement(Guid appealId)
+        public async Task<MemberReplacement> GetReplacement(Guid appealId)
         {
             try
             {
@@ -157,6 +157,17 @@ namespace Tpr.Chat.Core.Repositories
                     var sql = "SELECT * FROM dbo.MemberReplacements WHERE AppealId = @appealId";
 
                     return await connection.QuerySingleOrDefaultAsync<MemberReplacement>(sql, new { appealId });
+
+                    //if(replacement == null)
+                    //{
+                    //    replacement = new MemberReplacement { AppealId = appealId };
+
+                    //    var replacementResult = await AddReplacement(replacement);
+
+                    //    if (!replacementResult) return null;
+                    //}
+
+                    //return replacement;
                 }
             }
             catch (Exception exception)
@@ -167,19 +178,7 @@ namespace Tpr.Chat.Core.Repositories
             }
         }
 
-        public async Task<bool> AddMemberReplacement(Guid appealId, int expertKey)
-        {
-            var replacement = new MemberReplacement
-            {
-                AppealId = appealId,
-                RequestTime = DateTime.Now,
-                OldMember = expertKey
-            };
-
-            return await AddMemberReplacement(replacement);
-        }
-
-        public async Task<bool> AddMemberReplacement(MemberReplacement replacement)
+        public async Task<bool> AddReplacement(MemberReplacement replacement)
         {
             try
             {
@@ -200,7 +199,7 @@ namespace Tpr.Chat.Core.Repositories
             }
         }
 
-        public async Task<bool> UpdateMemberReplacement(MemberReplacement replacement)
+        public async Task<bool> UpdateReplacement(MemberReplacement replacement)
         {
             try
             {
@@ -210,6 +209,27 @@ namespace Tpr.Chat.Core.Repositories
 
                     return await connection.UpdateAsync(replacement);
                 }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
+
+                return false;
+            }
+        }
+
+        public async Task<bool> AddReplacement(Guid appeaId, int oldMember)
+        {
+            try
+            {
+                var replacement = new MemberReplacement
+                {
+                    AppealId = appeaId,
+                    OldMember = oldMember,
+                    RequestTime = DateTime.Now
+                };
+
+                return await AddReplacement(replacement);
             }
             catch (Exception exception)
             {
