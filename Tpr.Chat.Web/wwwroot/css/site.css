@@ -564,7 +564,8 @@ a {
 
     .place-right .message-bubble {
         border-radius: 5px 5px 0 5px;
-        background: #ddedfa;
+        background: #ceffce
+        /*background: #ddedfa;*/
     }
 
 .sidemenu {
